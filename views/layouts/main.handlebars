@@ -1,0 +1,26 @@
+<html>
+<head>
+
+    <!-- Header includes -->
+    {{> head}}
+
+</head>
+<body>
+    <div id="fullscreen-container" class="d-flex flex-column">
+        
+        <div id="main-container" class="d-flex flex-column" style="flex-grow: 1; min-height: 650px">
+
+            {{> navbar}}
+
+            <!-- Body -->
+            {{{ body }}}
+
+        </div>
+
+        <div id="mobile-container" style="flex-grow: 0">
+        </div>
+
+    </div>
+
+</body>
+</html>

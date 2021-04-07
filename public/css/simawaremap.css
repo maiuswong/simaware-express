@@ -1,0 +1,291 @@
+
+/* HTML tags*/
+body
+{
+    font-family: 'Jost', sans-serif;
+}
+
+a
+{
+  text-decoration: none;
+}
+
+.active-area {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+}
+/* CSS classes */
+@media(min-width: 576px)
+{
+  .active-area {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    right: 400px;
+    bottom: 50px;
+  }
+}
+.bg-black
+{
+  background-color: #000;
+}
+.bg-transparent-black
+{
+  background-color: rgba(25,25,25,0.9);
+}
+.datablock
+{
+    background-color: rgba(0,0,0,0);
+    color: #00d300 !important;
+    border: none !important;
+    font-size: 0.75rem;
+    line-height: 0.75rem;
+    box-shadow: none !important;
+    font-family: 'Jost', sans-serif;
+}
+.flights-tableitem
+{
+  font-size: 0.85rem;
+  color: #ddd;
+}
+.flights-liveitem
+{
+  font-size: 1.2rem;
+}
+.leaflet-container
+{
+  background-color: #000 !important;
+}
+.leaflet-control-attribution
+{
+  background-color: rgba(0,0,0,0) !important;
+  color: rgba(255,255,255,0.15);
+  font-family: 'Jost', sans-serif;
+}
+.leaflet-control-attribution > a
+{
+  color: rgba(255,255,255,0.15);
+}
+.leaflet-tile-container img {
+  width: 256.5px !important;
+  height: 256.5px !important;
+}
+.leaflet-tooltip
+{
+    font-family: 'Jost', sans-serif;
+    background-color: rgba(0,0,0,0);
+    border: none;
+    box-shadow: none;
+}
+.leaflet-tooltip::before
+{
+  border-right-color: rgba(0,0,0,0) !important;
+}
+.leaflet-tooltip-left::before
+{
+  border-left-color: rgba(0,0,0,0) !important;
+}
+.search-flight-item:hover
+{
+  cursor: pointer;
+  background: rgba(0,0,0,0.05);
+}
+.search-flight-item:active
+{
+  background: rgba(0,0,0,0.08);
+}
+.tooltip-airport
+{
+  color: #ff0;
+}
+
+/* CSS IDs */
+#flights-sidebar
+{
+  font-family: 'Jost', sans-serif;
+  z-index: 1000;
+  width: 350px;
+  background-color: #353638;
+  color: #fff;
+  position: absolute;
+  top: 1rem;
+  right: calc(50% - 175px);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+@media(min-width: 576px)
+{
+  #flights-sidebar
+  {
+    right: 1rem;
+  }
+}
+#flights-body
+{
+  display: none;
+}
+@media(min-width: 576px)
+{
+  #flights-body
+  {
+    display: flex;
+  }
+}
+#flights-cap
+{
+  background-color: #edeeef;
+  color: #333;
+}
+#flights-infotable
+{
+  color: #eee;
+  table-layout:fixed;
+}
+#flights-livetable
+{
+  background-color: rgba(0,0,0,0.2);
+  overflow: hidden;
+  color: #eee;
+}
+#flights-status
+{
+  border-bottom-left-radius: 0.25rem;
+  font-size: 1rem;
+}
+#flights-progressbar
+{
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+#flights-progressbar-elapsed
+{
+  height: 2px;
+  width: 30px;
+}
+#flights-progressbar-plane
+{
+  margin-left: 2px;
+  margin-right: 2px;
+  font-size: 1rem
+}
+#flights-progressbar-remaining
+{
+  height: 2px;
+  flex-grow: 1;
+  min-width: 0;
+  background-color: #aaa;
+}
+#fullscreen-container
+{
+  min-height: 100%;
+}
+#main-container
+{
+  height: 90%;
+}
+#map-footer
+{
+  z-index: 1100;
+  font-family: 'Jost', sans-serif;
+  font-size: 1rem;
+}
+
+#footer-background
+{
+
+  background-color: rgba(255,255,255,0.05);
+  position: absolute;
+  z-index: 1200;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+}
+
+#footer-group
+{
+  width: 100%;
+  font-family: 'Jost', sans-serif;
+  display: flex;
+  justify-content: center;
+}
+@media(min-width: 960px)
+{
+  #footer-group
+  {
+    justify-content: space-between;
+  }
+}
+#search-group
+{
+  width: 350px;
+}
+#infobar
+{
+  color: #fff;
+  width: 600px;
+  display: none;
+  font-size: 0.9rem;
+}
+@media(min-width: 576px)
+{
+  #infobar
+  {
+    display: flex;
+    align-items: center;
+  }
+}
+#search-selector
+{
+  border-top-left-radius: 0.2rem;
+  border-bottom-left-radius: 0.2rem;
+  border-top-right-radius: 0rem;
+  border-bottom-right-radius: 0rem;
+  border-color: #555;
+  background-color: #333435;
+  color: #eee;
+}
+#search-field
+{
+  border-top-right-radius: 0.2rem;
+  border-bottom-right-radius: 0.2rem;
+  border-color: #555;
+  background-color: #333435;
+}
+#search-wrapper
+{
+  display: none;
+  z-index: 1200;
+  width: 350px;
+  position: absolute;
+  right: calc(50% - 175px);
+  bottom: 90px;
+  z-index: 1200;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  box-shadow: rgb(0 0 0 / 40%) 0px -10px 5px;
+}
+@media(min-width: 576px)
+{
+  #main-container
+  {
+    height: 100%;
+  }
+  #mobile-container
+  {
+    display: none;
+  }
+  #search-group
+  {
+    left: 1rem;
+    width: 350px;
+  }
+  #search-wrapper
+  {
+    right: 1rem;
+  }
+}

@@ -1,0 +1,114 @@
+<div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
+
+    <!-- Flight Display Sidebar -->
+    <div id="flights-sidebar" class="flex-column" style="display: none;">
+        <div id="flights-status" class="bg-success text-white py-1 px-3" style="position: absolute; top: 0; right: 0;">
+            Enroute
+        </div>
+        <div id="flights-cap" class="p-3 d-flex flex-column">
+            <div>
+                <h3 id="flights-callsign"></h3>
+            </div>
+            <div class="d-flex flex-row align-items-center">
+                <h4 id="flights-dep-icao" class="flights-icao mb-0"></h1>
+                <div id="flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1">
+                    <div id="flights-progressbar-elapsed" class="bg-success"></div>
+                    <i id="flights-progressbar-plane" class="fas fa-plane text-success"></i>
+                    <div id="flights-progressbar-remaining"></div>
+                </div>
+                <h4 id="flights-arr-icao" class="flights-icao mb-0"></h1>
+            </div>
+        </div>
+        <table id="flights-livetable">
+                <tr>
+                    <td class="pt-2 text-center" width="33.3333%">Speed</td>
+                    <td class="pt-2 text-center" width="33.3333%">Altitude</td>
+                    <td class="pt-2 text-center" width="33.3333%">To Go</td>
+                </tr>
+                <tr>
+                    <td class="pb-2 flights-liveitem text-center" id="spd"></td>
+                    <td class="pb-2 flights-liveitem text-center" id="alt"></td>
+                    <td class="pb-2 flights-liveitem text-center" id="togo"></td>
+                </tr>
+            </table>
+        <div id="flights-body" class="flex-column p-3">
+            <div>
+                <table id="flights-infotable">
+                    <tr>
+                        <td class="pe-3 text-center">Depart</td>
+                        <td id="flights-airport-dep" class="flights-tableitem"></td>
+                    </tr>
+                    <tr>
+                        <td class="pe-3">
+                            <div href="/timetable/book/1561" class="segment" style="width: 2px; height: 30px; background-color: #eee; margin: 0 auto"></div>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pe-3 text-center">Arrive</td>
+                        <td id="flights-airport-arr" class="flights-tableitem"></td>
+                    </tr>
+                    <tr>
+                        <td class="pt-3 pe-3 text-center align-top">Route</td>
+                        <td id="flights-route" class="pt-3 flights-tableitem"></td>
+                    </tr>
+                    <tr>
+                        <td class="pt-3 pe-3 text-center align-center">Aircraft</td>
+                        <td id="flights-equipment" class="pt-3 flights-tableitem align-center"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Group -->
+    <div id="footer-background">
+        <div id="footer-group">
+            <div id="infobar" class="py-1">
+                <script src="/js/simaware_app/simaware-infobar.js"></script>
+            </div>
+            <div id="search-group">
+                <div class="input-group mb-0" data-children-count="1">
+                    <div class="input-group-prepend mr-0">
+                        <div class="btn-group dropup">
+                            <button type="button" id="search-selector" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                Live Flights
+                            </button>
+                            <ul class="dropdown-menu" style="">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Separated link</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <input type="text" id="search-field" class="form-control text-white border-left-0" placeholder="Search..." aria-label="Text input with dropdown button">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="search-wrapper">
+    <div class="p-3">
+        <h4 class="mb-0">Search Results</h4>
+    </div>
+    <div style="max-height: 400; overflow-y: scroll">
+        <table id="search-results" class="mb-2 w-100">
+        </table>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    
+    initializeMap();
+    initializeNexrad();
+    initializeATC();
+    refreshFlights();
+    initializeAirports();
+    refreshATC();
+    
+})
+</script>
