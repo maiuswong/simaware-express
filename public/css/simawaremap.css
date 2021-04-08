@@ -115,7 +115,6 @@ a
   right: calc(50% - 175px);
   border-radius: 0.25rem;
   overflow: hidden;
-  box-shadow: rgb(0 0 0 / 40%) 0px 10px 5px;
 }
 @media(min-width: 576px)
 {
@@ -133,6 +132,14 @@ a
 {
   max-height: 80%;
   overflow-y: scroll;
+}
+.airport-list-item:hover
+{
+  background-color: rgba(255,255,255,0.05);
+}
+.airport-list-item:active
+{
+  background-color: rgba(255,255,255,0.08);
 }
 #sidebar-container
 {
@@ -172,6 +179,7 @@ a
 #flights-status
 {
   border-bottom-left-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
   font-size: 1rem;
 }
 #flights-progressbar
@@ -320,12 +328,21 @@ a
   font-family: 'Jost', sans-serif;
 }
 
+@media(max-width: 576px)
+{
+  #sidebar
+  {
+    right: calc(50% - 175px);
+    bottom: 70px;
+  }
+}
+
 #airport-status
 {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 1rem;
   border-bottom-left-radius: 0.25rem;
   font-size: 1rem;
-  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
 }

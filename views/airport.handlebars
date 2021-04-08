@@ -11,13 +11,36 @@
 
 <script>
 $(document).ready(function() {
-    
+
+    airports = [];
+    flights = [];
+
+    initialize();
+    setInterval(
+        async () => { 
+            flights = await refreshFlights(filterName, filterCriteria); 
+            updateAirportFlights(airports, flights, filterCriteria) 
+        }, 60 * 1000);
+    })
+
+async function initialize()
+{
+    // Set-up airport only
+    filterName = 'airport';
+    filterCriteria = '{{ icao }}';
+
+    initializeMap(filterName, filterCriteria);
+
+    response = await fetch('/livedata/airports.json');
+    airports = await response.json();
+
+    flights = await refreshFlights(filterName, filterCriteria);
+
     initializeAirport('{{ icao }}');
-    initializeMap('airport', '{{ icao }}');
     initializeNexrad();
     initializeATC();
     initializeAirports();
-    refreshATC();
-    
-})
+    refreshATC();   
+    updateAirportFlights(airports, flights, filterCriteria);
+}
 </script>

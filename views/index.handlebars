@@ -8,12 +8,40 @@
 
 <script>
 $(document).ready(function() {
+
+
     
+    
+    
+})
+
+$(document).ready(function() {
+
+    airports = [];
+    flights = [];
+
+    // Airports show everything
+    filterName = null;
+    filterCriteria = null;
+
+    initialize();
+    setInterval(
+        async () => { 
+            flights = await refreshFlights(filterName, filterCriteria); 
+        }, 60 * 1000);
+    })
+
+async function initialize()
+{
     initializeMap();
+
+    response = await fetch('/livedata/airports.json');
+    airports = await response.json();
+    flights = await refreshFlights(filterName, filterCriteria);
+
     initializeNexrad();
     initializeATC();
     initializeAirports();
     refreshATC();
-    
-})
+}
 </script>

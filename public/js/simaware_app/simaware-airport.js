@@ -13,8 +13,6 @@ function initializeAirport(icao)
             $('#airport-name').html(airport.name);
         }
 
-        setInterval(updateAirportFlights(flights, icao), 60 * 1000);
-
         el = document.getElementById('sidebar-container');
         L.DomEvent.disableScrollPropagation(el);
         L.DomEvent.disableClickPropagation(el);
@@ -23,16 +21,20 @@ function initializeAirport(icao)
     
 }
 
-function updateAirportFlights(flights, icao)
+function updateAirportFlights(airports, flights, icao)
 {
+    console.log('Updating Airports');
     var deps = [];
     var arrs = [];
     $.each(flights, (idx, obj) => {
+        console.log(obj.callsign + ' ' + obj.dep + ' ' + obj.arr)
+        console.log(obj.arr == icao)
+        console.log(icao)
         if(obj.arr == icao)
         {
             arrs.push(obj);
         }
-        else
+        else if(obj.dep == icao)
         {
             deps.push(obj);
         }
@@ -42,13 +44,13 @@ function updateAirportFlights(flights, icao)
     depscount = 0;
     arrscount = 0;
     $.each(deps, (idx, obj) => {
-        [airportname, airportcity] = getAirportDetails(obj.arr);
-        html = html + '<tr onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">to</small></td><td>' + airportcity + '</td></tr>';
+        [airportname, airportcity] = getAirportDetails(airports, obj.arr);
+        html = html + '<tr class="airport-list-item" onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">to</small></td><td>' + airportcity + '</td></tr>';
         depscount++;
     });
     $.each(arrs, (idx, obj) => {
-        [airportname, airportcity] = getAirportDetails(obj.dep);
-        html = html + '<tr onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">from</small></td><td>' + airportcity + '</td></tr>';
+        [airportname, airportcity] = getAirportDetails(airports, obj.dep);
+        html = html + '<tr class="airport-list-item" onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">from</small></td><td>' + airportcity + '</td></tr>';
         arrscount++;
     });
     $('#airport-list').html(html);
@@ -57,7 +59,7 @@ function updateAirportFlights(flights, icao)
 
 }
 
-function getAirportDetails(icao)
+function getAirportDetails(airports, icao)
 {
     if(airports[icao] != null)
     {

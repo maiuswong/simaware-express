@@ -12,9 +12,6 @@ function initializeMap(filterName = null, filterCriteria = null)
     // Initialize the icons that will be sued
     initializeIcons();
 
-    // Load the flights once
-    refreshFlights(filterName, filterCriteria);
-
     // Create the map
     map = L.map('map', {zoomControl: false}).setView([30, 0], 3).setActiveArea('active-area');
     map.doubleClickZoom.disable();
@@ -46,9 +43,6 @@ function initializeMap(filterName = null, filterCriteria = null)
         $('#search-wrapper').show();
         $('#search-results').html('<tr><td class="px-3 text-muted">Begin typing to search</td></tr>');
     });
-
-    // Set timer to auto-update
-    setInterval(refreshFlights(filterName, filterCriteria), 60 * 1000);
 }
 
 // Tells Leaflet what icons are available
@@ -117,30 +111,29 @@ function initializeATC()
 }
 
 // Updates the data based on the current version of live.json
-function refreshFlights(filterName = null, filterCriteria = null)
+async function refreshFlights(filterName = null, filterCriteria = null)
 {
-    $.ajax({
-        url: apiserver + 'api/livedata/live', 
-        xhrFields: {withCredentials: false},
-        success: function(data)
+    console.log('Refreshing Flights');
+
+    response = await fetch(apiserver + 'api/livedata/live', { credentials: 'omit' });
+    flights = await response.json();
+    flights = applyFilter(flights, filterName, filterCriteria);
+    
+    $.each(flights, function(idx, obj)
+    {
+        // Update current connections
+        if(typeof plane_array[obj.uid] !== 'undefined')
+        {   
+            updateLocation(obj);
+        }
+        else
         {
-            // If a filter exists, apply it
-            flights = applyFilter(data, filterName, filterCriteria);
-            uids = [];
-            $.each(flights, function(idx, obj)
-            {
-                // Update current connections
-                if(typeof plane_array[obj.uid] !== 'undefined')
-                {   
-                    updateLocation(obj);
-                }
-                else
-                {
-                    addAircraft(obj);
-                }
-            });
+            addAircraft(obj);
         }
     });
+
+    return flights;
+
 }
 
 // Filter for specific pages
