@@ -1,0 +1,23 @@
+<div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
+
+    <!-- Flight Display Sidebar -->
+    {{> flights-sidebar }}
+
+    <!-- The full-size sidebar -->
+    {{> airport-sidebar }}
+
+    <!-- Footer Group -->
+    {{> footer}}
+
+<script>
+$(document).ready(function() {
+    
+    initializeAirport('{{ icao }}');
+    initializeMap('airport', '{{ icao }}');
+    initializeNexrad();
+    initializeATC();
+    initializeAirports();
+    refreshATC();
+    
+})
+</script>

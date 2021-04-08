@@ -16,7 +16,7 @@ function runSearch(str)
 function compileSearchResults(str)
 {
     var results = runSearch(str);
-    var template = Handlebars.compile('{{#each results}}<tr class="search-flight-item" onClick="zoomToFlight(\'{{ this.uid }}\')"><td class="px-3"><p class="mb-0">{{ this.callsign }}</p><small>{{ this.cid }} {{ this.dep }} - {{ this.arr }}</small></td></tr>{{/each}}');
+    var template = Handlebars.compile('{{#if results.length}}{{#each results}}<tr class="search-flight-item" onClick="zoomToFlight(\'{{ this.uid }}\')"><td class="px-3"><p class="mb-0">{{ this.callsign }}</p><small>{{ this.cid }} {{ this.dep }} - {{ this.arr }}</small></td></tr>{{/each}}{{else}}<tr><td class="px-3"><span class="text-muted">No results</span></td></tr>{{/if}}');
     return template({ results: results });
 }
 

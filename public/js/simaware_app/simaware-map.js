@@ -1,7 +1,7 @@
 const apiserver = 'https://simaware.ca/';
 
 // Initializes the map in the #map container
-function initializeMap()
+function initializeMap(filterName = null, filterCriteria = null)
 {
     // Set storage variables
     plane_array = [];
@@ -11,6 +11,9 @@ function initializeMap()
 
     // Initialize the icons that will be sued
     initializeIcons();
+
+    // Load the flights once
+    refreshFlights(filterName, filterCriteria);
 
     // Create the map
     map = L.map('map', {zoomControl: false}).setView([30, 0], 3).setActiveArea('active-area');
@@ -37,10 +40,15 @@ function initializeMap()
         {
             returnToView();
         }
+        $('#search-wrapper').hide();
     })
+    $('#search-field').click(() => {
+        $('#search-wrapper').show();
+        $('#search-results').html('<tr><td class="px-3 text-muted">Begin typing to search</td></tr>');
+    });
 
     // Set timer to auto-update
-    setInterval(refreshFlights, 60 * 1000);
+    setInterval(refreshFlights(filterName, filterCriteria), 60 * 1000);
 }
 
 // Tells Leaflet what icons are available
@@ -204,6 +212,12 @@ function updateLocation(obj)
     // Include the new flight object with the markers
     plane_array[obj.uid].flight = obj;
 
+    // If the flight is active, then update the flightpath
+    if(typeof flightpath != 'undefined' && active_featuregroup.hasLayer(flightpath) && plane.flight.uid == obj.uid)
+    {
+        flightpath.addLatLng([obj.lat, obj.lon]);
+    }
+
     // Mark the UID as "handled", i.e. remove it from the active uids list
     markUID(obj);
 }
@@ -319,6 +333,7 @@ function getTraconBlock(obj)
 // Zoom to a flight
 function zoomToFlight(uid)
 {
+
     if(!map.hasLayer(active_featuregroup))
     {
         plane = plane_array[uid];
@@ -362,6 +377,9 @@ function zoomToFlight(uid)
 
         // Update the flights box
         updateFlightsBox(plane.flight);
+
+        // Hide the sidebar
+        $('#sidebar').hide();
     }
 }
 
@@ -426,6 +444,9 @@ function returnToView()
 
         // Hide the flight information box
         $('#flights-sidebar').hide().removeClass('d-flex');
+
+        // Return the sidebar if it exists on the page
+        $('#sidebar').show();
     }
 }
 
