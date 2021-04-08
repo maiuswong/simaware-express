@@ -15,7 +15,7 @@ function initializeAirport(icao)
 
         setInterval(updateAirportFlights(flights, icao), 60 * 1000);
 
-        el = document.getElementById('sidebar');
+        el = document.getElementById('sidebar-container');
         L.DomEvent.disableScrollPropagation(el);
         L.DomEvent.disableClickPropagation(el);
         
