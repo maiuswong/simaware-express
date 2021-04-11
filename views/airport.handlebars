@@ -29,7 +29,7 @@ async function initialize()
     filterName = 'airport';
     filterCriteria = '{{ icao }}';
 
-    initializeMap(filterName, filterCriteria);
+    initializeMap();
 
     response = await fetch('/livedata/airports.json');
     airports = await response.json();

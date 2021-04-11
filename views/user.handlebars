@@ -1,0 +1,32 @@
+<div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
+
+    <!-- Flight Display Sidebar -->
+    {{> flights-sidebar }}
+
+    <!-- The full-size sidebar -->
+    {{> user-sidebar }}
+
+    <!-- Footer Group -->
+    {{> footer}}
+
+<script>
+$(document).ready(function() {
+
+    airports = [];
+    flights = [];
+
+    initialize();
+
+});
+
+async function initialize()
+{
+    // Set-up airport only
+
+    initializeMap();
+    initializeUser({{ cid }});
+
+    response = await fetch('/livedata/airports.json');
+    airports = await response.json();
+}
+</script>

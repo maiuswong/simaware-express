@@ -1,7 +1,7 @@
 const apiserver = 'https://simaware.ca/';
 
 // Initializes the map in the #map container
-function initializeMap(filterName = null, filterCriteria = null)
+function initializeMap()
 {
     // Set storage variables
     plane_array = [];
@@ -159,7 +159,6 @@ function applyFilter(data, filterName = null, filterCriteria = null)
     {
         return data;
     }
-    
 }
 
 // Adds aircraft to the plane_array
@@ -198,7 +197,7 @@ function getDatablock(obj)
 function updateLocation(obj)
 {
     // Update the location, heading, and tooltip content
-    plane_array[obj.uid].slideTo(new L.LatLng(Number(obj.lat), Number(obj.lon)), {duration: 1000});
+    plane_array[obj.uid].slideTo(new L.LatLng(Number(obj.lat), Number(obj.lon)), {duration: 500});
     plane_array[obj.uid].setRotationAngle(obj.hdg);
     plane_array[obj.uid].setTooltipContent(getDatablock(obj));
 
@@ -324,56 +323,83 @@ function getTraconBlock(obj)
 }
 
 // Zoom to a flight
-function zoomToFlight(uid)
+async function zoomToFlight(uid)
 {
-
-    if(!map.hasLayer(active_featuregroup))
+    if(typeof plane != 'undefined')
     {
-        plane = plane_array[uid];
-        bounds = []; bounds.push(plane.getLatLng());
-
-        // If the searchbox is showing, hide it
-        $('#search-wrapper').hide();
-
-        // Handle departure/arrival airports
-        [dep_airport, dep_point, dep_name, dep_city] = processAirport(plane.flight.dep);
-        [arr_airport, arr_point, arr_name, arr_city] = processAirport(plane.flight.arr);
-
-        if(dep_point && dep_point != null)
-        {
-            active_featuregroup.addLayer(dep_point); bounds.push(dep_point.getLatLng());
-        }
-        if(arr_point && arr_point != null)
-        {
-            active_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
-        }
-
-        $.getJSON('https://simaware.ca/api/logs/' + uid, (logs) => {
-            flightpath = new L.Polyline(logs, {color: '#00D300', weight: 1.5, nowrap: true});
-            active_featuregroup.addLayer(flightpath);
-        });
-
-        map.fitBounds(bounds);
-
-        // Swap the layers
-        map.addLayer(active_featuregroup);
-        map.removeLayer(plane_featuregroup);
-        
-        // Add the plane
-        active_featuregroup.addLayer(plane);
-
-        // Make the tooltip permanent
-        togglePlaneTooltip(plane, true);
-
-        // Show the flights box
-        $('#flights-sidebar').show().addClass('d-flex');
-
-        // Update the flights box
-        updateFlightsBox(plane.flight);
-
-        // Hide the sidebar
-        $('#sidebar').hide();
+        active_featuregroup.removeLayer(plane); delete plane;
     }
+    if(typeof dep_point != 'undefined')
+    {
+        active_featuregroup.removeLayer(dep_point); delete dep_point;
+    }
+    if(typeof arr_point != 'undefined')
+    {
+        active_featuregroup.removeLayer(arr_point); delete arr_point;
+    }
+    if(typeof flightpath != 'undefined')
+    {
+        active_featuregroup.removeLayer(flightpath); delete flightpath;
+    }
+
+    plane = plane_array[uid];
+    bounds = []; bounds.push(plane.getLatLng());
+
+    // If the searchbox is showing, hide it
+    $('#search-wrapper').hide();
+
+    // Handle departure/arrival airports
+    [dep_airport, dep_point, dep_name, dep_city] = processAirport(plane.flight.dep);
+    [arr_airport, arr_point, arr_name, arr_city] = processAirport(plane.flight.arr);
+    if(dep_point && arr_point)
+    {   
+        [dep_point, arr_point] = processAirportForAntimeridian(plane.flight, airports[dep_airport], airports[arr_airport], dep_point, arr_point);
+    }
+
+    if(dep_point && dep_point != null)
+    {
+        active_featuregroup.addLayer(dep_point); bounds.push(dep_point.getLatLng());
+    }
+    if(arr_point && arr_point != null)
+    {
+        active_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
+    }
+
+    $.getJSON('https://simaware.ca/api/logs/' + uid, (logs) => {
+        
+    });
+
+    map.fitBounds(bounds);
+
+    // Swap the layers
+    map.addLayer(active_featuregroup);
+    map.removeLayer(plane_featuregroup);
+    
+    // Add the plane
+    active_featuregroup.addLayer(plane);
+
+    // Make the tooltip permanent
+    togglePlaneTooltip(plane, true);
+
+    // Show the flights box
+    $('#flights-sidebar').show().addClass('d-flex');
+
+    // Update the flights box
+    updateFlightsBox(plane.flight);
+
+    // Hide the sidebar
+    $('#sidebar').hide();
+
+    addedFlightPathPromise = addFlightPath('https://simaware.ca/api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
+    await addedFlightPathPromise;
+}
+
+async function addFlightPath(url, dep, arr, flight)
+{
+    var response = await fetch(url);
+    var latlons = await response.json();
+    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {color: '#00D300', weight: 1.5, nowrap: true});
+    await active_featuregroup.addLayer(flightpath);
 }
 
 // Toggles the plane tooltip's <permanent> property
@@ -405,31 +431,14 @@ function processAirport(icao)
     return return_array;
 }
 
-function returnToView()
+async function returnToView()
 {
+    // Wait for the map to finish loading
     if(map.hasLayer(active_featuregroup))
     {
         // Get the plane object ready to be placed back
         togglePlaneTooltip(plane, false);
         plane_featuregroup.addLayer(plane);
-
-        // Delete the instances
-        if(plane)
-        {
-            active_featuregroup.removeLayer(plane); delete plane;
-        }
-        if(dep_point)
-        {
-            active_featuregroup.removeLayer(dep_point); delete dep_point;
-        }
-        if(arr_point)
-        {
-            active_featuregroup.removeLayer(arr_point); delete arr_point;
-        }
-        if(flightpath)
-        {
-            active_featuregroup.removeLayer(flightpath); delete flightpath;
-        }
 
         // Switch the layers
         map.removeLayer(active_featuregroup);
@@ -471,4 +480,80 @@ function updateFlightsBox(flight)
     // Route
     $('#flights-equipment').html(flight.aircraft);
 
+}
+
+function processAirportForAntimeridian(flight, dep, arr, dep_point, arr_point)
+{
+    if(crossesAntimeridian(dep, arr))
+    {
+
+        dep_latlon = dep_point.getLatLng();
+        arr_latlon = arr_point.getLatLng();
+        if(Number(flight.lon) > 0)
+        {
+            if(Number(arr_latlon.lng) < 0) { arr_latlon.lng += 360; }
+            if(Number(dep_latlon.lng) < 0) { dep_latlon.lng += 360; }
+        }
+        if(Number(flight.lon) < 0)
+        {
+            if(Number(arr_latlon.lng) > 0) { arr_latlon.lng -= 360; }
+            if(Number(dep_latlon.lng) > 0) { dep_latlon.lng -= 360; }
+        }
+
+        dep_point.setLatLng(dep_latlon);
+        arr_point.setLatLng(arr_latlon);
+
+    }
+
+    return [dep_point, arr_point];
+}
+
+function crossesAntimeridian(dep, arr)
+{
+  flag = 0;
+  if(dep == null || arr == null)
+  {
+    return 0;
+  }
+  if(Number(arr.lon) < Number(dep.lon) && getRhumbLineBearing(Number(dep.lat), Number(dep.lon), Number(arr.lat), Number(arr.lon)) < 180)
+  {
+    // Probably crossing antimeridian eastbound
+    flag = 1;
+  }
+  else if(Number(arr.lon) > Number(dep.lon) && getRhumbLineBearing(Number(dep.lat), Number(dep.lon), Number(arr.lat), Number(arr.lon)) >= 180)
+  {
+    // Probably crossing antimeridian westbound
+    flag = -1;
+  }
+  return flag;
+}
+
+function adjustLogsForAntimeridian(flight, dep, arr, logs)
+{
+    newLogs = [];
+    if(crossesAntimeridian(dep, arr))
+    {
+        newLogs = [];
+        $.each(logs, function(idx, obj) {
+            lat = Number(obj[0]);
+            if(Number(flight.lon) < 0 && Number(obj[1]) > 0)
+            {
+                lon = Number(obj[1]) - 360;
+            }
+            else if(Number(flight.lon) > 0 && Number(obj[1]) < 0)
+            {
+                lon = Number(obj[1]) + 360;
+            }
+            else
+            {
+                lon = Number(obj[1]);
+            }
+            newLogs.push([lat, lon]);
+        })
+    }
+    else
+    {
+        newLogs = logs;
+    }
+    return newLogs;
 }

@@ -24,4 +24,9 @@ app.get('/airport/:icao', (req, res) => {
     res.render('airport', { icao: req.params.icao });
 })
 
+/*  Users Page */
+app.get('/user/:cid', (req, res) => {
+    res.render('user', { cid: req.params.cid });
+})
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
