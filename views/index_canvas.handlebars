@@ -1,0 +1,17 @@
+<div class="d-flex" style="min-height: 0; flex-grow: 1">
+
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <!-- Flight Display Sidebar -->
+    {{> flights-sidebar}}
+
+    <!-- Footer Group -->
+    {{> footer}}
+
+</div>
+<script>
+    $(document).ready(() => {
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.fillRect(10,10,1,1);
+    })
+</script>

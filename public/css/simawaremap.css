@@ -5,6 +5,11 @@ body
     font-family: 'Jost', sans-serif;
 }
 
+mark
+{
+  padding: 0;
+}
+
 a
 {
   text-decoration: none;

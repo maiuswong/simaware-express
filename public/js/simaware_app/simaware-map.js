@@ -13,7 +13,7 @@ function initializeMap()
     initializeIcons();
 
     // Create the map
-    map = L.map('map', {zoomControl: false}).setView([30, 0], 3).setActiveArea('active-area');
+    map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([30, 0], 3).setActiveArea('active-area');
     map.doubleClickZoom.disable();
     basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
     map.attributionControl.setPosition('topright');
@@ -23,10 +23,7 @@ function initializeMap()
     L.DomEvent.disableClickPropagation(el);
     
     // Set FeatureGroups
-    plane_featuregroup = new L.MarkerClusterGroup({
-        disableClusteringAtZoom: 5,
-        spiderfyOnMaxZoom: false,
-    }).addTo(map);
+    plane_featuregroup = new L.FeatureGroup().addTo(map);
     atc_featuregroup = new L.FeatureGroup();
     active_featuregroup = new L.FeatureGroup();
     tracons_featuregroup = new L.FeatureGroup();
@@ -113,8 +110,6 @@ function initializeATC()
 // Updates the data based on the current version of live.json
 async function refreshFlights(filterName = null, filterCriteria = null)
 {
-    console.log('Refreshing Flights');
-
     response = await fetch(apiserver + 'api/livedata/live', { credentials: 'omit' });
     flights = await response.json();
     flights = applyFilter(flights, filterName, filterCriteria);
@@ -165,9 +160,14 @@ function applyFilter(data, filterName = null, filterCriteria = null)
 function addAircraft(obj)
 {
     // Initialize and get variables
-    var plane = new L.marker(new L.LatLng(Number(obj.lat), Number(obj.lon)), {
-        icon: icons_array['B739'],
-        rotationAngle: Number(obj.hdg),
+    var plane = L.canvasMarker(new L.LatLng(obj.lat, obj.lon), {
+        radius: 16,
+        img: {
+            url: '/img/aircraft/B739.png',    //image link
+            size: [24, 24],     //image size ( default [40, 40] )
+            rotate: obj.hdg,         //image base rotate ( default 0 )
+            offset: { x: 0, y: 0 }, //image offset ( default { x: 0, y: 0 } )
+        },
     });
     plane.uid = obj.uid;
     plane.flight = obj;
@@ -182,11 +182,13 @@ function addAircraft(obj)
     });
 
     // Set the onclick action
-    plane.on('click', function() { zoomToFlight(this.uid); });
+    plane.on('click', function(e) { L.DomEvent.stopPropagation(e) ; zoomToFlight(this.uid); });
 
     // Add it to the feature group
     plane_array[plane.uid] = plane;
     plane_featuregroup.addLayer(plane_array[plane.uid]);
+
+    markUID(obj);
 }
 
 function getDatablock(obj)
@@ -197,8 +199,14 @@ function getDatablock(obj)
 function updateLocation(obj)
 {
     // Update the location, heading, and tooltip content
-    plane_array[obj.uid].slideTo(new L.LatLng(Number(obj.lat), Number(obj.lon)), {duration: 500});
-    plane_array[obj.uid].setRotationAngle(obj.hdg);
+    try{
+        plane_array[obj.uid].setLatLng(new L.LatLng(Number(obj.lat), Number(obj.lon)));
+        plane_array[obj.uid].options.img.rotate = obj.hdg;
+        plane_array[obj.uid]._updatePath();
+    } catch(err)
+    {
+        console.log(obj.uid);
+    }
     plane_array[obj.uid].setTooltipContent(getDatablock(obj));
 
     // Include the new flight object with the markers
@@ -278,7 +286,7 @@ function lightupFIR(obj, firMembers, firname)
     {
         $.each(obj.reverse(), function(idx, fir)
         {
-            fir.setStyle({color: '#fff', weight: 2, fillColor: '#fff', fillOpacity: 0.001});
+            fir.setStyle({color: '#fff', weight: 2, fillColor: '#fff', fillOpacity: 0});
             fir.bindTooltip(getControllerBlock(obj, firMembers, firname), {sticky: true, opacity: 1});
             fir.bringToFront();
         });
@@ -325,6 +333,7 @@ function getTraconBlock(obj)
 // Zoom to a flight
 async function zoomToFlight(uid)
 {
+    console.log(uid);
     if(typeof plane != 'undefined')
     {
         active_featuregroup.removeLayer(plane); delete plane;
@@ -364,10 +373,6 @@ async function zoomToFlight(uid)
     {
         active_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
     }
-
-    $.getJSON('https://simaware.ca/api/logs/' + uid, (logs) => {
-        
-    });
 
     map.fitBounds(bounds);
 
