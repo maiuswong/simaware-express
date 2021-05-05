@@ -287,7 +287,7 @@ function lightupFIR(obj, firMembers, firname)
     {
         $.each(obj.reverse(), function(idx, fir)
         {
-            fir.setStyle({color: '#fff', weight: 2, fillColor: '#000', fillOpacity: 0});
+            fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
             fir.bindTooltip(getControllerBlock(obj, firMembers, firname), {sticky: true, opacity: 1});
             fir.bringToFront();
         });
@@ -309,26 +309,26 @@ function turnOffFIR(fir)
 // Get the controller block
 function getControllerBlock(firObj, firMembers, firname)
 {
-    var list = '<table style="width: 200px; color: #333">';
+    var list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+firname+'</td></tr>';
     $.each(firMembers, function(idx, member) {
-        list = list+'<tr><td style="vertical-align: middle; font-family: \'Roboto Mono\', sans-serif">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="pl-3 text-primary" style="vertical-align: middle; font-family: \'Roboto Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+        list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="pl-3 text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
     })
-    list = '<div class="card" style="border: 1px solid #eee; color: #333; background-color: #eee; border-radius: 0.4rem; overflow: hidden; min-width: 240px; line-height: 1.2rem;font-size: 1rem"><div class="card-body px-2 py-3" style="background-color: #333; color: #eee; font-size: 1.1rem">'+firname+'</div><div class="p-2" style="color: #222; background-color: #eee">'+list+'</div></div>';
+    list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
 }
 
 function getTraconBlock(obj)
 {
-    list = '<table style="width: 100%; color: #333">';
     tracon_name = obj.name;
+    list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+'</td></tr>';
     $.each(obj.APP, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'Roboto Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="pl-3 text-primary" style="font-family: \'Roboto Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="pl-3 text-primary" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
     })
     $.each(obj.DEP, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'Roboto Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="pl-3 text-primary" style="font-family: \'Roboto Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="pl-3 text-primary" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
     })
-    list = list+'</table>';
-    return '<div class="card" style="border: 1px solid #eee; color: #333; background-color: #eee; border-radius: 0.4rem; overflow: hidden; min-width: 200px; line-height: 1.2rem;font-size: 1rem"><div class="card-body px-2 py-3" style="background-color: #333; color: #eee; font-size: 1.1rem">'+tracon_name+'</div><div class="p-2" style="color: #222; background-color: #eee">'+list+'</div></div>';
+    list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
+    return list;
 }
 
 // Zoom to a flight
