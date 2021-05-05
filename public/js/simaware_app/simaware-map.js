@@ -84,7 +84,7 @@ function initializeATC()
         success: function(data) {
 
         // Create the geoJSON layer
-        firmap = new L.geoJSON(data, {style: {fillColor: 'none', weight: 1, color: '#333'}});
+        firmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 1, color: '#333'}});
 
         // Store the geoJSON by ICAO and if it is a FSS
         $.each(firmap._layers, function(index, obj) {
@@ -245,22 +245,24 @@ function markUID(obj)
 }
 
 // Online ATC
-function refreshATC()
+async function refreshATC()
 {
-    $.getJSON(apiserver + 'api/livedata/onlineatc', function(data) {
+    response = await fetch(apiserver + 'api/livedata/onlineatc');
+    data = await response.json();
+    $.each(data, (idx, fir) => {
+        index = fir.fir.icao + Number(fir.fir.is_fss);
+        firObj = firs_array[index];
+        firname = fir.fir.name;
+        lightupFIR(firObj, fir.members, firname);
+    })
 
-        $.each(data, function(idx, fir)
-        {
-            index = fir.fir.icao + Number(fir.fir.is_fss);
-            firObj = firs_array[index];
-            firname = fir.fir.name;
-            lightupFIR(firObj, fir.members, firname);
-        });
-    });
-    $.getJSON('/livedata/tracons.json', (data) => {
-        
+    response = await fetch('/livedata/tracons.json');
+    data = await response.json();
+    $.each(data, (idx, fir) => {
         if(atc_featuregroup.hasLayer(tracons_featuregroup))
+        {
             atc_featuregroup.removeLayer(tracons_featuregroup); tracons_featuregroup = new L.FeatureGroup();
+        }
         
         $.each(data, function(idx, obj) 
         {
@@ -268,15 +270,14 @@ function refreshATC()
             {
                 radius: 100 * 1000,
                 weight: 2,
-                fillOpacity: 0.05,
+                fillOpacity: 0,
                 color: '#40e0d0'
             })
             newCircle.bindTooltip(getTraconBlock(obj), {sticky: true, opacity: 1});
             tracons_featuregroup.addLayer(newCircle);
         });
-
-        atc_featuregroup.addLayer(tracons_featuregroup);
     })
+    atc_featuregroup.addLayer(tracons_featuregroup);
 }
 
 // Light up a FIR on the firmap
@@ -286,7 +287,7 @@ function lightupFIR(obj, firMembers, firname)
     {
         $.each(obj.reverse(), function(idx, fir)
         {
-            fir.setStyle({color: '#fff', weight: 2, fillColor: '#fff', fillOpacity: 0});
+            fir.setStyle({color: '#fff', weight: 2, fillColor: '#000', fillOpacity: 0});
             fir.bindTooltip(getControllerBlock(obj, firMembers, firname), {sticky: true, opacity: 1});
             fir.bringToFront();
         });
@@ -561,4 +562,25 @@ function adjustLogsForAntimeridian(flight, dep, arr, logs)
         newLogs = logs;
     }
     return newLogs;
+}
+
+async function toggleATC()
+{
+    if(!map.hasLayer(atc_featuregroup))
+    {
+        map.addLayer(atc_featuregroup);
+        await refreshATC();
+        if(map.hasLayer(plane_featuregroup))
+        {
+            plane_featuregroup.bringToFront();
+        }
+        else if(map.hasLayer(active_featuregroup))
+        {
+            active_featuregroup.bringToFront();
+        }
+    }
+    else
+    {
+        map.removeLayer(atc_featuregroup);
+    }
 }
