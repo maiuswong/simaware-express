@@ -3,8 +3,46 @@
 body
 {
     font-family: 'Jost', sans-serif;
+    height:100%;
+}
+.map-button
+{
+  cursor: pointer;
+  width: 40;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.8rem;
+  margin-left: 6px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  border-radius: 1rem;
+}
+.map-button:last-of-type
+{
+  margin-right: 6px;
+}
+.map-button-active
+{
+  background-color: #888;
+  color: #fff;
+}
+.map-button:hover
+{
+  background-color: rgba(255,255,255,0.5);
+  color: #eee;
 }
 
+#controls
+{
+  opacity: 0.4;
+}
+
+#controls:hover
+{
+  opacity: 1;
+}
 mark
 {
   padding: 0;
@@ -55,10 +93,6 @@ a
 {
   font-size: 0.85rem;
   color: #ddd;
-}
-.flights-liveitem
-{
-  font-size: 1.2rem;
 }
 .leaflet-container
 {
@@ -228,13 +262,13 @@ a
 #footer-background
 {
 
-  background-color: rgba(255,255,255,0.05);
+  background-color: #333435;
   position: absolute;
   z-index: 1200;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1rem;
+  padding: 0.5rem;
   backdrop-filter: blur(3px);
 }
 
@@ -278,7 +312,7 @@ a
   border-top-right-radius: 0rem;
   border-bottom-right-radius: 0rem;
   border-color: #555;
-  background-color: #333435;
+  background-color: #434445;
   color: #eee;
 }
 #search-field
@@ -286,7 +320,7 @@ a
   border-top-right-radius: 0.2rem;
   border-bottom-right-radius: 0.2rem;
   border-color: #555;
-  background-color: #333435;
+  background-color: #434445;
 }
 #search-wrapper
 {
@@ -295,7 +329,7 @@ a
   width: 350px;
   position: absolute;
   right: calc(50% - 175px);
-  bottom: 90px;
+  bottom: 70px;
   z-index: 1200;
   border-radius: 0.25rem;
   background-color: #fff;
@@ -318,7 +352,7 @@ a
   }
   #search-wrapper
   {
-    right: 1rem;
+    right: 0.5rem;
   }
 }
 #sidebar

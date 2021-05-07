@@ -29,8 +29,4 @@ app.get('/user/:cid', (req, res) => {
     res.render('user', { cid: req.params.cid });
 })
 
-app.get('/canvas', (req, res) => {
-    res.render('index_canvas');
-})
-
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

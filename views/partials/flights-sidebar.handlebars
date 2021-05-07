@@ -17,6 +17,7 @@
         </div>
     </div>
     <table id="flights-livetable">
+        <tbody>
             <tr>
                 <td class="pt-2 text-center" width="33.3333%">Speed</td>
                 <td class="pt-2 text-center" width="33.3333%">Altitude</td>
@@ -27,7 +28,8 @@
                 <td class="pb-2 flights-liveitem text-center" id="alt"></td>
                 <td class="pb-2 flights-liveitem text-center" id="togo"></td>
             </tr>
-        </table>
+        </tbody>
+    </table>
     <div id="flights-body" class="flex-column p-3">
         <div>
             <table id="flights-infotable">
@@ -53,6 +55,10 @@
                 <tr>
                     <td class="pt-3 pe-3 text-center align-center">Aircraft</td>
                     <td id="flights-equipment" class="pt-3 flights-tableitem align-center"></td>
+                </tr>
+                <tr>
+                    <td class="pt-3 pe-3 text-center align-center">Name</td>
+                    <td id="flights-name" class="pt-3 flights-tableitem d-flex align-items-center"></td>
                 </tr>
             </table>
         </div>

@@ -9,7 +9,7 @@ function initializeMap()
     icons_array = [];
     firs_array  = [];
 
-    // Initialize the icons that will be sued
+    // Initialize the icons that will be used
     initializeIcons();
 
     // Create the map
@@ -20,6 +20,10 @@ function initializeMap()
 
     // Make the search box clickable
     el = document.getElementById('search-field');
+    L.DomEvent.disableClickPropagation(el);
+    el = document.getElementById('flights-sidebar');
+    L.DomEvent.disableClickPropagation(el);
+    el = document.getElementById('controls');
     L.DomEvent.disableClickPropagation(el);
     
     // Set FeatureGroups
@@ -51,6 +55,29 @@ function initializeIcons()
     })
 }
 
+function getBadge(rating)
+{
+    var txt = '';
+    switch(rating)
+    {
+        case 1:
+            txt = 'PPL';
+        case 2:
+            txt = 'IFR';
+        case 3:
+            txt = 'CMEL';
+        case 4:
+            txt = 'ATPL';
+    }
+    if(txt.length)
+    {
+        return '<span class="badge bg-warning" style="padding-top: 0.1rem; padding-bottom: 0.1rem; border-radius: 1rem">'+txt+'</span>';
+    }
+    else
+    {
+        return '';
+    }
+}
 // Initialize airports
 function initializeAirports()
 {
@@ -59,19 +86,15 @@ function initializeAirports()
     })
 }
 
-function initializeNexrad()
+async function initializeNexrad()
 {
-    $.ajax({
-        url: 'https://tilecache.rainviewer.com/api/maps.json',
-        success: function(data)
-        {
-          ts = data[0];
-          nexrad = L.tileLayer('https://tilecache.rainviewer.com/v2/radar/'+ts+'/512/{z}/{x}/{y}/6/0_1.png', {
+    response = await fetch('https://tilecache.rainviewer.com/api/maps.json');
+    data = await response.json();
+    ts = data[0];
+    nexrad = L.tileLayer('https://tilecache.rainviewer.com/v2/radar/'+ts+'/512/{z}/{x}/{y}/6/0_1.png', {
               tileSize: 256,
               opacity: 0.4,
           });
-        }
-      });
 }
 
 // Initialize the FIR Boundaries map
@@ -127,6 +150,13 @@ async function refreshFlights(filterName = null, filterCriteria = null)
         }
     });
 
+    $.each(active_uids, function(idx, obj)
+    {
+      plane_featuregroup.removeLayer(plane_array[obj]);
+      markUID(obj);
+      console.log('REMOVED '+obj);
+    });
+
     return flights;
 
 }
@@ -163,7 +193,7 @@ function addAircraft(obj)
     var plane = L.canvasMarker(new L.LatLng(obj.lat, obj.lon), {
         radius: 16,
         img: {
-            url: '/img/aircraft/B739.png',    //image link
+            url: '/img/aircraft/'+getMarker(obj.aircraft)+'.png',    //image link
             size: [24, 24],     //image size ( default [40, 40] )
             rotate: obj.hdg,         //image base rotate ( default 0 )
             offset: { x: 0, y: 0 }, //image offset ( default { x: 0, y: 0 } )
@@ -202,7 +232,7 @@ function updateLocation(obj)
     try{
         plane_array[obj.uid].setLatLng(new L.LatLng(Number(obj.lat), Number(obj.lon)));
         plane_array[obj.uid].options.img.rotate = obj.hdg;
-        plane_array[obj.uid]._updatePath();
+        plane_array[obj.uid]._update();
     } catch(err)
     {
         console.log(obj.uid);
@@ -273,7 +303,7 @@ async function refreshATC()
                 fillOpacity: 0,
                 color: '#40e0d0'
             })
-            newCircle.bindTooltip(getTraconBlock(obj), {sticky: true, opacity: 1});
+            newCircle.bindTooltip(getTraconBlock(obj), {opacity: 1});
             tracons_featuregroup.addLayer(newCircle);
         });
     })
@@ -288,7 +318,7 @@ function lightupFIR(obj, firMembers, firname)
         $.each(obj.reverse(), function(idx, fir)
         {
             fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
-            fir.bindTooltip(getControllerBlock(obj, firMembers, firname), {sticky: true, opacity: 1});
+            fir.bindTooltip(getControllerBlock(obj, firMembers, firname), {opacity: 1});
             fir.bringToFront();
         });
     }
@@ -311,7 +341,15 @@ function getControllerBlock(firObj, firMembers, firname)
 {
     var list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+firname+'</td></tr>';
     $.each(firMembers, function(idx, member) {
-        list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="pl-3 text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+        if(member.fssname)
+        {
+            list = list+'<tr><td class="ps-2" style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; border-left: 2px solid #9370DB">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td colspan="4" class="small text-muted pt-0 ps-2" style="line-height: 0.9rem; border-left: 2px solid #9370DB">Covers '+firname+' above FL245</td></tr>';
+        }
+        else
+        {
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+        }
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
@@ -354,6 +392,9 @@ async function zoomToFlight(uid)
 
     plane = plane_array[uid];
     bounds = []; bounds.push(plane.getLatLng());
+
+    // Refresh the flights before showing
+    refreshFlights();
 
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();
@@ -450,6 +491,10 @@ async function returnToView()
         map.removeLayer(active_featuregroup);
         map.addLayer(plane_featuregroup);
 
+        // Delete the active featuregroup
+        delete active_featuregroup;
+        active_featuregroup = new L.FeatureGroup();
+
         // Hide the flight information box
         $('#flights-sidebar').hide().removeClass('d-flex');
 
@@ -483,8 +528,11 @@ function updateFlightsBox(flight)
     // Route
     $('#flights-route').html(flight.route);
 
-    // Route
+    // Equipment
     $('#flights-equipment').html(flight.aircraft);
+
+    // Name
+    $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating));
 
 }
 
@@ -578,9 +626,90 @@ async function toggleATC()
         {
             active_featuregroup.bringToFront();
         }
+        $('.map-button#atc').addClass('map-button-active');
     }
     else
     {
         map.removeLayer(atc_featuregroup);
+        $('.map-button#atc').removeClass('map-button-active');
     }
+}
+
+function toggleNexrad()
+{
+    if(!map.hasLayer(nexrad))
+    {
+        map.addLayer(nexrad);
+        $('.map-button#wx').addClass('map-button-active');
+    }
+    else
+    {
+        map.removeLayer(nexrad);
+        $('.map-button#wx').removeClass('map-button-active');
+    }
+}
+
+function getAircraftIcao(str)
+{
+  ac = str.split('/');
+  if(ac.length >= 3)
+  {
+    return ac[1];
+  }
+  else
+  {
+    return ac[0];
+  }
+}
+
+function getMarker(str)
+{
+  ac = getAircraftIcao(str);
+  switch(ac)
+  {
+    case 'A318':
+    case 'A319':
+    case 'A320':
+    case 'A321':
+      return 'A320';
+    case 'B731':
+    case 'B732':
+    case 'B733':
+    case 'B734':
+    case 'B735':
+    case 'B736':
+    case 'B737':
+    case 'B738':
+      return 'B738';
+    case 'B739':
+      return 'B739';
+    case 'B741':
+    case 'B742':
+    case 'B743':
+    case 'B744':
+    case 'B748':
+      return 'A340';
+    case 'B752':
+    case 'B753':
+      return 'B752';
+    case 'B762':
+    case 'B763':
+    case 'B772':
+    case 'B77L':
+    case 'B773':
+    case 'B77W':
+      return 'B777';
+    case 'MD82':
+    case 'MD83':
+    case 'MD88':
+    case 'B712':
+    case 'MD90':
+    case 'CRJ2':
+    case 'CRJ7':
+    case 'CRJ9':
+      return 'CRJ9';
+    default:
+      return 'A320';
+  }
+
 }
