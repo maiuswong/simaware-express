@@ -136,6 +136,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     response = await fetch(apiserver + 'api/livedata/live', { credentials: 'omit' });
     flights = await response.json();
     flights = applyFilter(flights, filterName, filterCriteria);
+    newactive_uids = [];
     
     $.each(flights, function(idx, obj)
     {
@@ -153,10 +154,10 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     $.each(active_uids, function(idx, obj)
     {
       plane_featuregroup.removeLayer(plane_array[obj]);
-      markUID(obj);
       console.log('REMOVED '+obj);
     });
 
+    active_uids = newactive_uids;
     return flights;
 
 }
@@ -272,6 +273,7 @@ function getMarkerDirection(obj)
 function markUID(obj)
 {
     active_uids.splice(active_uids.indexOf(obj.uid), 1);
+    newactive_uids.push(obj.uid);
 }
 
 // Online ATC
@@ -318,7 +320,7 @@ function lightupFIR(obj, firMembers, firname)
         $.each(obj.reverse(), function(idx, fir)
         {
             fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
-            fir.bindTooltip(getControllerBlock(obj, firMembers, firname), {opacity: 1});
+            fir.bindTooltip(getControllerBlock(obj, firMembers, firname), {sticky: true, opacity: 1});
             fir.bringToFront();
         });
     }
@@ -343,8 +345,8 @@ function getControllerBlock(firObj, firMembers, firname)
     $.each(firMembers, function(idx, member) {
         if(member.fssname)
         {
-            list = list+'<tr><td class="ps-2" style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; border-left: 2px solid #9370DB">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
-            list = list+'<tr><td colspan="4" class="small text-muted pt-0 ps-2" style="line-height: 0.9rem; border-left: 2px solid #9370DB">Covers '+firname+' above FL245</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td colspan="4" class="small text-muted pt-0" style="line-height: 0.9rem;"><i class="fas fa-long-arrow-alt-right" style="color: #9370DB"></i> Covers '+firname+' above FL245</td></tr>';
         }
         else
         {
