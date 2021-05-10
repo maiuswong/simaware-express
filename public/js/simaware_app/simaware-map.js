@@ -19,12 +19,13 @@ function initializeMap()
     map.attributionControl.setPosition('topright');
 
     // Make the search box clickable
-    el = document.getElementById('search-field');
-    L.DomEvent.disableClickPropagation(el);
-    el = document.getElementById('flights-sidebar');
-    L.DomEvent.disableClickPropagation(el);
-    el = document.getElementById('controls');
-    L.DomEvent.disableClickPropagation(el);
+    $.each(['controls', 'flights-sidebar', 'search-field'], (idx, obj) => {
+        el = document.getElementById(obj);
+        if(el)
+        {
+            L.DomEvent.disableClickPropagation(el);
+        }
+    })
     
     // Set FeatureGroups
     plane_featuregroup = new L.FeatureGroup().addTo(map);
@@ -321,7 +322,7 @@ function lightupFIR(obj, firMembers, firname, firicao)
         $.each(obj.reverse(), function(idx, fir)
         {
             fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
-            fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {sticky: true, opacity: 1});
+            fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {sticky: true , opacity: 1});
             fir.bringToFront();
         });
     }
@@ -342,16 +343,16 @@ function turnOffFIR(fir)
 // Get the controller block
 function getControllerBlock(firObj, firMembers, firname, firicao)
 {
-    var list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600"><span class="text-muted">'+firicao+'</span> '+firname+'</td></tr>';
+    var list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600; white-space: nowrap"><span class="text-muted">'+firicao+'</span> '+firname+'</td></tr>';
     $.each(firMembers, function(idx, member) {
         if(member.fssname)
         {
-            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-angle-double-down"></i></td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB; white-space: nowrap">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-angle-down"></i></td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
             list = list+'<tr><td colspan="4" class="small text-muted pt-0" style="line-height: 0.9rem;"><b style="color: #9370db">'+member.fssname+'</b> covers '+firicao+' above FL245</td></tr>';
         }
         else
         {
-            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+member.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
         }
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';

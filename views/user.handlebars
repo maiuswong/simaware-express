@@ -24,6 +24,8 @@ async function initialize()
     // Set-up airport only
 
     initializeMap();
+    map.removeLayer(plane_featuregroup);
+    refreshFlights();
     initializeUser({{ cid }});
 
     response = await fetch('/livedata/airports.json');

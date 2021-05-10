@@ -268,7 +268,7 @@ a
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   backdrop-filter: blur(3px);
 }
 
@@ -352,7 +352,7 @@ a
   }
   #search-wrapper
   {
-    right: 0.5rem;
+    right: 1rem;
   }
 }
 #sidebar
