@@ -321,7 +321,7 @@ function lightupFIR(obj, firMembers, firname, firicao)
     {
         $.each(obj.reverse(), function(idx, fir)
         {
-            fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
+            fir.setStyle({color: '#fff', weight: 1.25, fillColor: '#000', fillOpacity: 0});
             fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {sticky: true , opacity: 1});
             fir.bringToFront();
         });
@@ -347,7 +347,7 @@ function getControllerBlock(firObj, firMembers, firname, firicao)
     $.each(firMembers, function(idx, member) {
         if(member.fssname)
         {
-            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB; white-space: nowrap">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-angle-down"></i></td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB; white-space: nowrap">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-caret-square-down"></i></td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
             list = list+'<tr><td colspan="4" class="small text-muted pt-0" style="line-height: 0.9rem;"><b style="color: #9370db">'+member.fssname+'</b> covers '+firicao+' above FL245</td></tr>';
         }
         else
