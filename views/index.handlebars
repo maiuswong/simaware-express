@@ -34,9 +34,18 @@ $(document).ready(function() {
     initialize();
     setInterval(
         async () => { 
-            flights = await refreshFlights(filterName, filterCriteria); 
-        }, 60 * 1000);
-    })
+
+            if(new Date().getSeconds() <= 5)
+            {
+                flights = await refreshFlights(filterName, filterCriteria); 
+            }
+            else
+            {
+                interpolateLoc();
+            }
+            
+        }, 5 * 1000);
+})
 
 async function initialize()
 {

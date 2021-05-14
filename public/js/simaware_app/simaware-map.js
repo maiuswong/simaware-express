@@ -152,15 +152,39 @@ async function refreshFlights(filterName = null, filterCriteria = null)
         }
     });
 
-    $.each(active_uids, function(idx, obj)
+    for(let uid in plane_array)
     {
-      plane_featuregroup.removeLayer(plane_array[obj]);
-      console.log('REMOVED '+obj);
-    });
+        if(!newactive_uids.includes(uid))
+        {
+            plane_featuregroup.removeLayer(plane_array[uid]);
+            delete plane_array[uid];
+        }
+    }
 
     active_uids = newactive_uids;
     return flights;
 
+}
+
+function interpolateLoc()
+{
+
+    for(uid in plane_array)
+    {
+        var intervaltime = 5;
+        var latlon = plane_array[uid].getLatLng();
+        var R = 6378.1;
+        var hdg_rad = Math.PI * plane_array[uid].flight.hdg / 180;
+        var dist = 1.852 * plane_array[uid].flight.gndspd / 3600 * intervaltime;
+
+        var lat1 = Math.PI * latlon.lat / 180;
+        var lon1 = Math.PI * latlon.lng / 180;
+
+        var lat2 = 180 * (Math.asin(Math.sin(lat1) * Math.cos(dist / R) + Math.cos(lat1) * Math.sin(dist / R) * Math.cos(hdg_rad))) / Math.PI;
+        var lon2 = 180 * (lon1 + Math.atan2(Math.sin(hdg_rad) * Math.sin(dist / R) * Math.cos(lat1), Math.cos(dist / R) - Math.sin(lat1) * Math.sin(lat2))) / Math.PI;
+
+        plane_array[uid].setLatLng(new L.LatLng(lat2, lon2));
+    }
 }
 
 // Filter for specific pages
