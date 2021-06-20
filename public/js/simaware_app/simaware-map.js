@@ -326,7 +326,7 @@ async function refreshATC()
         {
             var newCircle = new L.circle([this.loc.lat, this.loc.lon],
             {
-                radius: 100 * 1000,
+                radius: 60 * 1000,
                 weight: 2,
                 fillOpacity: 0,
                 color: '#40e0d0'
