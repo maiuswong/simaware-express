@@ -314,7 +314,7 @@ async function refreshATC()
         lightupFIR(firObj, fir.members, firname, firicao);
     })
 
-    response = await fetch('/livedata/tracons.json');
+    response = await fetch(apiserver + 'api/livedata/tracons');
     data = await response.json();
     $.each(data, (idx, fir) => {
         if(atc_featuregroup.hasLayer(tracons_featuregroup))
