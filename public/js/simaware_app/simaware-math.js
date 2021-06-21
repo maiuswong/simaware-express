@@ -1,3 +1,7 @@
+var green = '#00B74A';
+var blue = '#009cdc';
+var yellow = '#efa31d';
+
 // Returns the percentage of the flight
 function getElapsedWidth(flight)
 {
@@ -59,6 +63,60 @@ function getDfd(flight)
   else
     dtg = 0;
   return dtg;
+}
+
+function getStatus(flight)
+{
+  ret = {};
+  if(getDfd(flight) < 40)
+  {
+    if(flight.gndspd == 0)
+    {
+      ret.status = 'Pre-Departure';
+      ret.color = blue;
+      ret.blink = false;
+    }
+    else if(flight.gndspd < 50)
+    {
+      ret.status = 'Left Gate';
+      ret.color = blue;
+      ret.blink = true;
+    }
+    else
+    {
+      ret.status = 'Departed';
+      ret.color = blue;
+      ret.blink = true;
+    }
+  }
+  else if(getDtg(flight) < 40)
+  {
+    if(flight.gndspd == 0)
+    {
+      ret.status = 'Arrived';
+      ret.color = green;
+      ret.blink = false;
+    }
+    else if(flight.gndspd < 50)
+    {
+      ret.status = 'Landed';
+      ret.color = yellow;
+      ret.blink = false;
+    }
+    else
+    {
+      ret.status = 'Arriving Shortly';
+      ret.color = yellow;
+      ret.blink = true;
+    }
+  }
+  else
+  {
+    ret.status = 'Enroute';
+    ret.color = green;
+    ret.blink = false;
+  }
+  return ret;
 }
 
 // Get total distance 

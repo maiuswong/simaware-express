@@ -538,10 +538,27 @@ function updateFlightsBox(flight)
     // Update the callsign
     $('#flights-callsign').html(flight.callsign);
 
+    // Get status of the flight
+    flight_status = getStatus(flight);
+
     // Update the live stats
     $('.flights-liveitem#spd').html(flight.gndspd+' kt');
     $('.flights-liveitem#alt').html(flight.alt+' ft');
     $('.flights-liveitem#togo').html(Math.round(getDtg(flight))+' nm');
+
+    // Update status text and colors
+    $('#flights-status').html(flight_status.status);
+    $('#flights-status').css({ 'background-color': flight_status.color });
+    $('#flights-progressbar-plane').css({ 'color': flight_status.color });
+    $('#flights-progressbar-elapsed').css({ 'background-color': flight_status.color });
+    if(flight_status.blink)
+    {
+        $('#flights-progressbar-plane').addClass('blinking');
+    }
+    else
+    {
+        $('#flights-progressbar-plane').removeClass('blinking');
+    }
 
     // Update the airports
     [dep_airport, dep_point_, dep_name, dep_city] = processAirport(plane.flight.dep);

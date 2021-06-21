@@ -244,6 +244,14 @@ a
   min-width: 0;
   background-color: #aaa;
 }
+.blinking {
+  animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+
 #fullscreen-container
 {
   min-height: 100%;
