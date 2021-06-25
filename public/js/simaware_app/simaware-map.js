@@ -8,6 +8,7 @@ function initializeMap()
     active_uids = [];
     icons_array = [];
     firs_array  = [];
+    active_flight = null;
 
     // Initialize the icons that will be used
     initializeIcons();
@@ -32,6 +33,7 @@ function initializeMap()
     atc_featuregroup = new L.FeatureGroup();
     active_featuregroup = new L.FeatureGroup();
     tracons_featuregroup = new L.FeatureGroup();
+    locals_featuregroup = new L.FeatureGroup();
 
     // Set onclick functions
     map.on('click', function() {
@@ -152,6 +154,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
         }
     });
 
+    // Delete flights if they are no longer present
     for(let uid in plane_array)
     {
         if(!newactive_uids.includes(uid))
@@ -161,6 +164,12 @@ async function refreshFlights(filterName = null, filterCriteria = null)
         }
     }
 
+    // Update the active flight if there is one
+    if(active_flight)
+    {
+        updateFlightsBox(flights[active_flight]);
+        flightpath.addLatLng([flights[active_flight].lat, flights[active_flight].lon]);
+    }
     active_uids = newactive_uids;
     return flights;
 
@@ -316,26 +325,58 @@ async function refreshATC()
 
     response = await fetch(apiserver + 'api/livedata/tracons');
     data = await response.json();
-    $.each(data, (idx, fir) => {
-        if(atc_featuregroup.hasLayer(tracons_featuregroup))
-        {
-            atc_featuregroup.removeLayer(tracons_featuregroup); tracons_featuregroup = new L.FeatureGroup();
-        }
+
+    if(atc_featuregroup.hasLayer(tracons_featuregroup))
+    {
+        atc_featuregroup.removeLayer(tracons_featuregroup); tracons_featuregroup = new L.FeatureGroup();
+    }
+
+    $.each(data, (idx, trac) => {
         
-        $.each(data, function(idx, obj) 
+        var newCircle = new L.circle([trac.loc.lat, trac.loc.lon],
         {
-            var newCircle = new L.circle([this.loc.lat, this.loc.lon],
-            {
-                radius: 60 * 1000,
-                weight: 1.25,
-                fillOpacity: 0,
-                color: '#40e0d0'
-            })
-            newCircle.bindTooltip(getTraconBlock(obj), {opacity: 1});
-            tracons_featuregroup.addLayer(newCircle);
-        });
+            radius: 60 * 1000,
+            weight: 1.25,
+            fillOpacity: 0,
+            color: '#40e0d0'
+        })
+        newCircle.bindTooltip(getTraconBlock(trac), {opacity: 1});
+        tracons_featuregroup.addLayer(newCircle);
     })
     atc_featuregroup.addLayer(tracons_featuregroup);
+
+    response = await fetch(apiserver + 'api/livedata/locals');
+    data = await response.json();
+
+    if(atc_featuregroup.hasLayer(locals_featuregroup))
+    {
+        atc_featuregroup.removeLayer(locals_featuregroup); locals_featuregroup = new L.FeatureGroup();
+    }
+
+    $.each(data, (idx, local) => {
+        
+        var lat = local.loc.lat
+        var lon = local.loc.lon
+        oloc = new L.circleMarker([lat, lon],
+        {
+          radius: 6,
+          color: '#fff',
+          fillColor: getLocalColor(local),
+          fillOpacity: 1,
+        })
+        oloc.bindTooltip(getLocalBlock(local), {opacity: 1});
+        locals_featuregroup.addLayer(oloc);
+        oloc = new L.circleMarker([lat, lon],
+        {
+            radius: 0,
+            weight: 0.1,
+            color: getLocalColor(local)
+        })
+        oloc.bindTooltip('<span class="text-white">'+local.loc.icao+'</span>', {permanent: true, opacity: 1});
+        locals_featuregroup.addLayer(oloc);
+    })
+    atc_featuregroup.addLayer(locals_featuregroup);
+    
 }
 
 // Light up a FIR on the firmap
@@ -362,6 +403,63 @@ function turnOffFIR(fir)
             fir.setStyle({color: '#333', weight: 1}).bringToBack();
         });
     }
+}
+
+// Get the local colour
+function getLocalColor(obj)
+{
+    if(obj.TWR)
+    {
+        return red;
+    }
+    else if(obj.GND)
+    {
+        return green;
+    }
+    else if(obj.DEL)
+    {
+        return blue;
+    }
+    else if(obj.ATIS)
+    {
+        return yellow;
+    }
+    else
+    {
+        return '#999';
+    }
+}
+
+// Get the Local Block
+function getLocalBlock(obj)
+{
+    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="3" style="font-size: 0.8rem; font-weight: 400; white-space: nowrap">'+obj.loc.name+'<br><span class="text-muted" style="font-size: 0.8rem">'+obj.loc.city+', '+obj.loc.country+'</td></tr>';
+    if(obj.TWR)
+    {
+        $.each(obj.TWR, (idx, item) => {
+            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+        })
+    }
+    if(obj.GND)
+    {
+        $.each(obj.GND, (idx, item) => {
+            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+        })
+    }
+    if(obj.DEL)
+    {
+        $.each(obj.DEL, (idx, item) => {
+            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+        })
+    }
+    if(obj.ATIS)
+    {
+        $.each(obj.ATIS, (idx, item) => {
+            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+        })
+    }
+    list = '<div class="card bg-dark"><div class="p-2">'+list+'</table></div></div>';
+    return list;
 }
 
 // Get the controller block
@@ -400,7 +498,6 @@ function getTraconBlock(obj)
 // Zoom to a flight
 async function zoomToFlight(uid)
 {
-    console.log(uid);
     if(typeof plane != 'undefined')
     {
         active_featuregroup.removeLayer(plane); delete plane;
@@ -419,6 +516,7 @@ async function zoomToFlight(uid)
     }
 
     plane = plane_array[uid];
+    active_flight = uid;
     bounds = []; bounds.push(plane.getLatLng());
 
     // Refresh the flights before showing
@@ -528,6 +626,9 @@ async function returnToView()
 
         // Return the sidebar if it exists on the page
         $('#sidebar').show();
+
+        // Remove active flight tag
+        active_flight = null;
     }
 }
 
@@ -568,7 +669,7 @@ function updateFlightsBox(flight)
     $('#flights-arr-icao').html(arr_airport); $('#flights-airport-arr').html(arr_name+'<br>'+arr_city);
 
     // Set the progress bar correctly
-    $('#flights-progressbar-elapsed').width(getElapsedWidth(flight));
+    $('#flights-progressbar-elapsed').css({ width: getElapsedWidth(flight) + '%' });
 
     // Route
     $('#flights-route').html(flight.route);

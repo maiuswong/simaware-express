@@ -1,11 +1,12 @@
-var green = '#00B74A';
+var green = '#13b955';
 var blue = '#009cdc';
 var yellow = '#efa31d';
+var red = '#da292e';
 
 // Returns the percentage of the flight
 function getElapsedWidth(flight)
 {
-  return getDfd(flight) / getTotalDistance(flight) * $('#flights-progressbar').width() - $('#flights-progressbar-plane').width();
+  return (getDfd(flight) / getTotalDistance(flight) - $('#flights-progressbar-plane').width() / 2 / $('#flights-progressbar').width()) * 100;
 }
 
 // Returns the heading to latlon2 from latlon1

@@ -393,3 +393,8 @@ a
   font-size: 1rem;
   border-bottom-right-radius: 0.25rem;
 }
+
+.badge
+{
+  border-radius: 0;
+}
