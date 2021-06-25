@@ -452,25 +452,25 @@ function getLocalTooltip(obj)
     tt = '';
     if(obj.DEL)
     {
-        tt += '<td class="text-white bg-primary" style="text-align: center; padding: 0px 5px">D</td>';
+        tt += '<td class="text-white" style="background-color: '+blue+'; text-align: center; padding: 0px 5px">D</td>';
         ct += 1;
     }
     if(obj.GND)
     {
-        tt += '<td class="text-white bg-success" style="text-align: center; padding: 0px 5px">G</td>';
+        tt += '<td class="text-white" style="background-color: '+green+'; text-align: center; padding: 0px 5px">G</td>';
         ct += 1;
     }
     if(obj.TWR)
     {
-        tt += '<td class="text-white bg-danger" style="text-align: center; padding: 0px 5px">T</td>';
+        tt += '<td class="text-white" style="background-color: '+red+'; text-align: center; padding: 0px 5px">T</td>';
         ct += 1;
     }
     if(obj.ATIS)
     {
-        tt += '<td class="text-white bg-warning" style="text-align: center; padding: 0px 5px">A</td>';
+        tt += '<td class="text-white" style="background-color: '+yellow+'; text-align: center; padding: 0px 5px">A</td>';
         ct += 1;
     }
-    var tt = '<div style="display: flex; flex-direction: column; justify-content: center; align-items: center"><table style="font-family: \'Jost\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table><table style="border-radius: 1rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table></div>';
+    var tt = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(255,255,255,0.2); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table></div>';
 
     return tt;
 }
@@ -478,29 +478,39 @@ function getLocalTooltip(obj)
 // Get the Local Block
 function getLocalBlock(obj)
 {
-    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="6" style="font-size: 0.8rem; font-weight: 400; white-space: nowrap">'+obj.loc.name+'<br><span class="text-muted" style="font-size: 0.8rem">'+obj.loc.city+', '+obj.loc.country+'</td></tr>';
+
+    if(obj.loc.state)
+    {
+        city = obj.loc.city + ', ' + obj.loc.state; 
+    }
+    else
+    {
+        city = obj.loc.city + ', ' + obj.loc.country;
+    }
+
+    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="6" class="pb-2" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</mall></td></tr>';
     if(obj.DEL)
     {
         $.each(obj.DEL, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-primary" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">DEL</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+blue+'; border-radius: 0.18rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">DEL</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.GND)
     {
         $.each(obj.GND, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-success" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">GND</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+green+'; border-radius: 0.18rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">GND</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.TWR)
     {
         $.each(obj.TWR, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-danger" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">TWR</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+red+'; border-radius: 0.18rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">TWR</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.ATIS)
     {
         $.each(obj.ATIS, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-warning" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
+            list += '<tr><td rowspan="2" style="vertical-align:top"><div style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+yellow+'; border-radius: 0.18rem; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div><div class="badge" style="background-color: #181818;  border-radius: 0.18rem;border-top-left-radius: 0; border-top-right-radius: 0; font-size: 1.6rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;"">'+getAtisCode(item.atis, item.icao)+'</div></div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr><tr><td colspan="4" style="color: #ccc; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem">'+item.atis+'</td></tr>';
         })
     }
     list = '<div class="card bg-dark"><div class="p-2">'+list+'</table></div></div>';

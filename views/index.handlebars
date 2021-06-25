@@ -37,7 +37,8 @@ $(document).ready(function() {
 
             if(new Date().getSeconds() <= 5)
             {
-                flights = await refreshFlights(filterName, filterCriteria); 
+                flights = await refreshFlights(filterName, filterCriteria);
+                refreshATC();
             }
             else
             {
