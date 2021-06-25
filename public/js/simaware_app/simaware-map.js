@@ -357,22 +357,12 @@ async function refreshATC()
         
         var lat = local.loc.lat
         var lon = local.loc.lon
-        oloc = new L.circleMarker([lat, lon],
+        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(local), iconSize: 'auto'});
+        oloc = new L.marker([lat, lon],
         {
-          radius: 6,
-          color: '#fff',
-          fillColor: getLocalColor(local),
-          fillOpacity: 1,
+          icon: di,
         })
         oloc.bindTooltip(getLocalBlock(local), {opacity: 1});
-        locals_featuregroup.addLayer(oloc);
-        oloc = new L.circleMarker([lat, lon],
-        {
-            radius: 0,
-            weight: 0.1,
-            color: getLocalColor(local)
-        })
-        oloc.bindTooltip('<span class="text-white">'+local.loc.icao+'</span>', {permanent: true, opacity: 1});
         locals_featuregroup.addLayer(oloc);
     })
     atc_featuregroup.addLayer(locals_featuregroup);
@@ -428,6 +418,32 @@ function getLocalColor(obj)
     {
         return '#999';
     }
+}
+
+// Get Local Tooltip
+function getLocalTooltip(obj)
+{
+    var tt = '<table class="bg-white" style="font-family: \'Jost\', sans-serif; font-size: 0.6rem; border-radius: 1rem; overflow: hidden; font-weight: bold"><tr><td style="padding: 0px 5px;">'+obj.loc.icao+'</td>';
+    if(obj.DEL)
+    {
+        tt += '<td class="text-white bg-primary" style="padding: 0px 5px">D</td>';
+    }
+    if(obj.GND)
+    {
+        tt += '<td class="text-white bg-success" style="padding: 0px 5px">G</td>';
+    }
+    if(obj.TWR)
+    {
+        tt += '<td class="text-white bg-danger" style="padding: 0px 5px">T</td>';
+    }
+    if(obj.ATIS)
+    {
+        tt += '<td class="text-white bg-warning" style="padding: 0px 5px">A</td>';
+    }
+
+    tt += '</tr></table>';
+
+    return tt;
 }
 
 // Get the Local Block
