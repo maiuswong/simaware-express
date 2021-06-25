@@ -479,7 +479,11 @@ function getLocalTooltip(obj)
 function getLocalBlock(obj)
 {
 
-    if(obj.loc.state)
+    if(obj.loc.city == obj.loc.country)
+    {
+        city = obj.loc.city;
+    }
+    else if(obj.loc.state)
     {
         city = obj.loc.city + ', ' + obj.loc.state; 
     }
@@ -492,25 +496,25 @@ function getLocalBlock(obj)
     if(obj.DEL)
     {
         $.each(obj.DEL, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+blue+'; border-radius: 0.18rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">DEL</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+blue+'; border-radius: 0.18rem; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">DEL</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.GND)
     {
         $.each(obj.GND, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+green+'; border-radius: 0.18rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">GND</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+green+'; border-radius: 0.18rem; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">GND</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.TWR)
     {
         $.each(obj.TWR, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+red+'; border-radius: 0.18rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">TWR</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+red+'; border-radius: 0.18rem; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">TWR</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.ATIS)
     {
         $.each(obj.ATIS, (idx, item) => {
-            list += '<tr><td rowspan="2" style="vertical-align:top"><div style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+yellow+'; border-radius: 0.18rem; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div><div class="badge" style="background-color: #181818;  border-radius: 0.18rem;border-top-left-radius: 0; border-top-right-radius: 0; font-size: 1.6rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;"">'+getAtisCode(item.atis, item.icao)+'</div></div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr><tr><td colspan="4" style="color: #ccc; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem">'+item.atis+'</td></tr>';
+            list += '<tr><td rowspan="2" style="vertical-align:top"><div style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+yellow+'; border-radius: 0.18rem; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div><div class="badge" style="background-color: #181818;  border-radius: 0.18rem;border-top-left-radius: 0; border-top-right-radius: 0; font-size: 1.6rem; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;"">'+getAtisCode(item.atis, item.icao)+'</div></div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr><tr><td colspan="4" style="color: #ccc; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem">'+item.atis+'</td></tr>';
         })
     }
     list = '<div class="card bg-dark"><div class="p-2">'+list+'</table></div></div>';
@@ -819,20 +823,25 @@ async function toggleATC()
     {
         map.addLayer(atc_featuregroup);
         await refreshATC();
-        if(map.hasLayer(plane_featuregroup))
-        {
-            plane_featuregroup.bringToFront();
-        }
-        else if(map.hasLayer(active_featuregroup))
-        {
-            active_featuregroup.bringToFront();
-        }
+        setLayerOrder();
         $('.map-button#atc').addClass('map-button-active');
     }
     else
     {
         map.removeLayer(atc_featuregroup);
         $('.map-button#atc').removeClass('map-button-active');
+    }
+}
+
+function setLayerOrder()
+{
+    if(map.hasLayer(plane_featuregroup))
+    {
+        plane_featuregroup.bringToFront();
+    }
+    else if(map.hasLayer(active_featuregroup))
+    {
+        active_featuregroup.bringToFront();
     }
 }
 

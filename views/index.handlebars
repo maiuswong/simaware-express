@@ -37,8 +37,9 @@ $(document).ready(function() {
 
             if(new Date().getSeconds() <= 5)
             {
+                await refreshATC();
                 flights = await refreshFlights(filterName, filterCriteria);
-                refreshATC();
+                setLayerOrder();
             }
             else
             {
