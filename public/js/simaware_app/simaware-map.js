@@ -421,27 +421,56 @@ function getLocalColor(obj)
 }
 
 // Get Local Tooltip
+// function getLocalTooltip(obj)
+// {
+//     var tt = '<table class="bg-white" style="font-family: \'Jost\', sans-serif; font-size: 0.7rem; border-radius: 1rem; overflow: hidden;"><tr><td style="padding: 0px 5px;">'+obj.loc.icao+'</td>';
+//     if(obj.DEL)
+//     {
+//         tt += '<td class="text-white bg-primary" style="padding: 0px 5px">D</td>';
+//     }
+//     if(obj.GND)
+//     {
+//         tt += '<td class="text-white bg-success" style="padding: 0px 5px">G</td>';
+//     }
+//     if(obj.TWR)
+//     {
+//         tt += '<td class="text-white bg-danger" style="padding: 0px 5px">T</td>';
+//     }
+//     if(obj.ATIS)
+//     {
+//         tt += '<td class="text-white bg-warning" style="padding: 0px 5px">A</td>';
+//     }
+
+//     tt += '</tr></table>';
+
+//     return tt;
+// }
+
 function getLocalTooltip(obj)
 {
-    var tt = '<table class="bg-white" style="font-family: \'Jost\', sans-serif; font-size: 0.6rem; border-radius: 1rem; overflow: hidden; font-weight: bold"><tr><td style="padding: 0px 5px;">'+obj.loc.icao+'</td>';
+    ct = 0;
+    tt = '';
     if(obj.DEL)
     {
-        tt += '<td class="text-white bg-primary" style="padding: 0px 5px">D</td>';
+        tt += '<td class="text-white bg-primary" style="text-align: center; padding: 0px 5px">D</td>';
+        ct += 1;
     }
     if(obj.GND)
     {
-        tt += '<td class="text-white bg-success" style="padding: 0px 5px">G</td>';
+        tt += '<td class="text-white bg-success" style="text-align: center; padding: 0px 5px">G</td>';
+        ct += 1;
     }
     if(obj.TWR)
     {
-        tt += '<td class="text-white bg-danger" style="padding: 0px 5px">T</td>';
+        tt += '<td class="text-white bg-danger" style="text-align: center; padding: 0px 5px">T</td>';
+        ct += 1;
     }
     if(obj.ATIS)
     {
-        tt += '<td class="text-white bg-warning" style="padding: 0px 5px">A</td>';
+        tt += '<td class="text-white bg-warning" style="text-align: center; padding: 0px 5px">A</td>';
+        ct += 1;
     }
-
-    tt += '</tr></table>';
+    var tt = '<div style="display: flex; flex-direction: column; justify-content: center; align-items: center"><table style="font-family: \'Jost\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table><table style="border-radius: 1rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table></div>';
 
     return tt;
 }
@@ -449,29 +478,29 @@ function getLocalTooltip(obj)
 // Get the Local Block
 function getLocalBlock(obj)
 {
-    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="3" style="font-size: 0.8rem; font-weight: 400; white-space: nowrap">'+obj.loc.name+'<br><span class="text-muted" style="font-size: 0.8rem">'+obj.loc.city+', '+obj.loc.country+'</td></tr>';
-    if(obj.TWR)
+    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="6" style="font-size: 0.8rem; font-weight: 400; white-space: nowrap">'+obj.loc.name+'<br><span class="text-muted" style="font-size: 0.8rem">'+obj.loc.city+', '+obj.loc.country+'</td></tr>';
+    if(obj.DEL)
     {
-        $.each(obj.TWR, (idx, item) => {
-            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+        $.each(obj.DEL, (idx, item) => {
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-primary" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">DEL</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.GND)
     {
         $.each(obj.GND, (idx, item) => {
-            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-success" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">GND</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
-    if(obj.DEL)
+    if(obj.TWR)
     {
-        $.each(obj.DEL, (idx, item) => {
-            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+        $.each(obj.TWR, (idx, item) => {
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-danger" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">TWR</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     if(obj.ATIS)
     {
         $.each(obj.ATIS, (idx, item) => {
-            list += '<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge bg-warning" style="border-radius: 1rem; margin-right: 0.2rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr>';
         })
     }
     list = '<div class="card bg-dark"><div class="p-2">'+list+'</table></div></div>';
