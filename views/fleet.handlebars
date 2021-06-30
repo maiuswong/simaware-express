@@ -19,8 +19,7 @@ $(document).ready(function() {
     setInterval(
         async () => { 
             flights = await refreshFlights(filterName, filterCriteria); 
-            updateAirportFlights(airports, flights, filterCriteria);
-            getLocalATC();
+            updateAirportFlights(airports, flights, filterCriteria) 
         }, 60 * 1000);
     })
 
@@ -41,7 +40,7 @@ async function initialize()
     initializeNexrad();
     initializeATC();
     initializeAirports();
-    refreshATC();
+    refreshATC();   
     updateAirportFlights(airports, flights, filterCriteria);
 }
 </script>

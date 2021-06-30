@@ -6,8 +6,10 @@ function initializeMap()
     // Set storage variables
     plane_array = [];
     active_uids = [];
+    active_firs = [];
     icons_array = [];
     firs_array  = [];
+    sigmets_array = [];
     active_flight = null;
 
     // Initialize the icons that will be used
@@ -34,6 +36,7 @@ function initializeMap()
     active_featuregroup = new L.FeatureGroup();
     tracons_featuregroup = new L.FeatureGroup();
     locals_featuregroup = new L.FeatureGroup();
+    sigmets_featuregroup = new L.FeatureGroup();
 
     // Set onclick functions
     map.on('click', function() {
@@ -310,9 +313,16 @@ function markUID(obj)
     newactive_uids.push(obj.uid);
 }
 
+function markFIR(obj)
+{
+    active_firs.splice(active_firs.indexOf(obj), 1);
+    newactive_firs.push(obj);
+}
+
 // Online ATC
 async function refreshATC()
 {
+    newactive_firs = [];
     response = await fetch(apiserver + 'api/livedata/onlineatc');
     data = await response.json();
     $.each(data, (idx, fir) => {
@@ -321,7 +331,14 @@ async function refreshATC()
         firname = fir.fir.name;
         firicao = fir.fir.icao;
         lightupFIR(firObj, fir.members, firname, firicao);
+        markFIR(index);
     })
+
+    $.each(active_firs, (idx, fir) => {
+        firObj = firs_array[fir];
+        turnOffFIR(firObj);
+    })
+    active_firs = newactive_firs;
 
     response = await fetch(apiserver + 'api/livedata/tracons');
     data = await response.json();
@@ -369,6 +386,37 @@ async function refreshATC()
     
 }
 
+// Update Convective Sigmets
+async function updateWxInfo()
+{
+    response = await fetch(apiserver + 'api/wxdata/sigmet');
+    data = await response.json();
+    $.each(data.AIRSIGMET, (idx, sigmet) => {
+        if(sigmet.hazard['@attributes'].type == 'CONVECTIVE')
+        {
+            let latlon = [];
+            $.each(sigmet.area.point, (idx, point) => {
+                latlon.push([point.latitude, point.longitude]);
+            })
+            polygon = new L.Polygon(latlon, {color: '#ffcc33', weight: 1});
+            polygon.bindTooltip(getSigmetBlock(sigmet), {opacity: 1})
+            sigmets_featuregroup.addLayer(polygon);
+        }
+    })
+}
+
+function getSigmetBlock(sigmet)
+{
+    list = '<div class="card bg-dark text-white"><div class="card-header ps-2" style="background-color: #efa31d"><h5 class="mb-0" style="color: #fff">Convective SIGMET '+getSigmetCode(sigmet)+'</h5></div><div class="p-2"><small style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; color: #aaa">'+nl2br(sigmet.raw_text)+'</div></div>';
+    return list;
+}
+
+function getSigmetCode(sigmet)
+{
+    var spl = sigmet.raw_text.split(/\r?\n/);
+    return spl[2].split(' ')[2];
+}
+
 // Light up a FIR on the firmap
 function lightupFIR(obj, firMembers, firname, firicao)
 {
@@ -377,20 +425,21 @@ function lightupFIR(obj, firMembers, firname, firicao)
         $.each(obj.reverse(), function(idx, fir)
         {
             fir.setStyle({color: '#fff', weight: 1.25, fillColor: '#000', fillOpacity: 0});
-            fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {sticky: true , opacity: 1});
+            fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {opacity: 1});
             fir.bringToFront();
         });
     }
 }
 
 // Disable a FIR on the firmap
-function turnOffFIR(fir)
+function turnOffFIR(obj)
 {
     if(typeof obj === 'object')
     {
         $.each(obj, function(idx, fir)
         {
             fir.setStyle({color: '#333', weight: 1}).bringToBack();
+            fir.unbindTooltip();
         });
     }
 }
@@ -922,4 +971,10 @@ function getMarker(str)
       return 'A320';
   }
 
+}
+
+// Helper functions
+function nl2br (str, is_xhtml) {   
+    var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';    
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
 }
