@@ -387,27 +387,34 @@ async function refreshATC()
 }
 
 // Update Convective Sigmets
-async function updateWxInfo()
+async function updateSigmet()
 {
     response = await fetch(apiserver + 'api/wxdata/sigmet');
     data = await response.json();
+    
+    for(let sigmet in sigmets_array)
+    {
+        sigmets_featuregroup.removeLayer(sigmets_array[sigmet]);
+    }
+
     $.each(data.AIRSIGMET, (idx, sigmet) => {
         if(sigmet.hazard['@attributes'].type == 'CONVECTIVE')
         {
             let latlon = [];
+            let code = getSigmetCode(sigmet);
             $.each(sigmet.area.point, (idx, point) => {
                 latlon.push([point.latitude, point.longitude]);
             })
-            polygon = new L.Polygon(latlon, {color: '#ffcc33', weight: 1});
-            polygon.bindTooltip(getSigmetBlock(sigmet), {opacity: 1})
-            sigmets_featuregroup.addLayer(polygon);
+            sigmets_array[code] = new L.Polygon(latlon, {color: '#ffcc33', weight: 1.5});
+            sigmets_array[code].bindTooltip(getSigmetBlock(sigmet), {opacity: 0.9})
+            sigmets_featuregroup.addLayer(sigmets_array[code]);
         }
     })
 }
 
 function getSigmetBlock(sigmet)
 {
-    list = '<div class="card bg-dark text-white"><div class="card-header ps-2" style="background-color: #efa31d"><h5 class="mb-0" style="color: #fff">Convective SIGMET '+getSigmetCode(sigmet)+'</h5></div><div class="p-2"><small style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; color: #aaa">'+nl2br(sigmet.raw_text)+'</div></div>';
+    list = '<div class="card bg-dark text-white"><div class="card-header ps-2" style="background-color: #efa31d"><h5 class="mb-0" style="color: #fff">Convective SIGMET '+getSigmetCode(sigmet)+'</h5></div><div class="p-2"><small style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.65rem; color: #aaa">'+nl2br(sigmet.raw_text)+'</div></div>';
     return list;
 }
 
@@ -896,6 +903,10 @@ async function toggleATC()
 
 function setLayerOrder()
 {
+    if(map.hasLayer(atc_featuregroup))
+    {
+        atc_featuregroup.bringToFront();
+    }
     if(map.hasLayer(plane_featuregroup))
     {
         plane_featuregroup.bringToFront();
@@ -917,6 +928,22 @@ function toggleNexrad()
     {
         map.removeLayer(nexrad);
         $('.map-button#wx').removeClass('map-button-active');
+    }
+}
+
+function toggleSigmet()
+{
+    if(!map.hasLayer(sigmets_featuregroup))
+    {
+        map.addLayer(sigmets_featuregroup);
+        $('.map-button#sigmet').addClass('map-button-active');
+        setLayerOrder();
+    }
+    else
+    {
+        map.removeLayer(sigmets_featuregroup);
+        $('.map-button#sigmet').removeClass('map-button-active');
+        setLayerOrder();
     }
 }
 

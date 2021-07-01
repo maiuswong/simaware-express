@@ -8,7 +8,9 @@ body
 .map-button
 {
   cursor: pointer;
-  width: 40;
+  min-width: 40;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
