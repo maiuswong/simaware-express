@@ -363,14 +363,14 @@ async function refreshATC()
     atc_featuregroup.addLayer(tracons_featuregroup);
 
     response = await fetch(apiserver + 'api/livedata/locals');
-    data = await response.json();
+    locals = await response.json();
 
     if(atc_featuregroup.hasLayer(locals_featuregroup))
     {
         atc_featuregroup.removeLayer(locals_featuregroup); locals_featuregroup = new L.FeatureGroup();
     }
 
-    $.each(data, (idx, local) => {
+    $.each(locals, (idx, local) => {
         
         var lat = local.loc.lat
         var lon = local.loc.lon
@@ -522,6 +522,18 @@ function getLocalTooltip(obj)
     var tt = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(255,255,255,0.2); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table></div>';
 
     return tt;
+}
+
+function getLocalTooltipFromIcao(icao)
+{
+    if(typeof locals[icao] != 'undefined')
+    {
+        return getLocalTooltip(locals[icao]);
+    }
+    else
+    {
+        return '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(255,255,255,0.2); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">N/A</td></tr></table></div>'
+    }
 }
 
 // Get the Local Block

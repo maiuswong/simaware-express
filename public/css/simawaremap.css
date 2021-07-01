@@ -244,6 +244,24 @@ a
   min-width: 0;
   background-color: #aaa;
 }
+#infobar-flights-progressbar-elapsed
+{
+  height: 2px;
+  width: 30px;
+}
+#infobar-flights-progressbar-plane
+{
+  margin-left: 2px;
+  margin-right: 2px;
+  font-size: 1rem
+}
+#infobar-flights-progressbar-remaining
+{
+  height: 2px;
+  flex-grow: 1;
+  min-width: 0;
+  background-color: #aaa;
+}
 .blinking {
   animation: blinker 1.5s linear infinite;
 }
@@ -397,4 +415,9 @@ a
 .badge
 {
   border-radius: 0;
+}
+
+.bg-purple
+{
+  background-color: #6441a5;
 }

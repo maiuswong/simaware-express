@@ -9,6 +9,12 @@ function getElapsedWidth(flight)
   return (getDfd(flight) / getTotalDistance(flight) - $('#flights-progressbar-plane').width() / 2 / $('#flights-progressbar').width()) * 100;
 }
 
+// Pctg of infoflight
+function getInfoElapsedWidth(flight)
+{
+  return (getDfd(flight) / getTotalDistance(flight)) * 100 - 6;
+}
+
 // Returns the heading to latlon2 from latlon1
 function getRhumbLineBearing(lat1, lon1, lat2, lon2)
 {
