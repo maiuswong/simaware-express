@@ -429,7 +429,7 @@ function lightupFIR(obj, firMembers, firname, firicao)
 {
     if(typeof obj === 'object')
     {
-        $.each(obj.reverse(), function(idx, fir)
+        $.each(obj, function(idx, fir)
         {
             fir.setStyle({color: '#fff', weight: 1.25, fillColor: '#000', fillOpacity: 0});
             fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {opacity: 1});
@@ -903,9 +903,9 @@ async function toggleATC()
 
 function setLayerOrder()
 {
-    if(map.hasLayer(atc_featuregroup))
+    if(map.hasLayer(sigmets_featuregroup))
     {
-        atc_featuregroup.bringToFront();
+        sigmets_featuregroup.bringToFront();
     }
     if(map.hasLayer(plane_featuregroup))
     {
