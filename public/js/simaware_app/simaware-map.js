@@ -309,20 +309,38 @@ function getMarkerDirection(obj)
 
 function markUID(obj)
 {
-    active_uids.splice(active_uids.indexOf(obj.uid), 1);
+    if($.inArray(obj, active_uids) >= 0)
+    {
+        active_uids.splice(active_uids.indexOf(obj.uid), 1);
+    }
     newactive_uids.push(obj.uid);
 }
 
 function markFIR(obj)
 {
-    active_firs.splice(active_firs.indexOf(obj), 1);
-    newactive_firs.push(obj);
+    if($.inArray(obj, active_firs) >= 0)
+    {
+        active_firs.splice(active_firs.indexOf(obj), 1);
+    }
+}
+
+function getActiveFIRs()
+{
+    let active_firs = [];
+    for(let id in firs_array)
+    {
+        if(firs_array[id][0].options.color == '#fff')
+        {
+            active_firs.push(id);
+        }
+    }
+    return active_firs;
 }
 
 // Online ATC
 async function refreshATC()
 {
-    newactive_firs = [];
+    active_firs = getActiveFIRs();
     response = await fetch(apiserver + 'api/livedata/onlineatc');
     data = await response.json();
     $.each(data, (idx, fir) => {
@@ -338,7 +356,6 @@ async function refreshATC()
         firObj = firs_array[fir];
         turnOffFIR(firObj);
     })
-    active_firs = newactive_firs;
 
     response = await fetch(apiserver + 'api/livedata/tracons');
     data = await response.json();
@@ -405,9 +422,12 @@ async function updateSigmet()
             $.each(sigmet.area.point, (idx, point) => {
                 latlon.push([point.latitude, point.longitude]);
             })
-            sigmets_array[code] = new L.Polygon(latlon, {color: '#ffcc33', weight: 1.5});
-            sigmets_array[code].bindTooltip(getSigmetBlock(sigmet), {opacity: 0.9})
-            sigmets_featuregroup.addLayer(sigmets_array[code]);
+            if(code != '')
+            {
+                sigmets_array[code] = new L.Polygon(latlon, {color: '#ffcc33', weight: 1.5});
+                sigmets_array[code].bindTooltip(getSigmetBlock(sigmet), {opacity: 0.9})
+                sigmets_featuregroup.addLayer(sigmets_array[code]);
+            }
         }
     })
 }
