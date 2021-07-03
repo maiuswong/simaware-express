@@ -8,7 +8,10 @@
         <div class="map-button py-1" id="nat">NAT</div>
     </div>
 
-    <!-- Flight Display Sidebar -->
+    <!-- Events Sidebar -->
+    {{> events-sidebar}}
+
+    <!-- Flights Sidebar -->
     {{> flights-sidebar}}
 
     <!-- Footer Group -->
@@ -20,7 +23,9 @@ $(document).ready(function() {
 
     airports = [];
     flights = [];
-    manual = false;
+    manual = true;
+
+    eventid = {{ id }};
 
     // Airports show everything
     filterName = null;
@@ -30,25 +35,18 @@ $(document).ready(function() {
     setInterval(
         async () => { 
 
-            if(new Date().getSeconds() <= 5)
-            {
-                await refreshATC();
-                flights = await refreshFlights(filterName, filterCriteria);
-                updateInfobar();
-                updateSigmet();
-                setLayerOrder();
-            }
-            else
-            {
-                interpolateLoc();
-            }
+            await refreshATC();
+            flights = await refreshFlights(filterName, filterCriteria);
+            updateInfobar();
+            updateSigmet();
+            setLayerOrder();
             
-        }, 5 * 1000);
+        }, 60 * 1000);
 })
 
 async function initialize()
 {
-    initializeMap();
+    initializeMap(manual);
 
     response = await fetch('/livedata/airports.json');
     airports = await response.json();
@@ -59,6 +57,7 @@ async function initialize()
     initializeAirports();
     refreshATC();
     initializeInfobar();
-    updateSigmet()
+    updateSigmet();
+    loadEvent(eventid);
 }
 </script>

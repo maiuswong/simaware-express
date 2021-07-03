@@ -164,6 +164,34 @@ a
     right: 1rem;
   }
 }
+
+/* CSS IDs */
+#events-container
+{
+  bottom: 130px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+}
+
+#events-sidebar
+{
+  font-family: 'Jost', sans-serif;
+  z-index: 1000;
+  background-color: #353638;
+  color: #fff;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+@media(min-width: 576px)
+{
+  #events-sidebar
+  {
+    left: 1rem;
+  }
+}
+
 #airport-list
 {
   color: #fff;
@@ -204,6 +232,12 @@ a
 {
   background-color: #edeeef;
   color: #333;
+}
+
+#events-cap
+{
+  background-color: #444;
+  color: #fff;
 }
 
 #flights-infotable

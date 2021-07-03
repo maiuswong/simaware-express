@@ -1,7 +1,7 @@
 const apiserver = 'https://simaware.ca/';
 
 // Initializes the map in the #map container
-function initializeMap()
+function initializeMap(manual = 0)
 {
     // Set storage variables
     plane_array = [];
@@ -31,7 +31,8 @@ function initializeMap()
     })
     
     // Set FeatureGroups
-    plane_featuregroup = new L.FeatureGroup().addTo(map);
+    plane_featuregroup = new L.FeatureGroup();
+    if(!manual) { map.addLayer(plane_featuregroup); }
     atc_featuregroup = new L.FeatureGroup();
     active_featuregroup = new L.FeatureGroup();
     tracons_featuregroup = new L.FeatureGroup();
@@ -451,7 +452,7 @@ function lightupFIR(obj, firMembers, firname, firicao)
     {
         $.each(obj, function(idx, fir)
         {
-            fir.setStyle({color: '#fff', weight: 1.25, fillColor: '#000', fillOpacity: 0});
+            fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
             fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {opacity: 1});
             fir.bringToFront();
         });
@@ -762,7 +763,7 @@ async function returnToView()
 
         // Switch the layers
         map.removeLayer(active_featuregroup);
-        map.addLayer(plane_featuregroup);
+        if(!manual) { map.addLayer(plane_featuregroup); }
 
         // Delete the active featuregroup
         delete active_featuregroup;

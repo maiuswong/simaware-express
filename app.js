@@ -29,4 +29,8 @@ app.get('/user/:cid', (req, res) => {
     res.render('user', { cid: req.params.cid });
 })
 
+app.get('/event/:id', (req, res) => {
+    res.render('event', {id: req.params.id});
+})
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
