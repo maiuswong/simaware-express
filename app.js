@@ -29,6 +29,10 @@ app.get('/user/:cid', (req, res) => {
     res.render('user', { cid: req.params.cid });
 })
 
+app.get('/events/', (req, res) => {
+    res.render('events');
+})
+
 app.get('/event/:id', (req, res) => {
     res.render('event', {id: req.params.id});
 })

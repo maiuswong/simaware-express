@@ -31,7 +31,7 @@ function infobar_airports_scroll(idx, limit = 10)
     else
     {
         airport = airports[infoairports[idx].icao];
-        $('#infobar-content').html('<table class="text-white"><tr><td><span class="badge bg-secondary"; style="border-radius: 0.2rem; font-family: \'JetBrains Mono\', monospace">#'+(idx + 1)+'</span></td><td class="ps-3" style="font-family: \'JetBrains mono\', sans-serif">'+getLocalTooltipFromIcao(infoairports[idx].icao)+'</td><td class="ps-3" style="font-size: 0.9rem; line-height: 0.9rem">'+airport.name+'<br><small class="text-muted">'+airport.city+'</small></td><td class="ps-3"><i class="fas fa-plane-departure"></i> '+infoairports[idx].departures+'</td><td class="ps-2"><i class="fas fa-plane-arrival"></i> '+infoairports[idx].arrivals+'</td></tr></table>');
+        $('#infobar-content').html('<table class="text-white"><tr><td><span class="badge bg-secondary"; style="border-radius: 0.2rem; font-family: \'JetBrains Mono\', monospace">#'+(idx + 1)+'</span></td><td class="ps-3" style="font-family: \'JetBrains mono\', sans-serif">'+getLocalTooltip(infoairports[idx].icao)+'</td><td class="ps-3" style="font-size: 0.9rem; line-height: 0.9rem">'+airport.name+'<br><small class="text-muted">'+airport.city+'</small></td><td class="ps-3"><i class="fas fa-plane-departure"></i> '+infoairports[idx].departures+'</td><td class="ps-2"><i class="fas fa-plane-arrival"></i> '+infoairports[idx].arrivals+'</td></tr></table>');
         $('#infobar-content').fadeIn(300, function() {
             $(this).delay(5000).fadeOut(150, function() {
                 infobar_airports_scroll(idx + 1);

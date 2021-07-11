@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+        </div>
+        <style scoped>
+        p
+        {
+            font-size: 0.7rem;
+        }
+        </style>
+        <div class="col-9" id="eventspane">
+            <div class="container"></div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(() => {
+
+    initialize();
+
+})
+
+async function initialize()
+{
+    response = await fetch(apiserver + '/api/events');
+    data = await response.json();
+
+    html = '';
+    $.each(data, (idx, event) => {
+        html += '<h6>'+event.name+'</h6>';
+    })
+
+    console.log(data);
+    $('#eventspane').html(html);
+}
+</script>

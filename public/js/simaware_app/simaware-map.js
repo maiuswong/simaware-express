@@ -10,7 +10,7 @@ function initializeMap(manual = 0)
     icons_array = [];
     firs_array  = [];
     sigmets_array = [];
-    active_flight = null;
+    active_flight = null; 
 
     // Initialize the icons that will be used
     initializeIcons();
@@ -38,6 +38,7 @@ function initializeMap(manual = 0)
     tracons_featuregroup = new L.FeatureGroup();
     locals_featuregroup = new L.FeatureGroup();
     sigmets_featuregroup = new L.FeatureGroup();
+    events_featuregroup = new L.FeatureGroup();
 
     // Set onclick functions
     map.on('click', function() {
@@ -392,12 +393,12 @@ async function refreshATC()
         
         var lat = local.loc.lat
         var lon = local.loc.lon
-        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(local), iconSize: 'auto'});
+        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(local.loc.icao), iconSize: 'auto'});
         oloc = new L.marker([lat, lon],
         {
           icon: di,
         })
-        oloc.bindTooltip(getLocalBlock(local), {opacity: 1});
+        oloc.bindTooltip(getLocalBlock(local.loc.icao), {opacity: 1});
         locals_featuregroup.addLayer(oloc);
     })
     atc_featuregroup.addLayer(locals_featuregroup);
@@ -523,8 +524,18 @@ function getLocalColor(obj)
 //     return tt;
 // }
 
-function getLocalTooltip(obj)
+function getLocalTooltip(icao)
 {
+    if(locals[icao])
+    {
+        var obj = locals[icao];
+    }
+    else
+    {
+        var obj = [];
+        obj.loc = [];
+        obj.loc.icao = icao;
+    }
     ct = 0;
     tt = '';
     if(obj.DEL)
@@ -547,41 +558,62 @@ function getLocalTooltip(obj)
         tt += '<td class="text-white" style="background-color: '+yellow+'; text-align: center; padding: 0px 5px">A</td>';
         ct += 1;
     }
-    var tt = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(255,255,255,0.2); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table></div>';
+    if(!obj.TWR && !obj.GND && !obj.DEL && !obj.ATIS)
+    {
+        ct = 1;
+        tt = '<td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">N/A</td>';
+    }
+    
+    // If event, apply a border
+    if(eventsByAirport[icao])
+    {
+        var event = '<div style="position: absolute; top: -5; right: -5; border-radius: 5px; width: 10; height: 10; background-color: '+red+'"></div>';
+    }
+    else
+    {
+        var event = '';
+    }
+    var tt = '<div style="position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.2); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin-top: 0.2rem; margin-left: 0.2rem; margin-right: 0.2rem ;align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table><table style="margin: 0.2rem 0.2rem; flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table></div>';
+
+
 
     return tt;
 }
 
-function getLocalTooltipFromIcao(icao)
-{
-    if(typeof locals[icao] != 'undefined')
-    {
-        return getLocalTooltip(locals[icao]);
-    }
-    else
-    {
-        return '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(255,255,255,0.2); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">N/A</td></tr></table></div>'
-    }
-}
-
 // Get the Local Block
-function getLocalBlock(obj)
+function getLocalBlock(icao)
 {
-
-    if(obj.loc.city == obj.loc.country)
+    if(locals[icao])
     {
-        city = obj.loc.city;
-    }
-    else if(obj.loc.state)
-    {
-        city = obj.loc.city + ', ' + obj.loc.state; 
+        var obj = locals[icao];
+        if(obj.loc.city == obj.loc.country)
+        {
+            city = obj.loc.city;
+        }
+        else if(obj.loc.state)
+        {
+            city = obj.loc.city + ', ' + obj.loc.state; 
+        }
+        else
+        {
+            console.log(obj.loc.city);
+            city = obj.loc.city + ', ' + obj.loc.country;
+        }
     }
     else
     {
-        city = obj.loc.city + ', ' + obj.loc.country;
+        var obj = [];
+        obj.loc = [];
+        obj.loc.icao = icao;
+        if(airports[icao])
+        {
+            city = airports[icao].city;
+        }
     }
+    ct = 0;
+    tt = '';
 
-    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="6" class="pb-2" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</mall></td></tr>';
+    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="6" class="pb-2" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</small></td></tr>';
     if(obj.DEL)
     {
         $.each(obj.DEL, (idx, item) => {
@@ -606,7 +638,23 @@ function getLocalBlock(obj)
             list += '<tr><td rowspan="2" style="vertical-align:top"><div style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+yellow+'; border-radius: 0.18rem; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div><div class="badge" style="background-color: #181818;  border-radius: 0.18rem;border-top-left-radius: 0; border-top-right-radius: 0; font-size: 1.6rem; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;"">'+getAtisCode(item.atis, item.icao)+'</div></div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.time_online+'</td></tr><tr><td colspan="4" style="color: #ccc; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem">'+item.atis+'</td></tr>';
         })
     }
-    list = '<div class="card bg-dark"><div class="p-2">'+list+'</table></div></div>';
+
+    eventslist = '';
+    if(eventsByAirport[icao])
+    {
+        eventslist = '<tr><td colspan="2">Upcoming Events</td></tr>';
+        for(id in eventsByAirport[icao])
+        {
+            eventslist += '<tr><td class="pe-3 py-1"><table style="overflow: hidden; border-radius: 0.2rem; font-family: \'JetBrains Mono\', sans-serif; background-color: #0d628c"><tr><td style="background-color: #105070; text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="width: 35px; text-align: center">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td>'+eventsByAirport[icao][id].name+'<br><small class="text-muted">'+moment(eventsByAirport[icao][id].start).format('HHmm')+' - '+ +moment(eventsByAirport[icao][id].end).format('HHmm') +'Z</small></td></tr>';
+        }
+    }
+    
+
+    list = '<div class="card border border-secondary bg-dark"><div class="p-2">'+list+'</table></div></div>';
+    if(eventsByAirport[icao])
+    {
+        list += '<div class="card mt-2 border border-secondary" style="background-color: #333"><div class="p-2"><table style="overflow: hidden; font-size: 0.9rem">'+eventslist+'</table></div></div>';
+    }
     return list;
 }
 
@@ -695,6 +743,11 @@ async function zoomToFlight(uid)
     // Swap the layers
     map.addLayer(active_featuregroup);
     map.removeLayer(plane_featuregroup);
+
+    if(typeof polyline_featuregroup != 'undefined' && map.hasLayer(polyline_featuregroup))
+    {
+        map.removeLayer(polyline_featuregroup);
+    }
     
     // Add the plane
     active_featuregroup.addLayer(plane);
@@ -777,6 +830,10 @@ async function returnToView()
 
         // Remove active flight tag
         active_flight = null;
+    }
+    if(typeof polyline_featuregroup != 'undefined')
+    {
+        map.addLayer(polyline_featuregroup);
     }
 }
 
