@@ -391,8 +391,8 @@ async function refreshATC()
 
     $.each(locals, (idx, local) => {
         
-        var lat = local.loc.lat
-        var lon = local.loc.lon
+        var lat = local.loc.lat;
+        var lon = local.loc.lon;
         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(local.loc.icao), iconSize: 'auto'});
         oloc = new L.marker([lat, lon],
         {
@@ -401,6 +401,21 @@ async function refreshATC()
         oloc.bindTooltip(getLocalBlock(local.loc.icao), {opacity: 1});
         locals_featuregroup.addLayer(oloc);
     })
+    for(icao in eventsByAirport) 
+    {
+        if(typeof locals[icao] == 'undefined' && airports[icao])
+        {
+            var lat = airports[icao].lat;
+            var lon = airports[icao].lon;
+            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(icao), iconSize: 'auto'});
+            oloc = new L.marker([lat, lon],
+            {
+                icon: di,
+            })
+            oloc.bindTooltip(getLocalBlock(icao), {opacity: 1});
+            locals_featuregroup.addLayer(oloc);
+        }
+    }
     atc_featuregroup.addLayer(locals_featuregroup);
     
 }
@@ -608,6 +623,7 @@ function getLocalBlock(icao)
         if(airports[icao])
         {
             city = airports[icao].city;
+            obj.loc.name = airports[icao].name;
         }
     }
     ct = 0;
@@ -645,16 +661,17 @@ function getLocalBlock(icao)
         eventslist = '<tr><td colspan="2">Upcoming Events</td></tr>';
         for(id in eventsByAirport[icao])
         {
-            eventslist += '<tr><td class="pe-3 py-1"><table style="overflow: hidden; border-radius: 0.2rem; font-family: \'JetBrains Mono\', sans-serif; background-color: #0d628c"><tr><td style="background-color: #105070; text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="width: 35px; text-align: center">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td>'+eventsByAirport[icao][id].name+'<br><small class="text-muted">'+moment(eventsByAirport[icao][id].start).format('HHmm')+' - '+ +moment(eventsByAirport[icao][id].end).format('HHmm') +'Z</small></td></tr>';
+            eventslist += '<tr><td class="pe-3 py-1"><table style="overflow: hidden; border: 1px solid '+blue+'; font-family: \'JetBrains Mono\', sans-serif; background-color: #0d628c"><tr><td style="background-color: #105070; text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 0.8rem">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; white-space: nowrap">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).format('HHmm') +'Z</small></td></tr>';
         }
     }
     
 
-    list = '<div class="card border border-secondary bg-dark"><div class="p-2">'+list+'</table></div></div>';
+    list = '<div class="card border border-secondary bg-dark" style="min-width: 300px; overflow: hidden"><div class="p-2">'+list+'</table></div>';
     if(eventsByAirport[icao])
     {
-        list += '<div class="card mt-2 border border-secondary" style="background-color: #333"><div class="p-2"><table style="overflow: hidden; font-size: 0.9rem">'+eventslist+'</table></div></div>';
+        list += '<div class="p-2" style="background-color: #333"><table>'+eventslist+'</table></div>';
     }
+    list += '</div>';
     return list;
 }
 
