@@ -573,12 +573,10 @@ function getLocalTooltip(icao)
         tt += '<td class="text-white" style="background-color: '+yellow+'; text-align: center; padding: 0px 5px">A</td>';
         ct += 1;
     }
-    if(!obj.TWR && !obj.GND && !obj.DEL && !obj.ATIS)
+    if(tt != '')
     {
-        ct = 1;
-        tt = '<td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">N/A</td>';
-    }
-    
+        tt = '<table style="margin: 0.2rem; margin-top: 0rem; flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table>';
+    }    
     // If event, apply a border
     if(eventsByAirport[icao])
     {
@@ -588,7 +586,7 @@ function getLocalTooltip(icao)
     {
         var event = '';
     }
-    var tt = '<div style="position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.2); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin-top: 0.2rem; margin-left: 0.2rem; margin-right: 0.2rem ;align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table><table style="margin: 0.2rem 0.2rem; flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table></div>';
+    var tt = '<div style="position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
 
 
 
@@ -629,7 +627,7 @@ function getLocalBlock(icao)
     ct = 0;
     tt = '';
 
-    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem" class="bg-dark"><tr><td colspan="6" class="pb-2" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</small></td></tr>';
+    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem"><tr><td colspan="6" class="pb-1" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</small></td></tr>';
     if(obj.DEL)
     {
         $.each(obj.DEL, (idx, item) => {
@@ -666,7 +664,7 @@ function getLocalBlock(icao)
     }
     
 
-    list = '<div class="card border border-secondary bg-dark" style="min-width: 300px; overflow: hidden"><div class="p-2">'+list+'</table></div>';
+    list = '<div class="card border border-secondary" style="background-color: #282828; min-width: 300px; overflow: hidden"><div class="p-2">'+list+'</table></div>';
     if(eventsByAirport[icao])
     {
         list += '<div class="p-2" style="background-color: #333"><table>'+eventslist+'</table></div>';
