@@ -1,4 +1,9 @@
 const apiserver = 'https://simaware.ca/';
+const warnings = {
+    'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
+    'CZQX1': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
+    'EGGX1': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
+}
 
 // Initializes the map in the #map container
 function initializeMap(manual = 0)
@@ -346,11 +351,11 @@ async function refreshATC()
     response = await fetch(apiserver + 'api/livedata/onlineatc');
     data = await response.json();
     $.each(data, (idx, fir) => {
-        index = fir.fir.icao + Number(fir.fir.is_fss);
+        index = getFirIndex(fir);
         firObj = firs_array[index];
         firname = fir.fir.name;
         firicao = fir.fir.icao;
-        lightupFIR(firObj, fir.members, firname, firicao);
+        lightupFIR(firObj, fir.members, firname, firicao, index);
         markFIR(index);
     })
 
@@ -462,14 +467,14 @@ function getSigmetCode(sigmet)
 }
 
 // Light up a FIR on the firmap
-function lightupFIR(obj, firMembers, firname, firicao)
+function lightupFIR(obj, firMembers, firname, firicao, index)
 {
     if(typeof obj === 'object')
     {
         $.each(obj, function(idx, fir)
         {
             fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
-            fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao), {opacity: 1});
+            fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao, index), {opacity: 1});
             fir.bringToFront();
         });
     }
@@ -486,6 +491,17 @@ function turnOffFIR(obj)
             fir.unbindTooltip();
         });
     }
+}
+
+function getFirIndex(fir)
+{
+    var index = fir.fir.icao + Number(fir.fir.is_fss);
+    if(typeof firs_array[index] === 'undefined')
+    {
+        // Try is_fss = 0
+        index = fir.fir.icao + '0';
+    }
+    return index;
 }
 
 // Get the local colour
@@ -674,9 +690,13 @@ function getLocalBlock(icao)
 }
 
 // Get the controller block
-function getControllerBlock(firObj, firMembers, firname, firicao)
+function getControllerBlock(firObj, firMembers, firname, firicao, index)
 {
     var list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600; white-space: nowrap"><span class="text-muted">'+firicao+'</span> '+firname+'</td></tr>';
+    if(warnings[index])
+    {
+        list += '<tr><td colspan="3" class="small text-muted pt-0"><i class="fas fa-info-circle"></i> '+warnings[index]+'</td></tr>';
+    }
     $.each(firMembers, function(idx, member) {
         if(member.fssname)
         {
