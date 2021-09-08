@@ -463,7 +463,7 @@ function getCallsignByFir(fir, index)
         else
         {
             let country = getCountry(fir);
-            if(index[index.length - 1] == '1')
+            if(index[index.length - 1] == '1' || fir.name.search('Oceanic') > 0)
             {
                 return fir.name + ' Radio';
             }
