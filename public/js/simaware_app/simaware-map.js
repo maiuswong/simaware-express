@@ -20,6 +20,9 @@ function initializeMap(manual = 0)
     // Initialize the icons that will be used
     initializeIcons();
 
+    // Initialize map data
+    initializeFirData();
+
     // Create the map
     map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([30, 0], 3).setActiveArea('active-area');
     map.doubleClickZoom.disable();
@@ -97,6 +100,18 @@ function initializeAirports()
     $.getJSON('/livedata/airports.json', function(data){ 
         airports = data; 
     })
+}
+
+async function initializeFirData()
+{
+    let response = await fetch(apiserver + 'api/livedata/countries');
+    countries = await response.json();
+
+    response = await fetch(apiserver + 'api/livedata/firs');
+    firs = await response.json();
+
+    response = await fetch(apiserver + 'api/livedata/uirs');
+    uirs = await response.json();
 }
 
 async function initializeNexrad()
@@ -178,7 +193,6 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     if(active_flight)
     {
         updateFlightsBox(flights[active_flight]);
-        flightpath.addLatLng([flights[active_flight].lat, flights[active_flight].lon]);
     }
     active_uids = newactive_uids;
     return flights;
@@ -344,17 +358,239 @@ function getActiveFIRs()
     return active_firs;
 }
 
+// Search for FIR based on callsign
+function firSearch(str)
+{
+    // Brits add extra stuff for relief callsigns.  Remove CTR and FSS suffixes.
+    if(str.search('_FSS') >= 0) { var type = 'FSS'; } else { var type = 'CTR' };
+    var fstr = str.replace('__', '_').replace('_CTR', '').replace('_FSS', '');
+    if(type == 'FSS') // Could be a UIR
+    {
+        if(typeof uirs[fstr] !== 'undefined')
+        {
+            return uirs[fstr];
+        }
+        else
+        {
+            fstr = fstr.split('_')[0];
+            if(typeof uirs[fstr] !== 'undefined')
+            {
+                return uirs[fstr];
+            }
+        }
+        // Reset fstr if it was already passed through the first branch
+        var fstr = str.replace('__', '_').replace('_CTR', '').replace('_FSS', '');
+    }
+    if(typeof firs[fstr] !== 'undefined')
+    {
+        return firs[fstr];
+    }
+    else
+    {
+        fstr = fstr.split('_')[0];
+        if(typeof firs[fstr] !== 'undefined')
+        {
+            return firs[fstr];
+        }
+        else
+        {
+            return null;
+        }
+    }
+}
+
+function getCallsign(str)
+{
+    if(typeof uirs[str] !== 'undefined')
+    {
+        var fir = uirs[str];
+    }
+    else
+    {
+        var fir = firSearch(str);
+    } 
+    if(typeof fir !== 'undefined')
+    {
+        if(typeof fir.firs !== 'undefined') // UIRs already have the suffix added
+        {
+            return fir.name;
+        }
+        else
+        {
+            let country = getCountry(fir);
+            if(!country || country.radar == '')
+            {
+                if(country && country.name == 'USA')
+                {
+                    return fir.name + ' Center';
+                }
+                else
+                {   
+                    if(str.search('_FSS'))
+                    {
+                        return fir.name + ' Radio';
+                    }
+                    else
+                    {
+                        return fir.name + ' Centre';
+                    }
+                }
+            }
+            else
+            {
+                return fir.name + ' ' + country.radar;
+            }
+        }
+    }
+    else
+    {
+        return null;
+    }
+}
+
+function getCallsignByFir(fir, index)
+{
+    if(typeof fir !== 'undefined')
+    {
+        if(fir.icao == 'CZUL')
+        {
+            return 'Centre de Montréal';
+        }
+        if(typeof fir.firs !== 'undefined') // UIRs already have the suffix added
+        {
+            return fir.name;
+        }
+        else
+        {
+            let country = getCountry(fir);
+            if(index[index.length - 1] == '1')
+            {
+                return fir.name + ' Radio';
+            }
+            if(!country || country.radar == '')
+            {
+                if(country && country.name == 'USA')
+                {
+                    return fir.name + ' Center';
+                }
+                else
+                {   
+                    return fir.name + ' Centre';
+                }
+            }
+            else
+            {
+                return fir.name + ' ' + country.radar;
+            }
+        }
+    }
+    else
+    {
+        return null;
+    }
+}
+
+function getTimeOnline(atc)
+{
+    let start = moment.unix(atc.created_at_timestamp);
+    let diff = Math.abs(moment().diff(start, 'minutes', false));
+
+    let hr = Math.floor(diff / 60).toString();
+    let min = diff % 60;
+    min = min.toString();
+
+    if(min.length < 2)
+    {
+        min = '0' + min;
+    }
+
+    return hr + ':' + min;
+    
+}
+
+function getCountry(fir)
+{
+    if(typeof(countries[fir.icao.substring(0, 2)]) !== 'undefined')
+    {
+        return countries[fir.icao.substring(0, 2)];
+    }
+    else
+    {
+        return null;
+    }
+}
+
 // Online ATC
 async function refreshATC()
 {
     active_firs = getActiveFIRs();
-    response = await fetch(apiserver + 'api/livedata/onlineatc');
+    newdata = {};
+    response = await fetch(apiserver + 'api/livedata/onlinefirs');
     data = await response.json();
-    $.each(data, (idx, fir) => {
-        index = getFirIndex(fir);
-        firObj = firs_array[index];
-        firname = fir.fir.name;
-        firicao = fir.fir.icao;
+    // $.each(data, (idx, fir) => {
+    //     index = getFirIndex(fir);
+    //     firObj = firs_array[index];
+    //     firname = fir.fir.name;
+    //     firicao = fir.fir.icao;
+    //     lightupFIR(firObj, fir.members, firname, firicao, index);
+    //     markFIR(index);
+    // })
+
+    // $.each(active_firs, (idx, fir) => {
+    //     firObj = firs_array[fir];
+    //     turnOffFIR(firObj);
+    // })
+    $.each(data, (idx, atc) => {
+        let fir = firSearch(atc.callsign)
+        if(fir && typeof fir.firs === 'undefined') // fir is null if we can't find anything.  Do UIRs after.
+        {
+            let index = getFirIndexByCallsign(atc.callsign);
+            atc.time_online = getTimeOnline(atc);
+            if(typeof newdata[index] === 'undefined')
+            {
+                let row = {};
+                row.firname = getCallsignByFir(fir, index);
+                row.members = [atc];
+                row.firicao = fir.icao;
+                row.firObj = firs_array[index];
+                newdata[index] = row;
+            }
+            else
+            {
+                newdata[index].members.push(atc);
+            }
+        }
+    })
+    $.each(data, (idx, atc) => {
+        let fir = firSearch(atc.callsign)
+        atc.time_online = getTimeOnline(atc);
+        if(fir && typeof fir.firs !== 'undefined') // fir is null if we can't find anything.  Doing UIRs now.
+        {
+            atc.fssname = fir.name;
+            $.each(fir.firs, (idx, firicao) => {
+                console.log(firicao);
+                let index = getFirIndexByCallsign(firicao);
+                if(typeof newdata[index] === 'undefined')
+                {
+                    let row = {};
+                    row.firname = getCallsignByFir(firSearch(firicao), index);
+                    row.members = [atc];
+                    row.firicao = firicao;
+                    row.firObj = firs_array[index];
+                    newdata[index] = row;
+                }
+                else
+                {
+                    newdata[index].members.push(atc);
+                }
+            })
+        }
+    })
+
+    $.each(newdata, (index, fir) => {
+        var firObj = fir.firObj;
+        var firname = fir.firname;
+        var firicao = fir.firicao;
         lightupFIR(firObj, fir.members, firname, firicao, index);
         markFIR(index);
     })
@@ -471,12 +707,12 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
 {
     if(typeof obj === 'object')
     {
-        $.each(obj, function(idx, fir)
+        for(idx in obj)
         {
-            fir.setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
-            fir.bindTooltip(getControllerBlock(obj, firMembers, firname, firicao, index), {opacity: 1});
-            fir.bringToFront();
-        });
+            obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
+            obj[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1, sticky: true});
+            obj[idx].bringToFront();
+        }
     }
 }
 
@@ -502,6 +738,31 @@ function getFirIndex(fir)
         index = fir.fir.icao + '0';
     }
     return index;
+}
+
+function getFirIndexByCallsign(callsign)
+{
+    if(callsign.search('_FSS') > 0)
+    {
+        var type = 1;
+    }
+    else
+    {
+        var type = 0;
+    }
+    let fir = firSearch(callsign);
+    if(typeof fir !== 'undefined')
+    {
+        if(typeof firs_array[fir.icao + type] !== 'undefined')
+        {
+            return fir.icao + type;
+        }
+        else if(typeof(firs_array[fir.icao + '0'] !== 'undefined'))
+        {
+            return fir.icao + '0';
+        }
+    }
+    return null;
 }
 
 // Get the local colour
@@ -625,7 +886,6 @@ function getLocalBlock(icao)
         }
         else
         {
-            console.log(obj.loc.city);
             city = obj.loc.city + ', ' + obj.loc.country;
         }
     }
