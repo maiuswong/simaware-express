@@ -23,6 +23,10 @@ body
   margin-bottom: 6px;
   border-radius: 1rem;
 }
+.mono
+{
+  font-family: 'JetBrains Mono', sans-serif;
+}
 .map-button:last-of-type
 {
   margin-right: 6px;
@@ -98,6 +102,10 @@ a
   font-size: 0.85rem;
   color: #ddd;
 }
+#flights-route
+{
+  font-size: 0.75rem;
+}
 .leaflet-container
 {
   background-color: #000 !important;
@@ -130,6 +138,10 @@ a
 .leaflet-tooltip-left::before
 {
   border-left-color: rgba(0,0,0,0) !important;
+}
+#search-wrapper, #search-results
+{
+  color: #222;
 }
 .search-flight-item:hover
 {

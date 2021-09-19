@@ -456,14 +456,14 @@ function getCallsignByFir(fir, index)
         {
             return 'Centre de Montréal';
         }
-        if(typeof fir.firs !== 'undefined') // UIRs already have the suffix added
+        if(typeof fir.firs !== 'undefined' || fir.name.search('Oceanic') > 0 || fir.name.search('Radar') > 0 || fir.name.search('Control') > 0 || fir.name.search('Centre') > 0) // UIRs already have the suffix added
         {
             return fir.name;
         }
         else
         {
             let country = getCountry(fir);
-            if(index[index.length - 1] == '1' || fir.name.search('Oceanic') > 0)
+            if(index[index.length - 1] == '1')
             {
                 return fir.name + ' Radio';
             }
@@ -586,13 +586,27 @@ async function refreshATC()
             })
         }
     })
+    // Breaking it up into two since oceanics tend to overlap smaller facilities, rendering them un-hoverable
+    $.each(newdata, (index, fir) => {
+        if(fir.firname.search('Oceanic') > 1)
+        {
+            var firObj = fir.firObj;
+            var firname = fir.firname;
+            var firicao = fir.firicao;
+            lightupFIR(firObj, fir.members, firname, firicao, index);
+            markFIR(index);
+        }
+    })
 
     $.each(newdata, (index, fir) => {
-        var firObj = fir.firObj;
-        var firname = fir.firname;
-        var firicao = fir.firicao;
-        lightupFIR(firObj, fir.members, firname, firicao, index);
-        markFIR(index);
+        if(fir.firname.search('Oceanic') == -1)
+        {
+            var firObj = fir.firObj;
+            var firname = fir.firname;
+            var firicao = fir.firicao;
+            lightupFIR(firObj, fir.members, firname, firicao, index);
+            markFIR(index);
+        }
     })
 
     $.each(active_firs, (idx, fir) => {
@@ -710,7 +724,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         for(idx in obj)
         {
             obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
-            obj[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1, sticky: true});
+            obj[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1});
             obj[idx].bringToFront();
         }
     }
@@ -952,7 +966,7 @@ function getLocalBlock(icao)
 // Get the controller block
 function getControllerBlock(firObj, firMembers, firname, firicao, index)
 {
-    var list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600; white-space: nowrap"><span class="text-muted">'+firicao+'</span> '+firname+'</td></tr>';
+    var list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="4" style="font-size: 1rem; font-weight: 600; white-space: nowrap"><span class="text-muted">'+firicao+'</span> '+firname+'</td></tr>';
     if(warnings[index])
     {
         list += '<tr><td colspan="3" class="small text-muted pt-0"><i class="fas fa-info-circle"></i> '+warnings[index]+'</td></tr>';
