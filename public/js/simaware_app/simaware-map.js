@@ -58,7 +58,8 @@ function initializeMap(manual = 0)
     })
     $('#search-field').click(() => {
         $('#search-wrapper').show();
-        $('#search-results').html('<tr><td class="px-3 text-muted">Begin typing to search</td></tr>');
+        var str = $('#search-field').val().toLowerCase();
+        $('#search-results').html(compileSearchResults(str));
     });
 }
 

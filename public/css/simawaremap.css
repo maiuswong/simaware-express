@@ -143,12 +143,12 @@ a
 {
   color: #222;
 }
-.search-flight-item:hover
+.search-item:hover
 {
   cursor: pointer;
   background: rgba(0,0,0,0.05);
 }
-.search-flight-item:active
+.search-item:active
 {
   background: rgba(0,0,0,0.08);
 }
