@@ -19,6 +19,11 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+/* Index Page */
+app.get('/stats/', (req, res) => {
+    res.render('stats');
+});
+
 /* Airport Page */
 app.get('/airport/:icao', (req, res) => {
     res.render('airport', { icao: req.params.icao });
@@ -29,10 +34,12 @@ app.get('/user/:cid', (req, res) => {
     res.render('user', { cid: req.params.cid });
 })
 
+/* Events Page */
 app.get('/events/', (req, res) => {
     res.render('events');
 })
 
+/* Events Analysis Page */
 app.get('/event/:id', (req, res) => {
     res.render('event', {id: req.params.id});
 })

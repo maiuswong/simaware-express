@@ -23,44 +23,47 @@ function initializeMap(manual = 0)
     // Initialize map data
     initializeFirData();
 
-    // Create the map
-    map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([30, 0], 3).setActiveArea('active-area');
-    map.doubleClickZoom.disable();
-    basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
-    map.attributionControl.setPosition('topright');
+    // Create the map if it exists.  If not, then it's just a stats page that doesn't need it.
+    if($('#map').length)
+    {
+        map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([30, 0], 3).setActiveArea('active-area');
+        map.doubleClickZoom.disable();
+        basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
+        map.attributionControl.setPosition('topright');
 
-    // Make the search box clickable
-    $.each(['controls', 'flights-sidebar', 'search-field'], (idx, obj) => {
-        el = document.getElementById(obj);
-        if(el)
-        {
-            L.DomEvent.disableClickPropagation(el);
-        }
-    })
-    
+        // Make the search box clickable
+        $.each(['controls', 'flights-sidebar', 'search-field'], (idx, obj) => {
+            el = document.getElementById(obj);
+            if(el)
+            {
+                L.DomEvent.disableClickPropagation(el);
+            }
+        })
+
+        // Set onclick functions
+        map.on('click', function() {
+            if(map.hasLayer(active_featuregroup))
+            {
+                returnToView();
+            }
+            $('#search-wrapper').hide();
+        })
+        $('#search-field').click(() => {
+            $('#search-wrapper').show();
+            var str = $('#search-field').val().toLowerCase();
+            $('#search-results').html(compileSearchResults(str));
+        });
+    }
+
     // Set FeatureGroups
-    plane_featuregroup = new L.FeatureGroup();
-    if(!manual) { map.addLayer(plane_featuregroup); }
-    atc_featuregroup = new L.FeatureGroup();
-    active_featuregroup = new L.FeatureGroup();
-    tracons_featuregroup = new L.FeatureGroup();
-    locals_featuregroup = new L.FeatureGroup();
-    sigmets_featuregroup = new L.FeatureGroup();
-    events_featuregroup = new L.FeatureGroup();
-
-    // Set onclick functions
-    map.on('click', function() {
-        if(map.hasLayer(active_featuregroup))
-        {
-            returnToView();
-        }
-        $('#search-wrapper').hide();
-    })
-    $('#search-field').click(() => {
-        $('#search-wrapper').show();
-        var str = $('#search-field').val().toLowerCase();
-        $('#search-results').html(compileSearchResults(str));
-    });
+        plane_featuregroup = new L.FeatureGroup();
+        if(!manual) { map.addLayer(plane_featuregroup); }
+        atc_featuregroup = new L.FeatureGroup();
+        active_featuregroup = new L.FeatureGroup();
+        tracons_featuregroup = new L.FeatureGroup();
+        locals_featuregroup = new L.FeatureGroup();
+        sigmets_featuregroup = new L.FeatureGroup();
+        events_featuregroup = new L.FeatureGroup();
 }
 
 // Tells Leaflet what icons are available
@@ -527,7 +530,7 @@ async function refreshATC()
     active_firs = getActiveFIRs();
     newdata = {};
     response = await fetch(apiserver + 'api/livedata/onlinefirs');
-    data = await response.json();
+    sectors = await response.json();
     // $.each(data, (idx, fir) => {
     //     index = getFirIndex(fir);
     //     firObj = firs_array[index];
@@ -541,7 +544,7 @@ async function refreshATC()
     //     firObj = firs_array[fir];
     //     turnOffFIR(firObj);
     // })
-    $.each(data, (idx, atc) => {
+    $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
         if(fir && typeof fir.firs === 'undefined') // fir is null if we can't find anything.  Do UIRs after.
         {
@@ -562,7 +565,7 @@ async function refreshATC()
             }
         }
     })
-    $.each(data, (idx, atc) => {
+    $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
         atc.time_online = getTimeOnline(atc);
         if(fir && typeof fir.firs !== 'undefined') // fir is null if we can't find anything.  Doing UIRs now.
@@ -616,14 +619,14 @@ async function refreshATC()
     })
 
     response = await fetch(apiserver + 'api/livedata/tracons');
-    data = await response.json();
+    tracons = await response.json();
 
     if(atc_featuregroup.hasLayer(tracons_featuregroup))
     {
         atc_featuregroup.removeLayer(tracons_featuregroup); tracons_featuregroup = new L.FeatureGroup();
     }
 
-    $.each(data, (idx, trac) => {
+    $.each(tracons, (idx, trac) => {
         
         var newCircle = new L.circle([trac.loc.lat, trac.loc.lon],
         {
@@ -1180,8 +1183,8 @@ function updateFlightsBox(flight)
     [dep_airport, dep_point_, dep_name, dep_city] = processAirport(plane.flight.dep);
     [arr_airport, arr_point_, arr_name, arr_city] = processAirport(plane.flight.arr);
 
-    $('#flights-dep-icao').html(dep_airport); $('#flights-airport-dep').html(dep_name+'<br>'+dep_city);
-    $('#flights-arr-icao').html(arr_airport); $('#flights-airport-arr').html(arr_name+'<br>'+arr_city);
+    $('#flights-dep-icao').html(dep_airport); $('#flights-airport-dep').html(dep_name+'<br><span class="text-muted">'+dep_city+'</span>');
+    $('#flights-arr-icao').html(arr_airport); $('#flights-airport-arr').html(arr_name+'<br><span class="text-muted">'+arr_city+'</span>');
 
     // Set the progress bar correctly
     $('#flights-progressbar-elapsed').css({ width: getElapsedWidth(flight) + '%' });
