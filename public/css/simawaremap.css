@@ -403,7 +403,7 @@ a
   display: none;
   z-index: 1200;
   width: 350px;
-  position: absolute;
+  position: fixed;
   right: calc(50% - 175px);
   bottom: 70px;
   z-index: 1200;

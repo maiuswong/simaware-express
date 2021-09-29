@@ -1004,9 +1004,27 @@ function getTraconBlock(obj)
     return list;
 }
 
+async function loadAirlines()
+{
+    response = await fetch('/livedata/airlines.json');
+    airlines = await response.json();
+    airlinesByIcao = {};
+    $.each(airlines, (idx, airline) => {
+        airlinesByIcao[airline.icao] = airline;
+    })
+    return airlinesByIcao;
+}
+
 // Zoom to a flight
 async function zoomToFlight(uid)
 {
+
+    // If the map isn't available, will need to redirect to a page that does.
+    if(!$('#map').length)
+    {
+        window.location.href = '/?uid='+uid;
+    }
+
     if(typeof plane != 'undefined')
     {
         active_featuregroup.removeLayer(plane); delete plane;
@@ -1294,17 +1312,21 @@ async function toggleATC()
 
 function setLayerOrder()
 {
-    if(map.hasLayer(sigmets_featuregroup))
+    // Don't do anything unless the map is loaded
+    if($('#map').length)
     {
-        sigmets_featuregroup.bringToFront();
-    }
-    if(map.hasLayer(plane_featuregroup))
-    {
-        plane_featuregroup.bringToFront();
-    }
-    else if(map.hasLayer(active_featuregroup))
-    {
-        active_featuregroup.bringToFront();
+        if(map.hasLayer(sigmets_featuregroup))
+        {
+            sigmets_featuregroup.bringToFront();
+        }
+        if(map.hasLayer(plane_featuregroup))
+        {
+            plane_featuregroup.bringToFront();
+        }
+        else if(map.hasLayer(active_featuregroup))
+        {
+            active_featuregroup.bringToFront();
+        }
     }
 }
 

@@ -61,5 +61,12 @@ async function initialize()
     refreshATC();
     initializeInfobar();
     updateSigmet()
+
+    // If redirected from another page
+    let searchParams = new URLSearchParams(window.location.search);
+    if(searchParams.has('uid'))
+    {
+        zoomToFlight(searchParams.get('uid'));
+    }
 }
 </script>

@@ -7,11 +7,11 @@
                     <div class="nav nav-pills" id="nav-tab" role="tablist">
                         <button class="nav-link text-white active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Flights</button>
                         <button class="nav-link text-white" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">ATC</button>
-                        <button class="nav-link text-white" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
+                        <button class="nav-link text-white" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Airlines</button>
                     </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <div class="tab-pane show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                         <table class="small table table-dark table-bordered">
                             <thead>
                                 <tr>
@@ -27,7 +27,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <table class="small table table-dark table-bordered">
                             <thead>
                                 <tr>
@@ -42,7 +42,21 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+                    <div class="tab-pane" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                        <table class="small table table-dark table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 6%; text-align: center; vertical-align: middle"><i class="fas fa-medal"></i></th>
+                                    <th style="width: 6%; text-align: center">#</th>
+                                    <th colspan="3">Airline</th>
+                                    <th>Country of Origin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="airlines" style="vertical-align: middle">
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,6 +105,7 @@ async function initialize()
     airports = await response.json();
     flights = await refreshFlights(filterName, filterCriteria);
     eventsByAirport = await loadUpcomingEvents();
+    airlines = await loadAirlines();
 
     initializeNexrad();
     initializeATC();
@@ -151,6 +166,43 @@ async function refreshData()
         })
     })
     $('#atc').html(html);
+    
+    html = '';
+    var airlineCount = {};
+    $.each(airlines, (idx, airline) => {
+        airlineCount[airline.icao] = 0;
+    })
+    var airlineKeys = Object.keys(airlines);
+    $.each(flights, (idx, flight) => {
+        console.log(flight.callsign);
+        if(flight.callsign.match(/[A-Z]+/) && airlineKeys.includes(flight.callsign.match(/[A-Z]+/)[0]))
+        {
+            airlineCount[flight.callsign.match(/[A-Z]+/)[0]]++;
+        }
+    })
+
+    airlinesSorted = [];
+    for (var icao in airlineCount) {
+        airlinesSorted.push([icao, airlineCount[icao]]);
+    }
+
+    airlinesSorted.sort(function(a, b) {
+        return b[1] - a[1];
+    });
+    let counter = 0;
+    let prevnum = 0;
+    $.each(airlinesSorted, (idx, airline) => {
+        if(airline[1])
+        {
+             html += '<tr><td style="text-align: center">';
+            if(airline[1]) { if(counter == airline[1]) { html += prevnum; } else { html += idx + 1; prevnum = idx + 1;} counter = airline[1]; };
+            html += '</td><td style="text-align: center">';
+            if(airline[1] == 0) { html += '<span class="text-muted">'+ airline[1] +'</span>'; }
+            else { html += airline[1]; }
+            html += '</td><td style="text-align: center">'+airline[0]+'</td><td style="text-align: center">'+airlines[airline[0]].iata+'</td><td>' + airlines[airline[0]].name + '</td><td>'+ airlines[airline[0]].country + '</td></tr>';
+        }
+    })
+    $('#airlines').html(html);
 
 }
 </script>
