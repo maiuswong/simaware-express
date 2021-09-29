@@ -27,6 +27,15 @@ body
 {
   font-family: 'JetBrains Mono', sans-serif;
 }
+.nav-pills > .nav-link.active
+{
+  background-color: #3f3f3f;
+}
+.nav-pills > .nav-link
+{
+  padding: 0.2rem 1rem;
+  border-radius: 2rem;
+}
 .map-button:last-of-type
 {
   margin-right: 6px;
