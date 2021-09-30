@@ -87,15 +87,10 @@ $(document).ready(function() {
                 await refreshATC();
                 flights = await refreshFlights(filterName, filterCriteria);
                 updateInfobar();
-                updateSigmet();
-                setLayerOrder();
-            }
-            else
-            {
-                interpolateLoc();
+                updateData();
             }
             
-        }, 5 * 1000);
+        }, 60 * 1000);
 })
 
 async function initialize()
@@ -139,6 +134,7 @@ async function refreshData()
 
     html = '';
     $.each(sectors, (idx, sector) => {
+        console.log(sector.callsign);
         let index = getFirIndexByCallsign(sector.callsign);
         let firname = getCallsignByFir(firSearch(sector.callsign), index);
         html += '<tr><td>'+sector.callsign+'</td><td>'+firname+'</td><td>'+sector.freq+'</td><td>'+sector.name+'</td></tr>';
@@ -198,7 +194,7 @@ async function refreshData()
     $.each(airlinesSorted, (idx, airline) => {
         if(airline[1])
         {
-             html += '<tr><td style="text-align: center">';
+             html += '<tr class="airline" icao="'+airline[0]+'" onclick="$(\'#search-field\').val(\'al:\'+$(this).attr(\'icao\')); searchAction()"><td style="text-align: center">';
             if(airline[1]) { if(counter == airline[1]) { html += prevnum; } else { html += idx + 1; prevnum = idx + 1;} counter = airline[1]; };
             html += '</td><td style="text-align: center">';
             if(airline[1] == 0) { html += '<span class="text-muted">'+ airline[1] +'</span>'; }

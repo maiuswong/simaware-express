@@ -454,7 +454,7 @@ function getCallsign(str)
 
 function getCallsignByFir(fir, index)
 {
-    if(typeof fir !== 'undefined')
+    if(fir !== null)
     {
         if(fir.icao == 'CZUL')
         {
@@ -490,7 +490,7 @@ function getCallsignByFir(fir, index)
     }
     else
     {
-        return null;
+        return 'Unknown Position';
     }
 }
 
@@ -769,13 +769,13 @@ function getFirIndexByCallsign(callsign)
         var type = 0;
     }
     let fir = firSearch(callsign);
-    if(typeof fir !== 'undefined')
+    if(fir !== null)
     {
-        if(typeof firs_array[fir.icao + type] !== 'undefined')
+        if(firs_array[fir.icao + type] !== 'undefined')
         {
             return fir.icao + type;
         }
-        else if(typeof(firs_array[fir.icao + '0'] !== 'undefined'))
+        else if(typeof firs_array[fir.icao + '0'] !== 'undefined')
         {
             return fir.icao + '0';
         }
@@ -1047,7 +1047,7 @@ async function zoomToFlight(uid)
     bounds = []; bounds.push(plane.getLatLng());
 
     // Refresh the flights before showing
-    refreshFlights();
+    refreshFlights(filterName, filterCriteria);
 
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();
