@@ -30,11 +30,14 @@ body
 .nav-pills > .nav-link.active
 {
   background-color: #3f3f3f;
+  box-sizing: border-box;
+  border: 1px solid #555;
 }
 .nav-pills > .nav-link
 {
   padding: 0.2rem 1rem;
-  border-radius: 2rem;
+  border-radius: 0rem;
+  border: 1px solid transparent;
 }
 .map-button:last-of-type
 {

@@ -12,7 +12,7 @@
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
                     <div class="tab-pane show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                        <table class="small table table-dark table-bordered">
+                        <table class="small table table-dark table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Callsign</th>
@@ -28,7 +28,7 @@
                         </table>
                     </div>
                     <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                        <table class="small table table-dark table-bordered">
+                        <table class="small table table-dark table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th>Callsign</th>
@@ -43,7 +43,7 @@
                         </table>
                     </div>
                     <div class="tab-pane" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-                        <table class="small table table-dark table-bordered">
+                        <table class="small table table-dark table-hover table-bordered">
                             <thead>
                                 <tr>
                                     <th style="width: 6%; text-align: center; vertical-align: middle"><i class="fas fa-medal"></i></th>
@@ -115,7 +115,11 @@ async function initialize()
     initializeInfobar();
     updateSigmet();
 
-    refreshData();
+    console.log('FLAG' + !$.trim($('#atc').html()).length)
+    if(!$.trim($('#atc').html()).length)
+    {
+        refreshData();
+    }
 }
 
 async function refreshData()
@@ -129,7 +133,7 @@ async function refreshData()
         [dep_airport, dep_point, dep_name, dep_city] = processAirport(flight.dep);
         [arr_airport, arr_point, arr_name, arr_city] = processAirport(flight.arr);
         let status = getStatus(flight);
-        html += '<tr><td>'+flight.callsign+'</td><td><span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+'</td><td><span>'+status.status+'</span></td><td style="text-align: center">'+flight.dep+'</td><td class="small">'+dep_name+'<br><span class="text-muted">'+dep_city+'</span></td><td style="text-align: center">'+flight.arr+'</td><td class="small">'+arr_name+'<br><span class="text-muted">'+arr_city+'</span></td></tr>';
+        html += '<tr><td width="5%"><a class="text-white" href="#" onclick="zoomToFlight(\''+flight.uid+'\')">'+flight.callsign+'</a></td><td width="26%"><span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+'</td><td width="9%"><span>'+status.status+'</span></td><td width="5%" style="text-align: center"><a class="text-white" href="/airport/'+flight.dep+'">'+flight.dep+'</a></td><td width="25%" class="small"><a class="text-white" href="/airport/'+flight.dep+'">'+dep_name+'<br><span class="text-muted">'+dep_city+'</span></a></td><td width="5%" style="text-align: center"><a class="text-white" href="/airport/'+flight.arr+'">'+flight.arr+'</a></td><td width="25%" class="small"><a class="text-white" href="/airport/'+flight.arr+'">'+arr_name+'<br><span class="text-muted">'+arr_city+'</span></a></td></tr>';
     })
     $('#flights').html(html);
 
@@ -175,7 +179,6 @@ async function refreshData()
     })
     var airlineKeys = Object.keys(airlines);
     $.each(flights, (idx, flight) => {
-        console.log(flight.callsign);
         if(flight.callsign.match(/[A-Z]+/) && airlineKeys.includes(flight.callsign.match(/[A-Z]+/)[0]))
         {
             airlineCount[flight.callsign.match(/[A-Z]+/)[0]]++;
