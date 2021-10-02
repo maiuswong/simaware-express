@@ -35,14 +35,15 @@ async function initialize()
 
     response = await fetch('/livedata/airports.json');
     airports = await response.json();
-
     flights = await refreshFlights(filterName, filterCriteria);
+    eventsByAirport = await loadUpcomingEvents();
 
     initializeAirport('{{ icao }}');
     initializeNexrad();
     initializeATC();
     initializeAirports();
     refreshATC();
+    initializeInfobar();
     updateAirportFlights(airports, flights, filterCriteria);
 }
 </script>

@@ -1,10 +1,13 @@
-<div id="sidebar">
+<div id="airport-sidebar" style="display: none">
+    <div id="control-pullout" onclick="$('#airport-sidebar').animate({right: '1rem'}, 200); $(this).css({display: 'none'})">
+        <i class="fas fa-long-arrow-alt-left"></i>
+    </div>
+    <div id="controls-container">
+        <div class="control" style="margin-right: 0.5rem" onclick="$('#airport-sidebar').animate({right: '-25%'}, 200); $('#control-pullout').css({display: 'flex'})"><i class="fas fa-long-arrow-alt-right"></i></div>
+        <div class="control" onclick="returnFromAirport()"><i class="fas fa-times"></i></div>
+    </div>
     <div id="sidebar-container">
         <div id="airport-cap" class="p-3 d-flex flex-column">
-            <div id="airport-status" class="text-white bg-dark py-1 px-3">
-                <i class="fas fa-plane-arrival">&nbsp;</i> <span class="me-3" id="arrcount"></span>
-                <i class="fas fa-plane-departure">&nbsp;</i> <span id="depcount"></span>
-            </div>
             <div>
                 <h3 id="airport-icao">&nbsp;</h3>
                 <h6 id="airport-name" class="mb-0">&nbsp;</h6><h6 id="airport-city" class="mb-0 text-muted">&nbsp;</h6>
@@ -12,7 +15,11 @@
             <div id="airport-atc" class="">
             </div>
         </div>
-        <div id="airport-list-wrapper" class="py-2">
+        <div id="airport-list-wrapper">
+            <div id="airport-status" class="text-white bg-dark px-3 py-2">
+                <i class="fas fa-plane-arrival">&nbsp;</i> <span class="me-3" id="arrcount"></span>
+                <i class="fas fa-plane-departure">&nbsp;</i> <span id="depcount"></span>
+            </div>
             <table id="airport-list" class="w-100">
             </table>
         </div>

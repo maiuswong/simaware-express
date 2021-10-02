@@ -11,6 +11,9 @@
     <!-- Flight Display Sidebar -->
     {{> flights-sidebar}}
 
+    <!-- Airports Sidebar -->
+    {{> airport-sidebar }}
+
     <!-- Footer Group -->
     {{> footer}}
 </div>
@@ -67,6 +70,10 @@ async function initialize()
     if(searchParams.has('uid'))
     {
         zoomToFlight(searchParams.get('uid'));
+    }
+    else if(searchParams.has('airport'))
+    {
+        zoomToAirport(searchParams.get('airport'));
     }
 }
 </script>

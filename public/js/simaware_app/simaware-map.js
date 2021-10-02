@@ -374,32 +374,26 @@ function firSearch(str)
         {
             return uirs[fstr];
         }
-        else
+        if(typeof uirs[fstr.split('_')[0]] !== 'undefined')
         {
-            fstr = fstr.split('_')[0];
-            if(typeof uirs[fstr] !== 'undefined')
-            {
-                return uirs[fstr];
-            }
+            return uirs[fstr.split('_')[0]];
         }
-        // Reset fstr if it was already passed through the first branch
-        var fstr = str.replace('__', '_').replace('_CTR', '').replace('_FSS', '');
     }
     if(typeof firs[fstr] !== 'undefined')
     {
         return firs[fstr];
     }
-    else
+    if(typeof firs[fstr.split('_')[0]] !== 'undefined')
     {
-        fstr = fstr.split('_')[0];
-        if(typeof firs[fstr] !== 'undefined')
-        {
-            return firs[fstr];
-        }
-        else
-        {
-            return null;
-        }
+        return firs[fstr.split('_')[0]];
+    }
+    if(typeof uirs[fstr] !== 'undefined')
+    {
+        return uirs[fstr];
+    }
+    if(typeof uirs[fstr.split('_')[0]] !== 'undefined')
+    {
+        return uirs[fstr.split('_')[0]];
     }
 }
 
@@ -454,7 +448,7 @@ function getCallsign(str)
 
 function getCallsignByFir(fir, index)
 {
-    if(fir !== null)
+    if(fir !== null && typeof fir !== 'undefined') 
     {
         if(fir.icao == 'CZUL')
         {
@@ -769,7 +763,7 @@ function getFirIndexByCallsign(callsign)
         var type = 0;
     }
     let fir = firSearch(callsign);
-    if(fir !== null)
+    if(fir !== null && typeof fir !== 'undefined')
     {
         if(firs_array[fir.icao + type] !== 'undefined')
         {
@@ -1052,6 +1046,12 @@ async function zoomToFlight(uid)
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();
 
+    // If currently in the airports view, hide ap appropriately
+    if(typeof ap_featuregroup !== 'undefined')
+    {
+        $('#airport-sidebar').hide();
+    }
+
     // Handle departure/arrival airports
     [dep_airport, dep_point, dep_name, dep_city] = processAirport(plane.flight.dep);
     [arr_airport, arr_point, arr_name, arr_city] = processAirport(plane.flight.arr);
@@ -1073,7 +1073,17 @@ async function zoomToFlight(uid)
 
     // Swap the layers
     map.addLayer(active_featuregroup);
-    map.removeLayer(plane_featuregroup);
+
+    // If it's the ap layer, hide that; else hide plane_featuregroup
+    if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
+    {
+        map.removeLayer(ap_featuregroup);
+    }
+    else
+    {
+        map.removeLayer(plane_featuregroup);
+    }
+    
 
     if(typeof polyline_featuregroup != 'undefined' && map.hasLayer(polyline_featuregroup))
     {
@@ -1147,7 +1157,17 @@ async function returnToView()
 
         // Switch the layers
         map.removeLayer(active_featuregroup);
-        if(!manual) { map.addLayer(plane_featuregroup); }
+        if(!manual) {
+            if(typeof ap_featuregroup !== 'undefined')
+            {
+                map.addLayer(ap_featuregroup);
+                $('#airport-sidebar').show();
+            }
+            else
+            {
+                map.addLayer(plane_featuregroup); 
+            }
+        }
 
         // Delete the active featuregroup
         delete active_featuregroup;

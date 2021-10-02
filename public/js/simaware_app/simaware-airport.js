@@ -22,6 +22,40 @@ function initializeAirport(icao)
     
 }
 
+function zoomToAirport(icao)
+{
+    $('#airport-sidebar').show();
+    if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
+    {
+        map.removeLayer(ap_featuregroup);
+        delete ap_featuregroup;
+    }
+    ap_featuregroup = new L.FeatureGroup();
+    
+    initializeAirport(icao);
+    updateAirportFlights(airports, flights, icao);
+
+    map.removeLayer(plane_featuregroup);
+    $.each(flights, (idx, flight) => {
+        if(flight.dep == icao || flight.arr == icao)
+        {
+            ap_featuregroup.addLayer(plane_array[idx]);
+        }
+    })
+    map.addLayer(ap_featuregroup);
+
+    // If the searchbox is showing, hide it
+    $('#search-wrapper').hide();
+}
+
+function returnFromAirport()
+{
+    map.removeLayer(ap_featuregroup);
+    delete ap_featuregroup;
+    map.addLayer(plane_featuregroup);
+    $('#airport-sidebar').hide();
+}
+
 async function getLocalATC()
 {
 
