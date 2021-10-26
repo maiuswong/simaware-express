@@ -76,7 +76,11 @@ function infobar_streamers_scroll(idx, type)
         {
             let infoflight = plane_array[infostreamers[type][idx].uid].flight;
             let flight_status = getStatus(infoflight);
-            $('#infobar-content').html('<div class="d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</td><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+infostreamers[type][idx].dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+infostreamers[type][idx].arr+'</td></tr></table></div>');
+            let dep = infostreamers[type][idx].dep;
+            let arr = infostreamers[type][idx].arr;
+            if(!dep) { dep = 'NONE' }
+            if(!arr) { arr = 'NONE' }
+            $('#infobar-content').html('<div class="d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</td><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div>');
 
             // Set colors
             $('#infobar-flights-progressbar-plane').css({ 'color': flight_status.color });

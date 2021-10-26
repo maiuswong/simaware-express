@@ -31,10 +31,21 @@ function runSearch(str, selector = null)
         {
             var interrogation = (obj.aircraft + '|' + obj.arr + '|' + obj.callsign + '|' + obj.dep + '|' + obj.cid + '|' + obj.route).toLowerCase();
         }
-        if(interrogation.includes(str))
+        if(selector == 'al')
         {
-            var status = getStatus(obj);
-            return_array['flights'].push({ callsign: obj.callsign, aircraft: obj.aircraft, arr: obj.arr, dep: obj.dep, route: obj.route, uid: obj.uid, status: status });
+            if(interrogation == str)
+            {
+                var status = getStatus(obj);
+                return_array['flights'].push({ callsign: obj.callsign, aircraft: obj.aircraft, arr: obj.arr, dep: obj.dep, route: obj.route, uid: obj.uid, status: status });
+            }
+        }
+        else
+        {
+            if(interrogation.includes(str))
+            {
+                var status = getStatus(obj);
+                return_array['flights'].push({ callsign: obj.callsign, aircraft: obj.aircraft, arr: obj.arr, dep: obj.dep, route: obj.route, uid: obj.uid, status: status });
+            }
         }
     })
     if(str.length > 2)

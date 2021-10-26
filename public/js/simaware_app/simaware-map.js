@@ -118,6 +118,14 @@ async function initializeFirData()
     uirs = await response.json();
 }
 
+function getAirline(flight)
+{
+    if(flight.callsign.match(/[A-Z]+/) && typeof airlines[flight.callsign.match(/[A-Z]+/)[0]] !== 'undefined')
+    {
+        return airlines[flight.callsign.match(/[A-Z]+/)[0]];
+    }
+}
+
 async function initializeNexrad()
 {
     response = await fetch('https://tilecache.rainviewer.com/api/maps.json');
