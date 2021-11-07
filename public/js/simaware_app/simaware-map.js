@@ -773,7 +773,7 @@ function getFirIndexByCallsign(callsign)
     let fir = firSearch(callsign);
     if(fir !== null && typeof fir !== 'undefined')
     {
-        if(firs_array[fir.icao + type] !== 'undefined')
+        if(typeof firs_array[fir.icao + type] !== 'undefined')
         {
             return fir.icao + type;
         }
