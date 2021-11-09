@@ -14,6 +14,7 @@ function initializeMap(manual = 0)
     active_firs = [];
     icons_array = [];
     firs_array  = [];
+    firmarkers_array = [];
     sigmets_array = [];
     active_flight = null; 
 
@@ -617,7 +618,7 @@ async function refreshATC()
 
     $.each(active_firs, (idx, fir) => {
         firObj = firs_array[fir];
-        turnOffFIR(firObj);
+        turnOffFIR(firObj, idx);
     })
 
     response = await fetch(apiserver + 'api/livedata/tracons');
@@ -727,24 +728,51 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
 {
     if(typeof obj === 'object')
     {
+        var firmarkers_array_temp = [];
         for(idx in obj)
         {
             obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
-            obj[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1});
+
+            // Add a marker and tooltip
+            latlng = obj[idx].getBounds().getCenter();
+            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao), iconAnchor: ['50%', '50%'], iconSize: 'auto'});
+
+            // Add a marker if it doesn't exist
+            if(firmarkers_array[index] === undefined)
+            {
+                firmarkers_array_temp[idx] = new L.marker(latlng, { icon: di });
+                firmarkers_array_temp[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1});
+                atc_featuregroup.addLayer(firmarkers_array_temp[idx]);
+            }
+            // If it does, just update the text of the marker.
+            else
+            {
+                $.each(firmarkers_array[index], (idx2, obj) => {
+                    firmarkers_array[index][idx2].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1});
+                })
+            }
+            
             obj[idx].bringToFront();
+        }
+        if(firmarkers_array[index] === undefined)
+        {
+            firmarkers_array[index] = firmarkers_array_temp;
         }
     }
 }
 
 // Disable a FIR on the firmap
-function turnOffFIR(obj)
+function turnOffFIR(obj, index)
 {
     if(typeof obj === 'object')
     {
         $.each(obj, function(idx, fir)
         {
             fir.setStyle({color: '#333', weight: 1}).bringToBack();
-            fir.unbindTooltip();
+            $.each(firmarkers_array[index], (idx, obj) => {
+                atc_featuregroup.removeLayer(obj);
+            })
+            firmarkers_array[index] = undefined;
         });
     }
 }
@@ -808,6 +836,12 @@ function getLocalColor(obj)
     {
         return '#999';
     }
+}
+
+function getFirTooltip(icao)
+{
+    var tt = '<div style="top: -50%; left: -50%; position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.5); display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
+    return tt;
 }
 
 // Get Local Tooltip
