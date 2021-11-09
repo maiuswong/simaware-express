@@ -735,20 +735,20 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
 
             // Add a marker and tooltip
             latlng = obj[idx].getBounds().getCenter();
-            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao), iconAnchor: ['50%', '50%'], iconSize: 'auto'});
+            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao, index), iconAnchor: ['50%', '50%'], iconSize: 'auto'});
 
             // Add a marker if it doesn't exist
             if(firmarkers_array[index] === undefined)
             {
                 firmarkers_array_temp[idx] = new L.marker(latlng, { icon: di });
-                firmarkers_array_temp[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1});
+                firmarkers_array_temp[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1, sticky: true});
                 atc_featuregroup.addLayer(firmarkers_array_temp[idx]);
             }
             // If it does, just update the text of the marker.
             else
             {
                 $.each(firmarkers_array[index], (idx2, obj) => {
-                    firmarkers_array[index][idx2].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1});
+                    firmarkers_array[index][idx2].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1, sticky: true});
                 })
             }
             
@@ -838,10 +838,23 @@ function getLocalColor(obj)
     }
 }
 
-function getFirTooltip(icao)
+function getFirTooltip(icao, index)
 {
-    var tt = '<div style="top: -50%; left: -50%; position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.5); display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
+    var tt = '<div onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="top: -50%; left: -50%; position: relative; border-radius: 1rem; background-color: #999; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
     return tt;
+}
+
+function highlightFIR(index)
+{
+    $.each(firs_array[index], (idx, obj) => {
+        obj.setStyle({fillColor: '#fff', fillOpacity: 0.3});
+    })
+}
+function dehighlightFIR(index)
+{
+    $.each(firs_array[index], (idx, obj) => {
+        obj.setStyle({fillOpacity: 0});
+    })
 }
 
 // Get Local Tooltip
