@@ -86,7 +86,7 @@ function compileSearchResults(str)
     }
     else
     {
-        return '<tr><td class="px-3 text-muted">Begin typing to search.<br><small style="color: #aaa">Prepend with "ap:", "al:" or "flight:" to limit searches to airports, airlines, and flight callsigns, respectively.</span></td></tr>';
+        return '<tr><td class="px-3 text-muted">Begin typing to search.<br><small style="color: #aaa">Helpers:<br>"ap:" Airport search<br>"al:" Airline search<br>"flight:" Callsign search</span></td></tr>';
     }
 }
 
