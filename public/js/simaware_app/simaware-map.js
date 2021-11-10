@@ -742,7 +742,6 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
             {
                 firmarkers_array_temp[idx] = new L.marker(latlng, { icon: di });
                 firmarkers_array_temp[idx].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1, sticky: true});
-                atc_featuregroup.addLayer(firmarkers_array_temp[idx]);
             }
             // If it does, just update the text of the marker.
             else
@@ -757,6 +756,10 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         if(firmarkers_array[index] === undefined)
         {
             firmarkers_array[index] = firmarkers_array_temp;
+            for(idx in firmarkers_array[index])
+            {
+                atc_featuregroup.addLayer(firmarkers_array[index][idx]);
+            }
         }
     }
 }
@@ -840,7 +843,7 @@ function getLocalColor(obj)
 
 function getFirTooltip(icao, index)
 {
-    var tt = '<div onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="top: -50%; left: -50%; position: relative; border-radius: 1rem; background-color: #999; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
+    var tt = '<div onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="top: -50%; left: -50%; position: relative; border-radius: 1rem; background-color: rgba(153,153,153,0.7); border: 1.5px solid #fff; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
     return tt;
 }
 
