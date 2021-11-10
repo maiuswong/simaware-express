@@ -618,7 +618,7 @@ async function refreshATC()
 
     $.each(active_firs, (idx, fir) => {
         firObj = firs_array[fir];
-        turnOffFIR(firObj, idx);
+        turnOffFIR(firObj, fir);
     })
 
     response = await fetch(apiserver + 'api/livedata/tracons');
