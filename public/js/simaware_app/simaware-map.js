@@ -735,7 +735,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
 
             // Add a marker and tooltip
             latlng = obj[idx].getBounds().getCenter();
-            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao, index), iconAnchor: ['50%', '50%'], iconSize: 'auto'});
+            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao, index), iconAnchor: [19, 6], iconSize: 'auto'});
 
             // Add a marker if it doesn't exist
             if(firmarkers_array[index] === undefined)
@@ -844,7 +844,7 @@ function getLocalColor(obj)
 
 function getFirTooltip(icao, index)
 {
-    var tt = '<div onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="top: -50%; left: -50%; position: relative; border-radius: 1rem; background-color: rgba(153,153,153,0.7); border: 1.5px solid #fff; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
+    var tt = '<div onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
     return tt;
 }
 
