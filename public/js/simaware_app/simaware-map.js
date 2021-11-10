@@ -772,9 +772,10 @@ function turnOffFIR(obj, index)
         $.each(obj, function(idx, fir)
         {
             fir.setStyle({color: '#333', weight: 1}).bringToBack();
-            $.each(firmarkers_array[index], (idx, obj) => {
-                atc_featuregroup.removeLayer(obj);
-            })
+            for(idx in firmarkers_array[index])
+            {
+                atc_featuregroup.removeLayer(firmarkers_array[index][idx]);
+            }
             firmarkers_array[index] = undefined;
         });
     }
