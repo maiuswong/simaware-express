@@ -1,8 +1,8 @@
 const apiserver = 'https://simaware.ca/';
 const warnings = {
     'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
-    'CZQX1': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
-    'EGGX1': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
+    'CZQO0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
+    'EGGX0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
 }
 
 // Initializes the map in the #map container
@@ -72,7 +72,7 @@ function initializeIcons()
 {
     var icons_list = ['B739'];
     $.each(icons_list, function(idx, icon) {
-        icons_array[icon] = new L.divIcon({ className: icon, iconSize: [24, 24] , iconAnchor: [12, 12]});
+        icons_array[icon] = new L.divIcon({ className: icon, iconSize: [18, 18] , iconAnchor: [9, 9]});
     })
 }
 
@@ -266,7 +266,7 @@ function addAircraft(obj)
         radius: 16,
         img: {
             url: '/img/aircraft/'+getMarker(obj.aircraft)+'.png',    //image link
-            size: [24, 24],     //image size ( default [40, 40] )
+            size: [18, 18],     //image size ( default [40, 40] )
             rotate: obj.hdg,         //image base rotate ( default 0 )
             offset: { x: 0, y: 0 }, //image offset ( default { x: 0, y: 0 } )
         },
@@ -574,6 +574,7 @@ async function refreshATC()
         if(fir && typeof fir.firs !== 'undefined') // fir is null if we can't find anything.  Doing UIRs now.
         {
             atc.fssname = fir.name;
+            atc.fssicao = fir.prefix;
             $.each(fir.firs, (idx, firicao) => {
                 console.log(firicao);
                 let index = getFirIndexByCallsign(firicao);
@@ -663,21 +664,21 @@ async function refreshATC()
         oloc.bindTooltip(getLocalBlock(local.loc.icao), {opacity: 1});
         locals_featuregroup.addLayer(oloc);
     })
-    for(icao in eventsByAirport) 
-    {
-        if(typeof locals[icao] == 'undefined' && airports[icao])
-        {
-            var lat = airports[icao].lat;
-            var lon = airports[icao].lon;
-            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(icao), iconSize: 'auto'});
-            oloc = new L.marker([lat, lon],
-            {
-                icon: di,
-            })
-            oloc.bindTooltip(getLocalBlock(icao), {opacity: 1});
-            locals_featuregroup.addLayer(oloc);
-        }
-    }
+    // for(icao in eventsByAirport) 
+    // {
+    //     if(typeof locals[icao] == 'undefined' && airports[icao])
+    //     {
+    //         var lat = airports[icao].lat;
+    //         var lon = airports[icao].lon;
+    //         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(icao), iconSize: 'auto'});
+    //         oloc = new L.marker([lat, lon],
+    //         {
+    //             icon: di,
+    //         })
+    //         oloc.bindTooltip(getLocalBlock(icao), {opacity: 1});
+    //         locals_featuregroup.addLayer(oloc);
+    //     }
+    // }
     atc_featuregroup.addLayer(locals_featuregroup);
     
 }
@@ -735,7 +736,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
 
             // Add a marker and tooltip
             latlng = polylabel(obj[idx].feature.geometry.coordinates[0], 1.0)
-            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao, index), iconAnchor: [19, 6], iconSize: 'auto'});
+            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao, index, firMembers), iconSize: 'auto'});
 
             // Add a marker if it doesn't exist
             if(firmarkers_array[index] === undefined)
@@ -842,9 +843,29 @@ function getLocalColor(obj)
     }
 }
 
-function getFirTooltip(icao, index)
+function getFirTooltip(icao, index, firMembers)
 {
-    var tt = '<div onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao+'</td></tr></table></div>';
+    var is_fss = 0;
+    var fssicao = '';
+    $.each(firMembers, function(idx, member) 
+    {
+        if(member.fssname && is_fss == 0)
+        {
+            is_fss = 1;
+            fssicao = member.fssicao;
+        }
+        else
+        {
+            is_fss = 0;
+        }
+    })
+
+    var tt = '<div style="position: relative"><div class="firlabel" onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.75rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao;
+    if(is_fss)
+    {
+        tt += '<br><span style="background-color: #9370db">'+fssicao+'</span>';
+    }
+    tt += '</td></tr></table></div></div>';
     return tt;
 }
 

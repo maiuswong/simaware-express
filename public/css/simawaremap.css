@@ -109,6 +109,12 @@ a
     box-shadow: none !important;
     font-family: 'Jost', sans-serif;
 }
+.firlabel
+{
+  position: absolute;
+  top: -50%;
+  left: -50%;
+}
 .flights-tableitem
 {
   font-size: 0.85rem;
