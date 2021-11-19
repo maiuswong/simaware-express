@@ -1499,7 +1499,7 @@ function getMarker(str)
     case 'B743':
     case 'B744':
     case 'B748':
-      return 'A340';
+      return 'B747';
     case 'B752':
     case 'B753':
       return 'B752';
