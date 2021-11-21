@@ -8,6 +8,7 @@
                         <button class="nav-link text-white active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Flights</button>
                         <button class="nav-link text-white" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">ATC</button>
                         <button class="nav-link text-white" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Airlines</button>
+                        <button class="nav-link text-white" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-aircraft" type="button" role="tab" aria-controls="nav-aircraft" aria-selected="false">Aircraft</button>
                     </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
@@ -58,6 +59,20 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="tab-pane" id="nav-aircraft" role="tabpanel" aria-labelledby="nav-aircraft-tab">
+                        <table class="small table table-dark table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 6%; text-align: center; vertical-align: middle"><i class="fas fa-medal"></i></th>
+                                    <th style="width: 6%; text-align: center">#</th>
+                                    <th colspan="3">Aircraft</th>
+                                </tr>
+                            </thead>
+                            <tbody id="aircraft" style="vertical-align: middle">
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,6 +117,7 @@ async function initialize()
     flights = await refreshFlights(filterName, filterCriteria);
     eventsByAirport = await loadUpcomingEvents();
     airlines = await loadAirlines();
+    aircraft = await loadAircraft();
 
     initializeNexrad();
     initializeATC();
@@ -110,14 +126,14 @@ async function initialize()
     initializeInfobar();
     updateSigmet();
 
-    console.log('FLAG' + !$.trim($('#atc').html()).length)
+    {{!-- console.log('FLAG' + !$.trim($('#atc').html()).length) --}}
     if(!$.trim($('#atc').html()).length)
     {
-        refreshData();
+        refreshStats();
     }
 }
 
-async function refreshData()
+async function refreshStats()
 {
     await refreshATC();
     flights = await refreshFlights();
@@ -134,7 +150,7 @@ async function refreshData()
 
     html = '';
     $.each(sectors, (idx, sector) => {
-        console.log(sector.callsign);
+        {{!-- console.log(sector.callsign); --}}
         let index = getFirIndexByCallsign(sector.callsign);
         let firname = getCallsignByFir(firSearch(sector.callsign), index);
         html += '<tr><td>'+sector.callsign+'</td><td>'+firname+'</td><td>'+sector.freq+'</td><td>'+sector.name+'</td></tr>';
@@ -204,5 +220,56 @@ async function refreshData()
     })
     $('#airlines').html(html);
 
+    html = '';
+    aircraftCount = {};
+    aircraftKeys = Object.keys(aircraft);
+    $.each(aircraft, (idx, ac) => {
+        aircraftCount[ac.icao] = 0;
+    })
+    $.each(flights, (idx, flight) => {
+        var icao = getAircraftIcao(flight.aircraft);
+        if(aircraftKeys.includes(icao))
+        {
+            aircraftCount[icao]++;
+        }
+    })
+
+    aircraftSorted = [];
+    for (var icao in aircraftCount) {
+        aircraftSorted.push([icao, aircraftCount[icao]]);
+    }
+
+    aircraftSorted.sort(function(a, b) {
+        return b[1] - a[1];
+    });
+
+    let acounter = 0;
+    let aprevnum = 0;
+    $.each(aircraftSorted, (idx, ac) => {
+        if(ac[1])
+        {
+             html += '<tr class="aircraft" icao="'+ac[0]+'" onclick="$(\'#search-field\').val(\'ac:\'+$(this).attr(\'icao\')); searchAction()"><td style="text-align: center">';
+            if(ac[1]) { if(acounter == ac[1]) { html += aprevnum; } else { html += idx + 1; aprevnum = idx + 1;} acounter = ac[1]; };
+            html += '</td><td style="text-align: center">';
+            if(ac[1] == 0) { html += '<span class="text-muted">'+ ac[1] +'</span>'; }
+            else { html += ac[1]; }
+            html += '</td><td style="text-align: center">'+ac[0]+'</td><td style="text-align: center">'+aircraft[ac[0]].iata+'</td><td>' + aircraft[ac[0]].name + '</td></tr>';
+        }
+    })
+    $('#aircraft').html(html);
+
+}
+
+function getAircraftIcao(str)
+{
+    ac_array = str.split('/');
+    if(ac_array.length == 3)
+    {
+        return ac_array[1];
+    }
+    else
+    {
+        return ac_array[0];
+    }
 }
 </script>

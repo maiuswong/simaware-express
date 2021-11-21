@@ -457,6 +457,10 @@ function getCallsign(str)
 
 function getCallsignByFir(fir, index)
 {
+    if(index == undefined)
+    {
+        index = fir.icao + '0';
+    }
     if(fir !== null && typeof fir !== 'undefined') 
     {
         if(fir.icao == 'CZUL')
@@ -1087,6 +1091,17 @@ async function loadAirlines()
         airlinesByIcao[airline.icao] = airline;
     })
     return airlinesByIcao;
+}
+
+async function loadAircraft()
+{
+    response = await fetch('/livedata/aircraft.json');
+    aircraft = await response.json();
+    aircraftByIcao = {};
+    $.each(aircraft, (idx, ac) => {
+        aircraftByIcao[ac.icao] = ac;
+    })
+    return aircraftByIcao;
 }
 
 // Zoom to a flight

@@ -79,6 +79,7 @@ function compileSearchResults(str)
                 return airports_compiled + flights_compiled;
             case 'flight':
             case 'al':
+            case 'ac':
                 return flights_compiled;
             case 'ap':
                 return airports_compiled;
