@@ -65,6 +65,7 @@ function initializeMap(manual = 0)
         locals_featuregroup = new L.FeatureGroup();
         sigmets_featuregroup = new L.FeatureGroup();
         events_featuregroup = new L.FeatureGroup();
+        nats_featuregroup = new L.FeatureGroup();
 }
 
 // Tells Leaflet what icons are available
@@ -1045,6 +1046,21 @@ function getLocalBlock(icao)
     return list;
 }
 
+function getNatBlock(nat)
+{
+    var route = '';
+    $.each(nat.route, (idx, fix) => {
+        if(idx != 0)
+        {
+            route += ' <i class="fas fa-angle-right"></i> ';
+        }
+        route += fix.name;
+    })
+    var table = '<table class="my-2" style="width: 300px; color: #555; background-color: #eee"><tr><td style="width: 60px; border: 1px solid #ccc; text-align: center; font-size: 0.9rem"><h1 style="font-weight: bold; font-family: \'JetBrains Mono\', sans-serif;" class="mb-0">'+nat.id+'</h1></td><td rowspan="2" class="px-2"><small>Route</small><hr class="my-1"><span style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.9rem">'+route+'</span></td></tr><tr><td style="border: 1px solid #ccc; text-align: center"><small>TMI '+nat.tmi+'</small>';
+    table += '</td></tr></table>';
+    return '<div class="card"><div class="p-2" style="color: #222; background-color: #eee; font-size: 1rem; font-weight: bold">North Atlantic Track'+table+'<small class="text-muted" style="font-weight: normal">Data courtesy of Gander Oceanic OCA</small></div></div>';
+}
+
 // Get the controller block
 function getControllerBlock(firObj, firMembers, firname, firicao, index)
 {
@@ -1102,6 +1118,33 @@ async function loadAircraft()
         aircraftByIcao[ac.icao] = ac;
     })
     return aircraftByIcao;
+}
+
+async function initializeNat()
+{
+    response = await fetch(apiserver + 'api/livedata/nats');
+    nats = await response.json();
+
+    $.each(nats, (idx, nat) => {
+        latlons = [];
+        $.each(nat.route, (idx2, fix) => {
+            latlons.push([fix.latitude, fix.longitude]);
+        })
+        var natline = new L.Polyline.AntPath(latlons, {weight: 5, color: '#fff'});
+        natline.bindTooltip(getNatBlock(nat), {opacity: 1, sticky: true});
+        nats_featuregroup.addLayer(natline);
+        $.each(nat.route, (idx2, fix) => {
+            var return_point = L.circleMarker(new L.LatLng(fix.latitude, fix.longitude), {
+                radius: 5,
+                stroke: true,
+                weight: 3,
+                color: '#2196F3',
+                fillColor: '#eee',
+                fillOpacity: 1,
+            });
+            nats_featuregroup.addLayer(return_point);
+        })
+    })
 }
 
 // Zoom to a flight
@@ -1434,6 +1477,10 @@ function setLayerOrder()
         {
             sigmets_featuregroup.bringToFront();
         }
+        if(map.hasLayer(nats_featuregroup))
+        {
+            nats_featuregroup.bringToFront();
+        }
         if(map.hasLayer(plane_featuregroup))
         {
             plane_featuregroup.bringToFront();
@@ -1471,6 +1518,22 @@ function toggleSigmet()
     {
         map.removeLayer(sigmets_featuregroup);
         $('.map-button#sigmet').removeClass('map-button-active');
+        setLayerOrder();
+    }
+}
+
+function toggleNat()
+{
+    if(!map.hasLayer(nats_featuregroup))
+    {
+        map.addLayer(nats_featuregroup);
+        $('.map-button#nat').addClass('map-button-active');
+        setLayerOrder();
+    }
+    else
+    {
+        map.removeLayer(nats_featuregroup);
+        $('.map-button#nat').removeClass('map-button-active');
         setLayerOrder();
     }
 }

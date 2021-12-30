@@ -5,7 +5,7 @@
         <div class="map-button py-1" onclick="toggleNexrad()" id="wx"><i class="fas fa-sun"></i></div>
         <div class="map-button py-1" onclick="toggleATC()" id="atc">ATC</div>
         <div class="map-button py-1" onclick="toggleSigmet()" id="sigmet">SIGMET</div>
-        <div class="map-button py-1" id="nat">NAT</div>
+        <div class="map-button py-1" onclick="toggleNat()" id="nat">NAT</div>
     </div>
 
     <!-- Flight Display Sidebar -->
@@ -60,6 +60,7 @@ async function initialize()
     airlines = await loadAirlines();
 
     initializeNexrad();
+    initializeNat();
     initializeATC();
     initializeAirports();
     refreshATC();
