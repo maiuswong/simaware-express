@@ -1128,13 +1128,28 @@ async function initializeNat()
     $.each(nats, (idx, nat) => {
         latlons = [];
         $.each(nat.route, (idx2, fix) => {
-            latlons.push([fix.latitude, fix.longitude]);
+            if(fix.name == 'SOORY')
+            {
+                latlons.push([-fix.longitude, -fix.latitude]);
+            }
+            else
+            {
+                latlons.push([fix.latitude, fix.longitude]);
+            }
         })
         var natline = new L.Polyline.AntPath(latlons, {weight: 5, color: '#fff'});
         natline.bindTooltip(getNatBlock(nat), {opacity: 1, sticky: true});
         nats_featuregroup.addLayer(natline);
         $.each(nat.route, (idx2, fix) => {
-            var return_point = L.circleMarker(new L.LatLng(fix.latitude, fix.longitude), {
+            if(fix.name == 'SOORY')
+            {
+                var latlon = [-fix.longitude, -fix.latitude];
+            }
+            else
+            {
+                var latlon = [fix.latitude, fix.longitude];
+            }
+            var return_point = L.circleMarker(latlon, {
                 radius: 5,
                 stroke: true,
                 weight: 3,
