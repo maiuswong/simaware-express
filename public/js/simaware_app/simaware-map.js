@@ -1056,9 +1056,9 @@ function getNatBlock(nat)
         }
         route += fix.name;
     })
-    var table = '<table class="my-2" style="width: 300px; color: #555; background-color: #eee"><tr><td style="width: 60px; border: 1px solid #ccc; text-align: center; font-size: 0.9rem"><h1 style="font-weight: bold; font-family: \'JetBrains Mono\', sans-serif;" class="mb-0">'+nat.id+'</h1></td><td rowspan="2" class="px-2"><small>Route</small><hr class="my-1"><span style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.9rem">'+route+'</span></td></tr><tr><td style="border: 1px solid #ccc; text-align: center"><small>TMI '+nat.tmi+'</small>';
+    var table = '<table style="width: 300px; color: #555; background-color: #eee"><tr><td style="width: 60px; border: 1px solid #ccc; text-align: center; font-size: 0.9rem"><h1 style="font-weight: bold; font-family: \'JetBrains Mono\', sans-serif;" class="mb-0">'+nat.id+'</h1></td><td rowspan="2" class="px-2"><small style="font-weight: bold">North Atlantic Track</small><hr class="my-1"><span style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.9rem">'+route+'</span></td></tr><tr><td style="border: 1px solid #ccc; text-align: center"><small>TMI '+nat.tmi+'</small>';
     table += '</td></tr></table>';
-    return '<div class="card"><div class="p-2" style="color: #222; background-color: #eee; font-size: 1rem; font-weight: bold">North Atlantic Track'+table+'<small class="text-muted" style="font-weight: normal">Data courtesy of Gander Oceanic OCA</small></div></div>';
+    return '<div class="card"><div class="p-2" style="color: #222; background-color: #eee; font-size: 1rem; font-weight: bold">'+table+'<small class="text-muted" style="font-weight: normal">Data courtesy of Gander Oceanic OCA</small></div></div>';
 }
 
 // Get the controller block
