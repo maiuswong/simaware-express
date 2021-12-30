@@ -8,6 +8,7 @@ const warnings = {
 // Initializes the map in the #map container
 function initializeMap(manual = 0)
 {
+    $('.os-host-flexbox').overlayScrollbars({ });
     // Set storage variables
     plane_array = [];
     active_uids = [];
@@ -1268,6 +1269,30 @@ async function addFlightPath(url, dep, arr, flight)
     var latlons = await response.json();
     flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {color: '#00D300', weight: 1.5, nowrap: true});
     await active_featuregroup.addLayer(flightpath);
+}
+
+function toggleBasemap()
+{
+  if(typeof basemap == 'undefined')
+  {
+    map.removeLayer(lightbasemap);
+    basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', {
+    	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    	subdomains: 'abcd',
+    	maxZoom: 19
+    }).addTo(map);
+    $('.map-button#light').removeClass('map-button-active');
+    lightbasemap = undefined;
+  }
+  else
+  {
+    map.removeLayer(basemap);
+    lightbasemap =  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    }).addTo(map);
+    $('.map-button#light').addClass('map-button-active');
+    basemap = undefined;
+  }
 }
 
 // Toggles the plane tooltip's <permanent> property

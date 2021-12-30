@@ -7,6 +7,10 @@ body
     background-color: #222;
     color: #eee;
 }
+.os-host-flexbox
+{
+    flex-direction: column;
+}
 .map-button
 {
   cursor: pointer;

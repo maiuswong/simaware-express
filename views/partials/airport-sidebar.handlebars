@@ -15,7 +15,7 @@
             <div id="airport-atc" class="">
             </div>
         </div>
-        <div id="airport-list-wrapper">
+        <div id="airport-list-wrapper" class="os-host-flexbox">
             <div id="airport-status" class="text-white bg-dark px-3 py-2">
                 <i class="fas fa-plane-arrival">&nbsp;</i> <span class="me-3" id="arrcount"></span>
                 <i class="fas fa-plane-departure">&nbsp;</i> <span id="depcount"></span>
@@ -25,3 +25,8 @@
         </div>
     </div>
 </div>
+
+<!-- Initialize the scrollbar -->
+<script>
+    $('#airport-list-wrapper').overlayScrollbars({ });
+</script>
