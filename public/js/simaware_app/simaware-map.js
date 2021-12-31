@@ -738,7 +738,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         var firmarkers_array_temp = [];
         for(idx in obj)
         {
-            obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#000', fillOpacity: 0});
+            obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#fff', fillOpacity: 0.1});
 
             // Add a marker and tooltip
             latlng = polylabel(obj[idx].feature.geometry.coordinates[0], 1.0)
@@ -778,7 +778,7 @@ function turnOffFIR(obj, index)
     {
         $.each(obj, function(idx, fir)
         {
-            fir.setStyle({color: '#333', weight: 1}).bringToBack();
+            fir.setStyle({color: '#333', weight: 1, fillOpacity: 0}).bringToBack();
             for(idx in firmarkers_array[index])
             {
                 atc_featuregroup.removeLayer(firmarkers_array[index][idx]);
@@ -878,13 +878,13 @@ function getFirTooltip(icao, index, firMembers)
 function highlightFIR(index)
 {
     $.each(firs_array[index], (idx, obj) => {
-        obj.setStyle({fillColor: '#fff', fillOpacity: 0.3});
+        obj.setStyle({fillColor: '#fff', fillOpacity: 0.4});
     })
 }
 function dehighlightFIR(index)
 {
     $.each(firs_array[index], (idx, obj) => {
-        obj.setStyle({fillOpacity: 0});
+        obj.setStyle({fillOpacity: 0.1});
     })
 }
 
