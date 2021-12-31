@@ -1,4 +1,5 @@
-const apiserver = 'https://simaware.ca/';
+apiserver = 'https://simaware.ca/';
+
 const warnings = {
     'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
     'CZQO0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
@@ -219,7 +220,7 @@ function interpolateLoc()
 
     for(uid in plane_array)
     {
-        var intervaltime = 5;
+        var intervaltime = 2;
         var latlon = plane_array[uid].getLatLng();
         var R = 6378.1;
         var hdg_rad = Math.PI * plane_array[uid].flight.hdg / 180;
@@ -263,6 +264,17 @@ function applyFilter(data, filterName = null, filterCriteria = null)
 // Adds aircraft to the plane_array
 function addAircraft(obj)
 {
+    plane = createPlaneMarker(obj);
+
+    // Add it to the feature group
+    plane_array[plane.uid] = plane;
+    plane_featuregroup.addLayer(plane_array[plane.uid]);
+
+    markUID(obj);
+}
+
+function createPlaneMarker(obj)
+{
     // Initialize and get variables
     var plane = L.canvasMarker(new L.LatLng(obj.lat, obj.lon), {
         radius: 16,
@@ -288,11 +300,7 @@ function addAircraft(obj)
     // Set the onclick action
     plane.on('click', function(e) { L.DomEvent.stopPropagation(e) ; zoomToFlight(this.uid); });
 
-    // Add it to the feature group
-    plane_array[plane.uid] = plane;
-    plane_featuregroup.addLayer(plane_array[plane.uid]);
-
-    markUID(obj);
+    return plane;
 }
 
 function getDatablock(obj)
@@ -1057,9 +1065,9 @@ function getNatBlock(nat)
         }
         route += fix.name;
     })
-    var table = '<table style="width: 300px; color: #555; background-color: #eee"><tr><td style="width: 60px; border: 1px solid #ccc; text-align: center; font-size: 0.9rem"><h1 style="font-weight: bold; font-family: \'JetBrains Mono\', sans-serif;" class="mb-0">'+nat.id+'</h1></td><td rowspan="2" class="px-2"><small style="font-weight: bold">North Atlantic Track</small><hr class="my-1"><span style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.9rem">'+route+'</span></td></tr><tr><td style="border: 1px solid #ccc; text-align: center"><small>TMI '+nat.tmi+'</small>';
+    var table = '<table style="width: 300px; color: #ccc" class="mb-2"><tr><td style="width: 60px; border: 1px solid #ccc; text-align: center; font-size: 0.9rem"><h1 style="font-weight: bold; font-family: \'JetBrains Mono\', sans-serif;" class="mb-0">'+nat.id+'</h1></td><td rowspan="2" class="px-2"><small style="font-weight: bold">North Atlantic Track</small><hr class="my-1"><span style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.9rem">'+route+'</span></td></tr><tr><td style="border: 1px solid #ccc; text-align: center"><small>TMI '+nat.tmi+'</small>';
     table += '</td></tr></table>';
-    return '<div class="card"><div class="p-2" style="color: #222; background-color: #eee; font-size: 1rem; font-weight: bold">'+table+'<small class="text-muted" style="font-weight: normal">Data courtesy of Gander Oceanic OCA</small></div></div>';
+    return '<div class="card bg-dark" style="border: 1px solid #ccc"><div class="p-2" style="font-size: 1rem; font-weight: bold">'+table+'<small class="text-muted mb-0" style="font-weight: normal">Data courtesy of Gander Oceanic OCA</small></div></div>';
 }
 
 // Get the controller block
@@ -1164,13 +1172,19 @@ async function initializeNat()
 }
 
 // Zoom to a flight
-async function zoomToFlight(uid)
+async function zoomToFlight(uid, historical = 0)
 {
 
     // If the map isn't available, will need to redirect to a page that does.
-    if(!$('#map').length)
+    if(!$('#map').length || (manual && !historical))
     {
         window.location.href = '/?uid='+uid;
+    }
+
+    // If the flight doesn't exist, try historical mode.
+    if(typeof(plane_array[uid]) === 'undefined')
+    {
+        historical = 1;
     }
 
     if(typeof plane != 'undefined')
@@ -1190,12 +1204,27 @@ async function zoomToFlight(uid)
         active_featuregroup.removeLayer(flightpath); delete flightpath;
     }
 
-    plane = plane_array[uid];
+    if(historical) 
+    {
+        response = await fetch(apiserver + 'api/flight/' + uid);
+        planedata = await response.json();
+        bounds = [planedata.flight.lat, planedata.flight.lon];
+        plane = createPlaneMarker(planedata.flight);
+        plane.flight.historical = true;
+    } 
+    else 
+    { 
+        plane = plane_array[uid];
+        bounds = []; bounds.push(plane.getLatLng());
+    }
     active_flight = uid;
-    bounds = []; bounds.push(plane.getLatLng());
+    
 
     // Refresh the flights before showing
-    refreshFlights(filterName, filterCriteria);
+    if(!historical)
+    {
+        refreshFlights(filterName, filterCriteria);
+    }
 
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();
@@ -1258,9 +1287,18 @@ async function zoomToFlight(uid)
 
     // Hide the sidebar
     $('#sidebar').hide();
+    $('#user-sidebar').hide();
 
-    addedFlightPathPromise = addFlightPath('https://simaware.ca/api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
-    await addedFlightPathPromise;
+    if(historical)
+    {
+        flightpath = await new L.Polyline(adjustLogsForAntimeridian(planedata.flight, airports[dep_airport], airports[arr_airport], planedata.logs), {color: '#00D300', weight: 1.5, nowrap: true});
+        await active_featuregroup.addLayer(flightpath);
+    }
+    else
+    {
+        addedFlightPathPromise = addFlightPath('https://simaware.ca/api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
+        await addedFlightPathPromise;
+    }
 }
 
 async function addFlightPath(url, dep, arr, flight)
@@ -1277,23 +1315,25 @@ function toggleBasemap()
   {
     map.removeLayer(lightbasemap);
     basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    	attribution: '',
     	subdomains: 'abcd',
     	maxZoom: 19
     }).addTo(map);
     $('.map-button#light').removeClass('map-button-active');
     setLayerOrder();
     lightbasemap = undefined;
+    $.cookie('lightmap', 'false');
   }
   else
   {
     map.removeLayer(basemap);
     lightbasemap =  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    	attribution: ''
     }).addTo(map);
     $('.map-button#light').addClass('map-button-active');
     setLayerOrder();
     basemap = undefined;
+    $.cookie('lightmap', 'true');
   }
 }
 
@@ -1333,7 +1373,10 @@ async function returnToView()
     {
         // Get the plane object ready to be placed back
         togglePlaneTooltip(plane, false);
-        plane_featuregroup.addLayer(plane);
+        if(!plane.flight.historical)
+        {
+            plane_featuregroup.addLayer(plane);
+        }
 
         // Switch the layers
         map.removeLayer(active_featuregroup);
@@ -1358,6 +1401,7 @@ async function returnToView()
 
         // Return the sidebar if it exists on the page
         $('#sidebar').show();
+        $('#user-sidebar').show();
 
         // Remove active flight tag
         active_flight = null;
@@ -1365,6 +1409,30 @@ async function returnToView()
     if(typeof polyline_featuregroup != 'undefined')
     {
         map.addLayer(polyline_featuregroup);
+    }
+}
+
+function handleCookies()
+{
+    if($.cookie('atc') == 'true')
+    {
+        toggleATC();
+    }
+    if($.cookie('lightmap') == 'true')
+    {
+        toggleBasemap();
+    }
+    if($.cookie('sigmet') == 'true')
+    {
+        toggleSigmet();
+    }
+    if($.cookie('nat') == 'true')
+    {
+        toggleNat();
+    }
+    if($.cookie('wx') == 'true')
+    {
+        toggleNexrad();
     }
 }
 
@@ -1502,11 +1570,13 @@ async function toggleATC()
         await refreshATC();
         setLayerOrder();
         $('.map-button#atc').addClass('map-button-active');
+        $.cookie('atc', 'true');
     }
     else
     {
         map.removeLayer(atc_featuregroup);
         $('.map-button#atc').removeClass('map-button-active');
+        $.cookie('atc', 'false');
     }
 }
 
@@ -1540,11 +1610,13 @@ function toggleNexrad()
     {
         map.addLayer(nexrad);
         $('.map-button#wx').addClass('map-button-active');
+        $.cookie('wx', 'true');
     }
     else
     {
         map.removeLayer(nexrad);
         $('.map-button#wx').removeClass('map-button-active');
+        $.cookie('wx', 'false');
     }
 }
 
@@ -1555,12 +1627,15 @@ function toggleSigmet()
         map.addLayer(sigmets_featuregroup);
         $('.map-button#sigmet').addClass('map-button-active');
         setLayerOrder();
+        $.cookie('sigmet', 'true');
     }
     else
     {
         map.removeLayer(sigmets_featuregroup);
         $('.map-button#sigmet').removeClass('map-button-active');
         setLayerOrder();
+        $.cookie('sigmet', 'false');
+
     }
 }
 
@@ -1571,12 +1646,14 @@ function toggleNat()
         map.addLayer(nats_featuregroup);
         $('.map-button#nat').addClass('map-button-active');
         setLayerOrder();
+        $.cookie('nat', 'true');
     }
     else
     {
         map.removeLayer(nats_featuregroup);
         $('.map-button#nat').removeClass('map-button-active');
         setLayerOrder();
+        $.cookie('nat', 'false');
     }
 }
 

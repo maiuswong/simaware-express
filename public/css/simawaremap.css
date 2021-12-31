@@ -228,12 +228,12 @@ a
   }
 }
 
-#airport-list
+#airport-list, #flight-list
 {
   color: #fff;
   font-size: 0.9rem;
 }
-#airport-list-wrapper
+#airport-list-wrapper, #flight-list-wrapper
 {
   max-height: 80%;
   overflow-y: scroll;
@@ -453,7 +453,7 @@ a
     right: 1rem;
   }
 }
-#airport-sidebar
+#airport-sidebar, #user-sidebar
 {
   position: absolute;
   top: 1rem;

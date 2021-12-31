@@ -24,6 +24,12 @@ function initializeAirport(icao)
 
 function zoomToAirport(icao)
 {
+
+    if(!$('#map').length || manual)
+    {
+        window.location.href = '/?airport=' + icao;
+    }
+
     $('#airport-sidebar').show();
     if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
     {

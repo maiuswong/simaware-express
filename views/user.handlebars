@@ -28,6 +28,8 @@ async function initialize()
     refreshFlights();
     initializeUser({{ cid }});
 
+    manual = 1;
+
     response = await fetch('/livedata/airports.json');
     airports = await response.json();
 }

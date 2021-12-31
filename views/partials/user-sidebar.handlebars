@@ -1,11 +1,18 @@
-<div id="sidebar">
+<div id="user-sidebar">
     <div id="sidebar-container">
         <div id="airport-cap" class="p-3 d-flex flex-column">
-            <h5 class="mb-0" id="pilotname"></h5>
+            <div>
+                <h3 class="mb-0" id="pilot-name">&nbsp;</h3>
+            </div>
         </div>
-        <div id="airport-list-wrapper" class="py-2">
-            <table id="airport-list" class="w-100">
+        <div id="flight-list-wrapper" class="os-host-flexbox">
+            <table id="flight-list" class="w-100">
             </table>
         </div>
     </div>
 </div>
+
+<!-- Initialize the scrollbar -->
+<script>
+    $('#airport-list-wrapper').overlayScrollbars({ });
+</script>
