@@ -1282,6 +1282,7 @@ function toggleBasemap()
     	maxZoom: 19
     }).addTo(map);
     $('.map-button#light').removeClass('map-button-active');
+    setLayerOrder();
     lightbasemap = undefined;
   }
   else
@@ -1291,6 +1292,7 @@ function toggleBasemap()
     	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     }).addTo(map);
     $('.map-button#light').addClass('map-button-active');
+    setLayerOrder();
     basemap = undefined;
   }
 }
