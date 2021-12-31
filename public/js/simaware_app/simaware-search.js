@@ -100,7 +100,7 @@ function compileSearchResults(str)
     }
     else
     {
-        return '<tr><td class="px-3 text-muted">Begin typing to search.<br><small style="color: #aaa">Helpers:<br>"ap:" Airport search<br>"al:" Airline search<br>"flight:" Callsign search</span></td></tr>';
+        return '<tr><td class="px-3 text-muted" colspan="2">Begin typing to search.<br><br><small style="color: #aaa">Helpers:</small></td></tr><tr><td class="px-3 small text-muted">ap:</td><td class="px-3 small text-muted">Airport search</td></tr><tr><td class="px-3 small text-muted">al:</td><td class="px-3 small text-muted">Airline search</td></tr><tr><td class="px-3 small text-muted">flight:</td><td class="px-3 small text-muted">Callsign search</td></tr><tr><td class="px-3 small text-muted">user:</td><td class="px-3 small text-muted">Search user by CID</td></tr>';
     }
 }
 
