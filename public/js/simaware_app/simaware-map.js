@@ -1176,7 +1176,7 @@ async function zoomToFlight(uid, historical = 0)
 {
 
     // If the map isn't available, will need to redirect to a page that does.
-    if(!$('#map').length || (manual && !historical))
+    if(!$('#map').length || (!manual && !historical))
     {
         window.location.href = '/?uid='+uid;
     }
