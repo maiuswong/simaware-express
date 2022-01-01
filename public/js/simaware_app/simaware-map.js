@@ -1039,7 +1039,7 @@ function getLocalBlock(icao)
     eventslist = '';
     if(eventsByAirport[icao])
     {
-        eventslist = '<tr><td colspan="2">Upcoming Events</td></tr>';
+        eventslist = '<tr><td colspan="2" style="position: relative"><div style="position: absolute; top: 50%; left: 0; right: 0; height: 2; background-color: #aaa; z-index: 0"></div><small class="px-1 text-light" style="position: absolute; top: 0; left: 20; z-index: 1; background-color: #282828; color: #eee">Upcoming Events</small><small>&nbsp;</small></td></tr>';
         for(id in eventsByAirport[icao])
         {
             eventslist += '<tr><td class="pe-3 py-1"><table style="overflow: hidden; border: 1px solid '+blue+'; font-family: \'JetBrains Mono\', sans-serif; background-color: #0d628c"><tr><td style="background-color: #105070; text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 0.8rem">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; white-space: nowrap">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).format('HHmm') +'Z</small></td></tr>';
@@ -1050,7 +1050,7 @@ function getLocalBlock(icao)
     list = '<div class="card border border-secondary" style="background-color: #282828; min-width: 300px; overflow: hidden"><div class="p-2">'+list+'</table></div>';
     if(eventsByAirport[icao])
     {
-        list += '<div class="p-2" style="background-color: #333"><table>'+eventslist+'</table></div>';
+        list += '<div class="p-2 pt-0" style="background-color: #282828"><table style="width: 100%">'+eventslist+'</table></div>';
     }
     list += '</div>';
     return list;
@@ -1068,7 +1068,7 @@ function getNatBlock(nat)
     })
     var table = '<table style="width: 300px; color: #ccc" class="mb-2"><tr><td style="width: 60px; border: 1px solid #ccc; text-align: center; font-size: 0.9rem"><h1 style="font-weight: bold; font-family: \'JetBrains Mono\', sans-serif;" class="mb-0">'+nat.id+'</h1></td><td rowspan="2" class="px-2"><small style="font-weight: bold">North Atlantic Track</small><hr class="my-1"><span style="font-family: \'JetBrains Mono\', sans-serif; font-size: 0.9rem">'+route+'</span></td></tr><tr><td style="border: 1px solid #ccc; text-align: center"><small>TMI '+nat.tmi+'</small>';
     table += '</td></tr></table>';
-    return '<div class="card bg-dark" style="border: 1px solid #ccc"><div class="p-2" style="font-size: 1rem; font-weight: bold">'+table+'<small class="text-muted mb-0" style="font-weight: normal">Data courtesy of Gander Oceanic OCA</small></div></div>';
+    return '<div class="card" style="background-color: #282828; border: 1px solid #ccc"><div class="p-2" style="font-size: 1rem; font-weight: bold">'+table+'<small class="text-muted mb-0" style="font-weight: normal">Data courtesy of Gander Oceanic OCA</small></div></div>';
 }
 
 // Get the controller block
