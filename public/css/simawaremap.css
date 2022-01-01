@@ -224,7 +224,7 @@ a
 
 #events-table
 {
-  width: 600px;
+  min-width: 600px;
 }
 
 #events-sidebar
