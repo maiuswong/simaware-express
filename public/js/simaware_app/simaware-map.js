@@ -1182,11 +1182,7 @@ async function zoomToFlight(uid)
         window.location.href = '/?uid='+uid;
     }
 
-    // If the flight doesn't exist, try historical mode.
-    if(typeof(plane_array[uid]) === 'undefined')
-    {
-        historical = 1;
-    }
+    historical = (typeof(plane_array[uid]) === 'undefined') ? 1 : 0;
 
     if(typeof plane != 'undefined')
     {
