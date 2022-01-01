@@ -138,7 +138,7 @@ function replaceAarData(index)
     $('#events-city').html(getCity(eventdata.aarstore[index]));
     $.each(eventdata.aarstore[index].aar, function(idx, aar)
     {
-        $('#aar'+idx).html('<span style="color: '+getFlightColor(1.5 * aar[2])+'">'+aar[2]+'</span>');
+        $('#aar'+idx).html('<span style="color: '+getFlightColor(aar[2])+'">'+aar[2]+'</span>');
     });
 }
 
