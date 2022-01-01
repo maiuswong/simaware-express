@@ -144,7 +144,7 @@ function replaceAarData(index)
 
 async function loadUpcomingEvents()
 {
-    let response = await fetch(apiserver + 'api/events');
+    let response = await fetch(apiserver + 'api/upcomingevents');
     let events_raw = await response.json();
     let eventsByAirport = [];
 
