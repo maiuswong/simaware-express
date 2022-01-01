@@ -222,6 +222,11 @@ a
   position: absolute;
 }
 
+#events-table
+{
+  width: 600px;
+}
+
 #events-sidebar
 {
   font-family: 'Jost', sans-serif;
