@@ -114,54 +114,6 @@
             }
         })
 	}
-
-    function getColor(num)
-    {
-        if(num < 80)
-        {
-            return 'text-success';
-        }
-        else if(num < 100)
-        {
-            return 'text-warning';
-        }
-        else
-        {
-            return 'text-danger';
-        }
-    }
-
-    function getFlightColor(inp)
-    {
-      inp = (inp - 15) / 35;
-      if(inp > 1){ inp = 1; }
-      else if(inp < 0) { inp = 0; }
-      var g = 1 - 2 * inp;
-      var r = -g;
-      if(r < 0)
-      {
-        r = 0;
-      }
-      if(g < 0)
-      {
-        g = 0;
-      }
-      var y = 1 - 2 * Math.abs(inp - 0.5);
-
-      var t = r + g + y;
-      var r = r / t;
-      g = g / t;
-      y = y / t;
-
-      var rc = [255, 77, 77];
-      var gc = [51, 204, 51];
-      var yc = [255, 179, 26];
-      var rg = Math.floor(r * rc[0] + g * gc[0] + y * yc[0]);
-      var gg = Math.floor(r * rc[1] + g * gc[1] + y * yc[1]);
-      var yg = Math.floor(r * rc[2] + g * gc[2] + y * yc[2]);
-
-      return 'rgb('+rg+','+gg+','+yg+')';
-    }
 	
 	async function initialize()
 	{
