@@ -1232,6 +1232,8 @@ async function zoomToFlight(uid)
         $('#airport-sidebar').hide();
     }
 
+    $('#events-container').hide();
+
     // Handle departure/arrival airports
     [dep_airport, dep_point, dep_name, dep_city] = processAirport(plane.flight.dep);
     [arr_airport, arr_point, arr_name, arr_city] = processAirport(plane.flight.arr);
@@ -1447,6 +1449,7 @@ async function returnToView()
 
         // Return the sidebar if it exists on the page
         $('#sidebar').show();
+        $('#events-container').show();
 
         // Remove active flight tag
         active_flight = null;
