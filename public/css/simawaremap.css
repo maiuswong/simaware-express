@@ -388,6 +388,22 @@ a
   backdrop-filter: blur(3px);
 }
 
+.footer-infobar-item
+{
+  box-sizing: border-box;
+  border: 1px solid transparent;
+}
+
+.footer-infobar-item:hover
+{
+  background-color: rgba(0,0,0,0.15);
+  border: 1px solid #222;
+}
+.footer-infobar-item:active
+{
+  background-color: rgba(0,0,0,0.25);
+}
+
 #footer-group
 {
   width: 100%;

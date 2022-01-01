@@ -37,7 +37,7 @@ function initializeMap(manual = 0, landscape = 0)
         map.attributionControl.setPosition('topright');
 
         // Make the search box clickable
-        $.each(['controls', 'flights-sidebar', 'search-field', 'user-sidebar'], (idx, obj) => {
+        $.each(['controls', 'flights-sidebar', 'search-field', 'user-sidebar', 'footer-background'], (idx, obj) => {
             el = document.getElementById(obj);
             if(el)
             {
