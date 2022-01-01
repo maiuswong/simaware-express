@@ -99,7 +99,7 @@ function cycleEvents(index)
 function returnEventsTable(data)
 {
     ct = Object.keys(data.aar).length;
-    text = '<table class="m-2 text-white" style="width: 100%"><tr><td class="pb-2" colspan="'+(2 * ct + 1)+'"><div id="events-airport"><h6 class="mb-0"><b id="events-icao">&nbsp;</b> <span id="events-name"></span><br><small class="text-muted" id="events-city">&nbsp;</small></h6></div></td></tr><tr style="font-family: \'JetBrains Mono\'"><td><div style="width: 1px; height: 30px; background-color: #888; margin: 0 auto"></div></td>';
+    text = '<table class="m-2 text-white"><tr><td class="pb-2" colspan="'+(2 * ct + 1)+'"><div id="events-airport"><h6 class="mb-0"><b id="events-icao">&nbsp;</b> <span id="events-name"></span><br><small class="text-muted" id="events-city">&nbsp;</small></h6></div></td></tr><tr style="font-family: \'JetBrains Mono\'"><td><div style="width: 1px; height: 30px; background-color: #888; margin: 0 auto"></div></td>';
     for(element in data.aar)
     {
         text += '<td style="min-width: 30px; text-align: center"><h5 class="mb-0 aarelement" id="aar'+element+'"></h5></td><td><div style="width: 1px; height: 30px; background-color: #888; margin: 0 auto"></div></td>';
