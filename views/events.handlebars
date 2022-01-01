@@ -1,15 +1,21 @@
 <div class="container">
     <div class="row">
-        <div class="col-3">
-        </div>
-        <style scoped>
-        p
-        {
-            font-size: 0.7rem;
-        }
-        </style>
-        <div class="col-9" id="eventspane">
-            <div class="container"></div>
+        <div class="col-12">
+            <table class="mt-3 small table table-dark table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th>Name</th>
+                        <th class="text-center">Date</th>
+                        <th>Airports</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="eventspane">
+
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -27,7 +33,28 @@ async function initialize()
 
     html = '';
     $.each(data, (idx, event) => {
-        html += '<h6>'+event.name+'</h6>';
+        var id = '<td class="text-center">'+event.id+'</td>';
+        var name = '<td>'+event.name+'</td>';
+        var date = '<td class="text-center">'+moment(event.start).format('YYYY-MM-DD')+'</td>';
+        var apts = '<td>';
+        $.each(event.airports.split(','), (idx, str) => {
+            apts += '<span class="badge bg-secondary">'+str+'</span> ';
+        })
+        apts += '</td>';
+        if(event.approved == 0)
+        {
+            var va = '<td class="text-center text-muted" colspan="2">Pending</td>';
+        }
+        else if(event.processed == 0)
+        {
+            var va = '<td class="text-center text-warning" colspan="2">Processing</td>';
+        }
+        else
+        {
+            var va = '<td class="text-center"><a href="/event/'+event.id+'">View</a></td><td class="text-center"><a href="/analysis/'+event.id+'">Analysis</a></td>';
+        }
+
+        html += '<tr>' + id + name + date + apts + va + '</tr>';
     })
 
     console.log(data);

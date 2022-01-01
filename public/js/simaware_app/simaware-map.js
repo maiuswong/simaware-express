@@ -29,13 +29,13 @@ function initializeMap(manual = 0)
     // Create the map if it exists.  If not, then it's just a stats page that doesn't need it.
     if($('#map').length)
     {
-        map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([30, 0], 3).setActiveArea('active-area');
+        map = L.map('map', { zoomControl: false, preferCanvas: true, maxZoom: 10 }).setView([30, 0], 3).setActiveArea('active-area');
         map.doubleClickZoom.disable();
         basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
         map.attributionControl.setPosition('topright');
 
         // Make the search box clickable
-        $.each(['controls', 'flights-sidebar', 'search-field'], (idx, obj) => {
+        $.each(['controls', 'flights-sidebar', 'search-field', 'user-sidebar'], (idx, obj) => {
             el = document.getElementById(obj);
             if(el)
             {
@@ -1176,7 +1176,7 @@ async function zoomToFlight(uid, historical = 0)
 {
 
     // If the map isn't available, will need to redirect to a page that does.
-    if(!$('#map').length || (manual && !historical))
+    if(!$('#map').length)
     {
         window.location.href = '/?uid='+uid;
     }
@@ -1287,7 +1287,6 @@ async function zoomToFlight(uid, historical = 0)
 
     // Hide the sidebar
     $('#sidebar').hide();
-    $('#user-sidebar').hide();
 
     if(historical)
     {
@@ -1321,6 +1320,7 @@ function toggleBasemap()
     }).addTo(map);
     $('.map-button#light').removeClass('map-button-active');
     setLayerOrder();
+    setBasemapOrder();
     lightbasemap = undefined;
     $.cookie('lightmap', 'false');
   }
@@ -1332,6 +1332,7 @@ function toggleBasemap()
     }).addTo(map);
     $('.map-button#light').addClass('map-button-active');
     setLayerOrder();
+    setBasemapOrder();
     basemap = undefined;
     $.cookie('lightmap', 'true');
   }
@@ -1401,7 +1402,6 @@ async function returnToView()
 
         // Return the sidebar if it exists on the page
         $('#sidebar').show();
-        $('#user-sidebar').show();
 
         // Remove active flight tag
         active_flight = null;
@@ -1577,6 +1577,14 @@ async function toggleATC()
         map.removeLayer(atc_featuregroup);
         $('.map-button#atc').removeClass('map-button-active');
         $.cookie('atc', 'false');
+    }
+}
+
+function setBasemapOrder()
+{
+    if(map.hasLayer(nexrad))
+    {
+        nexrad.bringToFront();
     }
 }
 

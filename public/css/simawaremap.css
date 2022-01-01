@@ -119,6 +119,10 @@ a
   top: -50%;
   left: -50%;
 }
+.flight:hover
+{
+  background-color: rgba(0,0,0,0.2);
+}
 .flights-tableitem
 {
   font-size: 0.85rem;
@@ -489,7 +493,7 @@ a
   background-color: #6441a5;
 }
 
-#control-pullout
+.control-pullout
 {
   position: absolute;
   display: none;

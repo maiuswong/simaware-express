@@ -72,7 +72,7 @@ function compileSearchResults(str)
         
         if($.isNumeric(query))
         {
-            var users_compiled = '<tr><td class="px-3" style="position: relative"><div style="position: absolute; top: 50%; left: 8; right: 8; height: 2; background-color: #ddd; z-index: -1"></div><small class="px-1 bg-white" style="color: #bbb">Users</small></td></tr><tr><td class="px-3"><a href="/user/'+query+'" class="text-muted">User: '+query+'</a></td></tr>';
+            var users_compiled = '<tr><td class="px-3" style="position: relative"><div style="position: absolute; top: 50%; left: 8; right: 8; height: 2; background-color: #ddd; z-index: -1"></div><small class="px-1 bg-white" style="color: #bbb">Users</small></td></tr><tr class="search-item" onclick="zoomToUser('+query+')"><td class="px-3 py-2"><span class="text-muted">User / </span>'+query+'</td></tr>';
         }
         else
         {

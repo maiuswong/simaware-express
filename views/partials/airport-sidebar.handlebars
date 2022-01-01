@@ -1,9 +1,9 @@
 <div id="airport-sidebar" style="display: none">
-    <div id="control-pullout" onclick="$('#airport-sidebar').animate({right: '1rem'}, 200); $(this).css({display: 'none'})">
+    <div id="control-airport-pullout" class="control-pullout" onclick="$('#airport-sidebar').animate({right: '1rem'}, 200); $(this).css({display: 'none'})">
         <i class="fas fa-long-arrow-alt-left"></i>
     </div>
     <div id="controls-container">
-        <div class="control" style="margin-right: 0.5rem" onclick="$('#airport-sidebar').animate({right: -350}, 200); $('#control-pullout').css({display: 'flex'})"><i class="fas fa-long-arrow-alt-right"></i></div>
+        <div class="control" style="margin-right: 0.5rem" onclick="$('#airport-sidebar').animate({right: -350}, 200); $('#control-airport-pullout').css({display: 'flex'})"><i class="fas fa-long-arrow-alt-right"></i></div>
         <div class="control" onclick="returnFromAirport()"><i class="fas fa-times"></i></div>
     </div>
     <div id="sidebar-container">

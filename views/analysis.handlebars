@@ -1,0 +1,183 @@
+<style>
+	.rotate
+	{
+	transform: rotate(-90deg);
+	}
+	.hover:hover
+	{
+	background-color: #fff !important;
+	}
+</style>
+<div class="container">
+	<div class="row text-white">
+		<div class="col-lg-12 mt-3 p-0 d-flex" style="justify-content: flex-end">
+			<div class="btn-group rounded-0" role="group" id="analysis_airports">
+			</div>
+		</div>
+		<div class="col-lg-12 p-3 d-flex" style="border: 1px solid rgba(255,255,255,0.1); border-bottom: none; justify-content: space-between">
+			<div class="p-0 d-flex" style="flex-direction: column; justify-content: center">
+				<h4 id="analysis_eventname"></h4>
+				<h6 class="mb-0" id="analysis_eventdate"></h6>
+			</div>
+			<div class="p-3 d-flex" style="border: 1px solid rgba(255,255,255,0.1)">
+				<div class="p-0 pe-3" style="display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1)">
+					<h4 id="analysis_icao"></h4>
+					<h6 id="analysis_name"></h6>
+					<h6 class="mb-0" id="analysis_city"></h6>
+				</div>
+				<div class="p-0 ps-3" style="position: relative; min-width: 100px; align-items: center; display: flex; flex-direction: column; justify-content: center; ">
+					<small style="position: absolute; right: 0px; top: 0px; font-size: 0.8rem" class="text-muted" data-toggle="tooltip" data-placement="bottom" title="AAR: Airport arrival rate capacity"><i class="fas fa-question-circle"></i></small>
+					<h2 id="analysis_realworldaar"></h2>
+					<p class="mb-0" id="analysis_config"></p>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-12 pt-5 pb-4 text-muted" style="border: 1px solid rgba(255,255,255,0.1); border-bottom: none">
+			<h5>Traffic Efficiency Analysis</h5>
+			<p class="mb-0">The graph below shows all arrivals for a given event, and shows the amount of time spent within 80 miles of the arrival field.  This is a good indicator of whether a low aircraft arrival rate is due to low traffic or controller efficiency.  Note that some flights are marked as "Omitted"; either the flight is incomplete or too short to provide an accurate time spent within 80mi of the field.</p>
+		</div>
+		<div class="col-lg-12 py-3 mb-3" style="border-bottom: 1px solid rgba(255,255,255,0.1); border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
+			<table style="width: 100%; color: #bbb; font-family: 'Roboto Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid #888; border-top: 1px solid #888" id="analysis_toptable">
+			</table>
+			<div class="px-0" style="position: relative; border-bottom: 1px solid #888;" id="analysis_flights">
+
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(() => {
+	
+	    initialize();
+	
+	})
+	
+	function loadAnalysis(offset)
+	{
+	    var icao = analysis.$airports[offset];
+	    $('#analysis_icao').html(icao);
+	    $('#analysis_name').html(airports[icao].name)
+	    $('#analysis_city').html(airports[icao].city)
+	    $('#analysis_realworldaar').html(analysis.$rwaars[offset]);
+	    $('#analysis_config').html(analysis.$configs[offset]);
+	
+	    var flights = '';
+        var start = moment(analysis.event.start);
+        var end = moment(analysis.event.end);
+        var timeInMins = end.diff(start, 'minutes');
+        // Do the top table
+        var innerTable = '<tr>';
+        $.each(analysis.analysis[icao].$aar, (idx, period) => {
+            var aar = period[2] + '/' + analysis.$rwaars[offset] + ' <span class="'+getColor(Math.round((period[2] / analysis.$rwaars[offset]) * 100))+'">' + Math.round((period[2] / analysis.$rwaars[offset]) * 100) + '%</span>';
+            var startPeriod = moment(period[0]);
+            var endPeriod = moment(period[1]);
+            var width = endPeriod.diff(startPeriod, 'minutes') / timeInMins * 100;
+            var adr = analysis.analysis[icao].$adr[idx][2]; 
+            var intrac = analysis.analysis[icao].$intrac[idx];
+            innerTable += '<td style="border-left: 1px dashed #888; border-right: 1px dashed #888; width: '+width+'%">AAR: ' + aar + '<br>ADR: ' + adr + '<br>Within 80nm: ' + intrac + '</td>';
+        })
+        innerTable += '</tr>';
+        $('#analysis_toptable').html(innerTable);
+        // Do the bottom table
+        var table = '<table style="width: 100%; color: #bbb; font-family: \'Roboto Mono\', monospace; font-size: 0.8rem; border-top: 1px solid #888; height: 100%">';
+        for(let i = 0; i < Math.ceil(analysis.analysis[icao].$flightsArray.length) / 20; i++)
+        {
+            table += '<tr>';
+            $.each(analysis.analysis[icao].$aar, (idx, period) => {
+                var startPeriod = moment(period[0]);
+                var endPeriod = moment(period[1]);
+                var width = endPeriod.diff(startPeriod, 'minutes') / timeInMins * 100;
+                table += '<td style="border-left: 1px dashed #888; border-right: 1px dashed #888; vertical-align: top;  text-align: left width: '+width+'%"><div style="color: rgb(136, 136, 136); font-size: 0.9rem; font-family: \'Roboto Mono\', monospace; height: 100px; width: 100px;" class="rotate">'+startPeriod.format('HHmm')+' Z</div></td>';
+            })
+            table += '</tr>';
+        }
+        
+        table += '</table>';
+
+	    $.each(analysis.analysis[icao].$flightsArray, (idx, flight) => {
+            
+	        flights += '<div onclick="zoomToFlight(\''+flight.uid+'\')"style="width: 100%; height: 10px; font-size: 0.1rem; white-space: nowrap; text-align: right"><a href="#" class="px-1 badge text-white hover" data-toggle="tooltip" data-placement="right" title="'+flight.callsign+'" style="z-index: 2; background-color: '+getFlightColor(flight.size * timeInMins)+'; margin-right: '+(flight.offst*100)+'%; min-width: '+(flight.size*100)+'%; height: 6px; border-radius: 0px">&nbsp;</a></div>';
+	    })
+        flights = '<div class="mx-0" style="height: 100%; position: absolute; left: 0px; width: 100%; z-index: -1;">' + table + '</div>' + flights;
+	    $('#analysis_flights').html(flights);
+        
+        $('.analysis_chooser').each(function() {
+            if($(this).attr('id') == offset)
+            {
+                $(this).addClass('bg-secondary text-white');
+            }
+            else
+            {
+                $(this).removeClass('bg-secondary text-white');
+            }
+        })
+	}
+
+    function getColor(num)
+    {
+        if(num < 80)
+        {
+            return 'text-success';
+        }
+        else if(num < 100)
+        {
+            return 'text-warning';
+        }
+        else
+        {
+            return 'text-danger';
+        }
+    }
+
+    function getFlightColor(inp)
+    {
+      inp = (inp - 15) / 35;
+      if(inp > 1){ inp = 1; }
+      else if(inp < 0) { inp = 0; }
+      var g = 1 - 2 * inp;
+      var r = -g;
+      if(r < 0)
+      {
+        r = 0;
+      }
+      if(g < 0)
+      {
+        g = 0;
+      }
+      var y = 1 - 2 * Math.abs(inp - 0.5);
+
+      var t = r + g + y;
+      var r = r / t;
+      g = g / t;
+      y = y / t;
+
+      var rc = [255, 77, 77];
+      var gc = [51, 204, 51];
+      var yc = [255, 179, 26];
+      var rg = Math.floor(r * rc[0] + g * gc[0] + y * yc[0]);
+      var gg = Math.floor(r * rc[1] + g * gc[1] + y * yc[1]);
+      var yg = Math.floor(r * rc[2] + g * gc[2] + y * yc[2]);
+
+      return 'rgb('+rg+','+gg+','+yg+')';
+    }
+	
+	async function initialize()
+	{
+	    id = {{ id }};
+	    response = await fetch(apiserver + 'api/analysis/' + id);
+	    analysis = await response.json();
+
+        response = await fetch('/livedata/airports.json');
+        airports = await response.json();
+	
+	    // Airports tabs
+	    var airport_tabs = '';
+	    $.each(analysis.event.airports.split(','), (idx, icao) => {
+	        airport_tabs += '<a id="'+idx+'" onclick="loadAnalysis('+idx+')" class="analysis_chooser rounded-0 btn btn-outline-secondary" style="border: 1px solid #393939; border-bottom: none;">'+icao+'</a>';
+	    })
+	    $('#analysis_airports').html(airport_tabs);
+	    $('#analysis_eventname').html(analysis.event.name);
+	    $('#analysis_eventdate').html(analysis.event.start);
+	    loadAnalysis(0);
+	}
+</script>

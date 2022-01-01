@@ -39,9 +39,14 @@ app.get('/events/', (req, res) => {
     res.render('events');
 })
 
-/* Events Analysis Page */
+/* Events View Page */
 app.get('/event/:id', (req, res) => {
     res.render('event', {id: req.params.id});
+})
+
+/* Events Analysis Page */
+app.get('/analysis/:id', (req, res) => {
+    res.render('analysis', {id: req.params.id});
 })
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

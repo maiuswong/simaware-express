@@ -1,8 +1,15 @@
-<div id="user-sidebar">
+<div id="user-sidebar" style="display: none;">
+    <div id="control-user-pullout" class="control-pullout" onclick="$('#user-sidebar').animate({right: '1rem'}, 200); $(this).css({display: 'none'})">
+        <i class="fas fa-long-arrow-alt-left"></i>
+    </div>
+    <div id="controls-container">
+        <div class="control" style="margin-right: 0.5rem" onclick="$('#user-sidebar').animate({right: -350}, 200); $('#control-user-pullout').css({display: 'flex'})"><i class="fas fa-long-arrow-alt-right"></i></div>
+        <div class="control" onclick="$('#user-sidebar').hide(0)"><i class="fas fa-times"></i></div>
+    </div>
     <div id="sidebar-container">
         <div id="airport-cap" class="p-3 d-flex flex-column">
             <div>
-                <h4 class="mb-0" id="pilot-name">&nbsp;</h4>
+                <h5 class="mb-0 text-muted" id="pilot-name">&nbsp;</h5>
             </div>
         </div>
         <div id="flight-list-wrapper" class="os-host-flexbox">
