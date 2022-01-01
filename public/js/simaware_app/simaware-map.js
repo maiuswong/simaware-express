@@ -329,7 +329,6 @@ function updateLocation(obj)
     // If the flight is active, then update the flightpath
     if(typeof flightpath != 'undefined' && active_featuregroup.hasLayer(flightpath) && plane.flight.uid == obj.uid)
     {
-        console.log([obj.lat, obj.lon]);
         flightpath.addLatLng([obj.lat, obj.lon]);
     }
 
@@ -593,7 +592,6 @@ async function refreshATC()
             atc.fssname = fir.name;
             atc.fssicao = fir.prefix;
             $.each(fir.firs, (idx, firicao) => {
-                console.log(firicao);
                 let index = getFirIndexByCallsign(firicao);
                 if(typeof newdata[index] === 'undefined')
                 {
@@ -1175,7 +1173,7 @@ async function initializeNat()
 }
 
 // Zoom to a flight
-async function zoomToFlight(uid, historical = 0)
+async function zoomToFlight(uid)
 {
 
     // If the map isn't available, will need to redirect to a page that does.
@@ -1286,7 +1284,6 @@ async function zoomToFlight(uid, historical = 0)
     $('#flights-sidebar').show().addClass('d-flex');
 
     // Update the flights box
-    console.log(plane);
     updateFlightsBox(plane.flight);
 
     // Hide the sidebar

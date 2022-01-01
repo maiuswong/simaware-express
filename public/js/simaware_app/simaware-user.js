@@ -17,7 +17,7 @@ async function initializeUser(cid)
 
     html = '';
     $.each(flights, (idx, obj) => {
-        html += '<tr uid="'+obj.uid+'" onclick="zoomToFlight(\''+obj.uid+'\', 1)" class="flight"><td style="font-size: 1rem; text-align: center" class="py-2 px-1">';
+        html += '<tr uid="'+obj.uid+'" onclick="zoomToFlight(\''+obj.uid+'\')" class="flight"><td style="font-size: 1rem; text-align: center" class="py-2 px-1">';
         
         if(typeof(plane_array[obj.uid]) != 'undefined')
         {
