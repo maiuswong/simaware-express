@@ -52,7 +52,7 @@ async function loadEvent(id)
                 ll.push([obj[1], obj[0]]);
             })
             polyline = new L.Polyline(ll, {color:'#fff', opacity: 0.2, weight: 2});
-            polyline.on('click', function() {
+            polyline.on('mouseup', function() {
                 zoomToFlight(uid);
             });
             polyline.on('mouseover', function() {
@@ -151,8 +151,8 @@ async function loadUpcomingEvents()
     $.each(events_raw, (idx, event) => {
         if(moment.duration(moment(event.start).diff(moment())).asDays() >= 0 && moment.duration(moment(event.start).diff(moment())).asDays() < 7)
         {
-            let airports = event.airports.split(',');
-            $.each(airports, (idx2, airport) => {
+            let eventairports = event.airports.split(',');
+            $.each(eventairports, (idx2, airport) => {
                 if(typeof eventsByAirport[airport] != 'undefined')
                 {
                     eventsByAirport[airport].push(event);

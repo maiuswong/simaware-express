@@ -266,7 +266,7 @@ function applyFilter(data, filterName = null, filterCriteria = null)
 // Adds aircraft to the plane_array
 function addAircraft(obj)
 {
-    plane = createPlaneMarker(obj);
+    var plane = createPlaneMarker(obj);
 
     // Add it to the feature group
     plane_array[plane.uid] = plane;
@@ -329,6 +329,7 @@ function updateLocation(obj)
     // If the flight is active, then update the flightpath
     if(typeof flightpath != 'undefined' && active_featuregroup.hasLayer(flightpath) && plane.flight.uid == obj.uid)
     {
+        console.log([obj.lat, obj.lon]);
         flightpath.addLatLng([obj.lat, obj.lon]);
     }
 
@@ -1285,6 +1286,7 @@ async function zoomToFlight(uid, historical = 0)
     $('#flights-sidebar').show().addClass('d-flex');
 
     // Update the flights box
+    console.log(plane);
     updateFlightsBox(plane.flight);
 
     // Hide the sidebar

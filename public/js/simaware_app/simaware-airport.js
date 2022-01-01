@@ -141,6 +141,7 @@ function getAirportDetails(airports, icao)
     else
     {
         returnvalue = ['Unknown Airport', 'Unknown City'];
+        console.log('UNKNOWN: ' + icao);
     }
     return returnvalue;
 }
