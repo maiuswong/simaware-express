@@ -80,5 +80,9 @@ async function initialize()
     {
         zoomToAirport(searchParams.get('airport'));
     }
+    else if(searchParams.has('user'))
+    {
+        zoomToUser(searchParams.get('user'));
+    }
 }
 </script>

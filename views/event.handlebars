@@ -44,13 +44,16 @@ async function initialize()
     response = await fetch('/livedata/airports.json');
     airports = await response.json();
     flights = await refreshFlights(filterName, filterCriteria);
+    eventsByAirport = await loadUpcomingEvents();
+    airlines = await loadAirlines();
 
-    initializeNexrad();
-    initializeATC();
-    initializeAirports();
-    refreshATC();
-    initializeInfobar();
-    updateSigmet();
+    await initializeNexrad();
+    await initializeNat();
+    await initializeATC();
+    await initializeAirports();
+    await refreshATC();
+    await initializeInfobar();
+    await updateSigmet();
     loadEvent(eventid);
 }
 </script>

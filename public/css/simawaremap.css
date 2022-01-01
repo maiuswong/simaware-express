@@ -123,7 +123,7 @@ a
 .firlabel
 {
   position: absolute;
-  top: -50%;
+  top: -8px;
   left: -50%;
 }
 .flight:hover

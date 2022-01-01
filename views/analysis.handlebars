@@ -95,8 +95,10 @@
         table += '</table>';
 
 	    $.each(analysis.analysis[icao].$flightsArray, (idx, flight) => {
-            
-	        flights += '<div onclick="zoomToFlight(\''+flight.uid+'\')"style="width: 100%; height: 10px; font-size: 0.1rem; white-space: nowrap; text-align: right"><a href="#" class="px-1 badge text-white hover" data-toggle="tooltip" data-placement="right" title="'+flight.callsign+'" style="z-index: 2; background-color: '+getFlightColor(flight.size * timeInMins)+'; margin-right: '+(flight.offst*100)+'%; min-width: '+(flight.size*100)+'%; height: 6px; border-radius: 0px">&nbsp;</a></div>';
+            if(flight.legit)
+            {
+                flights += '<div onclick="zoomToFlight(\''+flight.uid+'\')"style="width: 100%; height: 10px; font-size: 0.1rem; white-space: nowrap; text-align: right"><a href="#" class="px-1 badge text-white hover" data-toggle="tooltip" data-placement="right" title="'+flight.callsign+'" style="z-index: 2; background-color: '+getFlightColor(flight.size * timeInMins)+'; margin-right: '+(flight.offst*100)+'%; min-width: '+(flight.size*100)+'%; height: 6px; border-radius: 0px">&nbsp;</a></div>';
+            }
 	    })
         flights = '<div class="mx-0" style="height: 100%; position: absolute; left: 0px; width: 100%; z-index: -1;">' + table + '</div>' + flights;
 	    $('#analysis_flights').html(flights);
