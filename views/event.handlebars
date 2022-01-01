@@ -1,12 +1,4 @@
 <div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
-    <div id="controls" class="d-flex" style="flex-direction: row; position: absolute; left: calc(50% - 150px); bottom: 70; evground: #333; z-index: 1199; font-size: 1rem; color: #888; overflow: hidden; border-radius: 1.5rem">
-        <div class="map-button py-1" style="" id="lights"><i class="far fa-lightbulb"></i></div>
-        <div class="map-button py-1" id="tags"><i class="fas fa-tags"></i></div>
-        <div class="map-button py-1" onclick="toggleNexrad()" id="wx"><i class="fas fa-sun"></i></div>
-        <div class="map-button py-1" onclick="toggleATC()" id="atc">ATC</div>
-        <div class="map-button py-1" onclick="toggleSigmet()" id="sigmet">SIGMET</div>
-        <div class="map-button py-1" id="nat">NAT</div>
-    </div>
 
     <!-- Events Sidebar -->
     {{> events-sidebar}}
@@ -24,6 +16,7 @@ $(document).ready(function() {
     airports = [];
     flights = [];
     manual = true;
+    landscape = true;
 
     eventid = {{ id }};
 
@@ -46,7 +39,7 @@ $(document).ready(function() {
 
 async function initialize()
 {
-    initializeMap(manual);
+    initializeMap(manual, landscape);
 
     response = await fetch('/livedata/airports.json');
     airports = await response.json();

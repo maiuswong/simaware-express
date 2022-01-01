@@ -20,10 +20,13 @@ async function loadEvent(id)
     {
         cycleEvents(0);
     }
-
+    bounds = [];
     $.each(eventdata.aarstore, (idx, airport) => {
         var lat = Number(airport.ap.lat);
         var lon = Number(airport.ap.lon);
+
+        bounds.push([lat, lon]);
+
         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getEventTooltip(airport), iconSize: 'auto'});
         oloc = new L.marker([lat, lon],
         {
@@ -31,6 +34,7 @@ async function loadEvent(id)
         });
         map.addLayer(oloc);
     })
+    map.fitBounds(bounds, [50, 50]);
     
     response = await fetch(apiserver + 'api/eventpaths/' + id);
     eventpaths = await response.json();
@@ -49,7 +53,7 @@ async function loadEvent(id)
             })
             polyline = new L.Polyline(ll, {color:'#fff', opacity: 0.2, weight: 2});
             polyline.on('click', function() {
-                window.location.href = '/flight/'+uid;
+                zoomToFlight(uid);
             });
             polyline.on('mouseover', function() {
                 this.setStyle({'weight': 3, 'color': '#ffcc33', 'opacity': 1});
