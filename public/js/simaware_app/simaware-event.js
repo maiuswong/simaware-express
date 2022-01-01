@@ -149,7 +149,7 @@ async function loadUpcomingEvents()
     let eventsByAirport = [];
 
     $.each(events_raw, (idx, event) => {
-        if(moment.duration(moment(event.start).diff(moment())).asDays() >= 0 && moment.duration(moment(event.start).diff(moment())).asDays() < 7)
+        if(moment.duration(moment(event.start).diff(moment())).asDays() >= 0 && moment.duration(moment(event.start).diff(moment())).asDays() < 14)
         {
             let eventairports = event.airports.split(',');
             $.each(eventairports, (idx2, airport) => {

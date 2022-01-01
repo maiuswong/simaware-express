@@ -679,21 +679,21 @@ async function refreshATC()
         oloc.bindTooltip(getLocalBlock(local.loc.icao), {opacity: 1});
         locals_featuregroup.addLayer(oloc);
     })
-    // for(icao in eventsByAirport) 
-    // {
-    //     if(typeof locals[icao] == 'undefined' && airports[icao])
-    //     {
-    //         var lat = airports[icao].lat;
-    //         var lon = airports[icao].lon;
-    //         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(icao), iconSize: 'auto'});
-    //         oloc = new L.marker([lat, lon],
-    //         {
-    //             icon: di,
-    //         })
-    //         oloc.bindTooltip(getLocalBlock(icao), {opacity: 1});
-    //         locals_featuregroup.addLayer(oloc);
-    //     }
-    // }
+    for(icao in eventsByAirport) 
+    {
+        if(typeof locals[icao] == 'undefined' && airports[icao])
+        {
+            var lat = airports[icao].lat;
+            var lon = airports[icao].lon;
+            var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(icao), iconSize: 'auto'});
+            oloc = new L.marker([lat, lon],
+            {
+                icon: di,
+            })
+            oloc.bindTooltip(getLocalBlock(icao), {opacity: 1});
+            locals_featuregroup.addLayer(oloc);
+        }
+    }
     atc_featuregroup.addLayer(locals_featuregroup);
     
 }
