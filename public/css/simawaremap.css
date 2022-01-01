@@ -225,6 +225,8 @@ a
 #events-table
 {
   min-width: 600px;
+  display: flex;
+  flex-direction: column;
 }
 
 #events-sidebar
