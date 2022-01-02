@@ -105,12 +105,12 @@ function updateAirportFlights(airports, flights, icao)
     arrscount = 0;
     $.each(deps, (idx, obj) => {
         [airportname, airportcity] = getAirportDetails(airports, obj.arr);
-        html = html + '<tr class="airport-list-item" onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">to</small></td><td>' + airportcity + '</td></tr>';
+        html = html + '<tr class="airport-list-item" onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">to</small></td><td><span style="font-family: \'Roboto Mono\'">'+ obj.arr + '</span></td><td>' + airportcity + '</td></tr>';
         depscount++;
     });
     $.each(arrs, (idx, obj) => {
         [airportname, airportcity] = getAirportDetails(airports, obj.dep);
-        html = html + '<tr class="airport-list-item" onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">from</small></td><td>' + airportcity + '</td></tr>';
+        html = html + '<tr class="airport-list-item" onclick="zoomToFlight(\''+obj.uid+'\')"><td class="px-2 py-1">' + obj.callsign + '</td><td class="text-end pe-1"><small class="text-muted">from</small></td><td><span style="font-family: \'Roboto Mono\'">'+ obj.dep + '</span></td><td>' + airportcity + '</td></tr>';
         arrscount++;
     });
     $('#airport-list').html(html);
