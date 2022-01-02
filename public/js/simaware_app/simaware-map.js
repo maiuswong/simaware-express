@@ -81,6 +81,19 @@ function initializeIcons()
     })
 }
 
+function returnSidebarToView(id)
+{
+    if($('#map').width() > 576)
+    {
+        var right = '1rem';
+    }
+    else
+    {
+        var right = (($('#map').width() - 350) / 2) + 'px';
+    }
+    el = $('#'+id).animate({right: right}, 200);
+}
+
 function getBadge(rating)
 {
     var txt = '';
