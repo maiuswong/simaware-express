@@ -30,6 +30,10 @@ function zoomToAirport(icao)
         window.location.href = '/?airport=' + icao;
     }
 
+    // Get back from flight view
+    returnToView();
+    $('#user-sidebar').hide(0);
+
     // Hide the user sidebar if it's showing
     $('#user-sidebar').hide(0);
 
@@ -59,9 +63,15 @@ function zoomToAirport(icao)
 
 function returnFromAirport()
 {
-    map.removeLayer(ap_featuregroup);
-    delete ap_featuregroup;
-    map.addLayer(plane_featuregroup);
+    if(typeof(ap_featuregroup) != 'undefined')
+    {
+        map.removeLayer(ap_featuregroup);
+        delete ap_featuregroup;
+    }
+    if(!map.hasLayer(plane_featuregroup))
+    {
+        map.addLayer(plane_featuregroup);
+    }
     $('#airport-sidebar').hide();
 }
 

@@ -1,0 +1,48 @@
+<div class="container">
+    <div class="mt-5 d-flex" style="justify-content: space-between; align-items: center">
+        <div>
+            <h4>Donations make SimAware happen.</h4>
+            <p>SimAware is donation-driven and thriving thanks to the generous support of our patrons.  Thank you!</p>
+        </div>
+        <a class="btn text-white" style="background-color: #FF424D" href="https://patreon.com/user?u=33982686&fan_landing=true"><i class="fab fa-patreon"></i> Become A Patron</a>
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-6">
+            <h5><span style="border-radius: 1rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporters</span></h5>
+            <hr>
+            <table id="supporters" style="width: 100%">
+            </table>
+        </div>
+        <div class="col-lg-6">
+            <h5><span style="border-radius: 1rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamers</span></h5>
+            <hr>
+            <table id="streamers" style="width: 100%">
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(() => {
+    initialize();
+})
+async function initialize()
+{
+    response = await fetch(apiserver + 'api/patrons');
+    patrons = await response.json();
+
+    supporter = '';
+    streamer = '';
+
+    $.each(patrons[1], (idx, obj) => {
+        supporter += '<tr><td class="px-3">'+obj.name + '</td><td class="ps-3" style="text-align: right"><span class="text-muted">since '+moment(obj.start).format('MMM YYYY')+'</span></td></tr>';
+    })
+
+    $.each(patrons[2], (idx, obj) => {
+        streamer += '<tr><td class="pe-3">'+obj.name + '</td><td class="px-3"><i class="fab fa-twitch"></i> '+obj.twitch+'</td><td class="ps-3" style="text-align: right"><span class="text-muted">since '+moment(obj.start).format('MMM YYYY')+'</span></td></tr>';
+    })
+
+    $('#supporters').html(supporter);
+    $('#streamers').html(streamer);
+
+}
+</script>

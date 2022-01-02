@@ -110,7 +110,7 @@ function getBadge(rating)
     }
     if(txt.length)
     {
-        return '<span class="badge bg-warning" style="padding-top: 0.1rem; padding-bottom: 0.1rem; border-radius: 1rem">'+txt+'</span>';
+        return '<span style="font-size: 0.8rem; border-radius: 1rem; font-weight: normal; color: #fff" class="px-2 badge badge-sm bg-warning">'+txt+'</span>';
     }
     else
     {
@@ -154,6 +154,12 @@ async function initializeNexrad()
               tileSize: 256,
               opacity: 0.4,
           });
+}
+
+async function initializePatrons()
+{
+    response = await fetch(apiserver + 'api/patronsbycid');
+    patrons = await response.json();
 }
 
 // Initialize the FIR Boundaries map
@@ -1543,8 +1549,26 @@ function updateFlightsBox(flight)
     $('#flights-equipment').html(flight.aircraft);
 
     // Name
-    $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating));
+    $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+' '+ getPatron(flight.cid));
 
+}
+
+function getPatron(cid)
+{
+    if($.inArray(cid.toString(), Object.keys(patrons)) >= 0 && (patrons[cid] == 1 || patrons[cid] == 2))
+    {
+        switch(patrons[cid])
+        {
+            case 1:
+                return '<span style="font-size: 0.8rem; border-radius: 1rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
+            case 2:
+              return '<span style="font-size: 0.8rem; border-radius: 1rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
+        }
+    }
+    else
+    {
+        return '';
+    }
 }
 
 function processAirportForAntimeridian(flight, dep, arr, dep_point, arr_point)
