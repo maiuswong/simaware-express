@@ -38,6 +38,8 @@ async function initialize()
     flights = await refreshFlights(filterName, filterCriteria);
     eventsByAirport = await loadUpcomingEvents();
 
+    map.setMaxZoom(8);
+
     initializeAirport('{{ icao }}');
     initializeNexrad();
     initializeATC();
