@@ -48,14 +48,19 @@ function zoomToAirport(icao)
     initializeAirport(icao);
     updateAirportFlights(airports, flights, icao);
 
+    var bounds = [];
+
     map.removeLayer(plane_featuregroup);
     $.each(flights, (idx, flight) => {
         if(flight.dep == icao || flight.arr == icao)
         {
             ap_featuregroup.addLayer(plane_array[idx]);
+            bounds.push([flight.lat, flight.lon]);
         }
     })
+    console.log(bounds);
     map.addLayer(ap_featuregroup);
+    map.fitBounds(bounds);
 
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();
