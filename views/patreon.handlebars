@@ -38,7 +38,7 @@ async function initialize()
     })
 
     $.each(patrons[2], (idx, obj) => {
-        streamer += '<tr><td class="pe-3">'+obj.name + '</td><td class="px-3"><i class="fab fa-twitch"></i> '+obj.twitch+'</td><td class="ps-3" style="text-align: right"><span class="text-muted">since '+moment(obj.start).format('MMM YYYY')+'</span></td></tr>';
+        streamer += '<tr><td class="pe-3">'+obj.name + '</td><td class="px-3"><i class="fab fa-twitch"></i> '+obj.twitch+'</td><td class="ps-3" style="text-align: right"><span class="text-muted">Patron since '+moment(obj.start).format('MMMM YYYY')+'</span></td></tr>';
     })
 
     $('#supporters').html(supporter);
