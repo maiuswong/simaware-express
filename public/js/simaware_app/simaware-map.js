@@ -1052,10 +1052,10 @@ function getLocalBlock(icao)
     eventslist = '';
     if(eventsByAirport[icao])
     {
-        eventslist = '<tr><td colspan="2" style="position: relative"><div style="position: absolute; top: 50%; left: 0; right: 0; height: 2; background-color: #aaa; z-index: 0"></div><small class="px-1 text-light" style="position: absolute; top: 0; left: 20; z-index: 1; background-color: #282828; color: #eee">Upcoming Events</small><small>&nbsp;</small></td></tr>';
+        eventslist = '<tr><td colspan="2" style="position: relative"><div style="position: absolute; top: 50%; left: 0; right: 0; height: 1; background-color: #999; z-index: 0"></div><small class="px-1" style="position: absolute; top: 0; left: 20; z-index: 1; background-color: #282828; color: #999">Upcoming Events</small><small>&nbsp;</small></td></tr>';
         for(id in eventsByAirport[icao])
         {
-            eventslist += '<tr><td class="pe-3 py-1"><table style="overflow: hidden; border: 1px solid '+blue+'; font-family: \'JetBrains Mono\', sans-serif; background-color: #0d628c"><tr><td style="background-color: #105070; text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 0.8rem">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; white-space: nowrap">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).format('HHmm') +'Z</small></td></tr>';
+            eventslist += '<tr><td class="pe-3 pt-1" width="15%"><table class="rounded-2" style="overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; background-color: #eee"><tr><td style="color: rgb(169,56,72); text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 1rem; color: #222">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; white-space: nowrap">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).format('HHmm') +'Z</small></td></tr>';
         }
     }
     
