@@ -11,7 +11,6 @@ function initializeAirport(icao)
             $('#airport-icao').html(airport.icao);
             $('#airport-city').html(airport.city);
             $('#airport-name').html(airport.name);
-            getLocalATC();
         }
 
         el = document.getElementById('sidebar-container');
@@ -78,33 +77,6 @@ function returnFromAirport()
         map.addLayer(plane_featuregroup);
     }
     $('#airport-sidebar').hide();
-}
-
-async function getLocalATC()
-{
-
-    if(typeof ap_oloc != 'undefined' && map.hasLayer(ap_oloc))
-    {
-        map.removeLayer(ap_oloc); delete ap_oloc;
-    }
-
-    response = response = await fetch(apiserver + 'api/livedata/locals');
-    data = await response.json();
-
-    if(typeof data[filterCriteria] != 'undefined')
-    {
-        ap_local = data[filterCriteria];
-        var lat = ap_local.loc.lat
-        var lon = ap_local.loc.lon
-        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(ap_local), iconSize: 'auto'});
-        ap_oloc = new L.marker([lat, lon],
-        {
-            icon: di,
-        })
-        ap_oloc.bindTooltip(getLocalBlock(ap_local), {opacity: 1});
-        map.addLayer(ap_oloc);
-    }
-    
 }
 
     
