@@ -10,37 +10,41 @@
 </style>
 <div class="container">
 	<div class="row text-white">
-		<div class="col-lg-12 mt-3 p-0 d-flex" style="justify-content: flex-end">
-			<div class="btn-group rounded-0" role="group" id="analysis_airports">
-			</div>
-		</div>
-		<div class="col-lg-12 p-3 d-flex" style="border: 1px solid rgba(255,255,255,0.1); border-bottom: none; justify-content: space-between">
-			<div class="p-0 d-flex" style="flex-direction: column; justify-content: center">
-				<h4 id="analysis_eventname"></h4>
-				<h6 class="mb-0" id="analysis_eventdate"></h6>
-			</div>
-			<div class="p-3 d-flex" style="border: 1px solid rgba(255,255,255,0.1)">
-				<div class="p-0 pe-3" style="display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1)">
-					<h4 id="analysis_icao"></h4>
-					<h6 id="analysis_name"></h6>
-					<h6 class="mb-0" id="analysis_city"></h6>
+		<div class="table-responsive">
+			<div style="min-width: 1000px">
+				<div class="col-lg-12 mt-3 p-0 d-flex" style="justify-content: flex-start">
+					<div class="btn-group rounded-0" role="group" id="analysis_airports">
+					</div>
 				</div>
-				<div class="p-0 ps-3" style="position: relative; min-width: 100px; align-items: center; display: flex; flex-direction: column; justify-content: center; ">
-					<small style="position: absolute; right: 0px; top: 0px; font-size: 0.8rem" class="text-muted" data-toggle="tooltip" data-placement="bottom" title="AAR: Airport arrival rate capacity"><i class="fas fa-question-circle"></i></small>
-					<h2 id="analysis_realworldaar"></h2>
-					<p class="mb-0" id="analysis_config"></p>
+				<div class="col-lg-12 p-3 d-flex" style="border: 1px solid rgba(255,255,255,0.1); border-bottom: none; justify-content: space-between">
+					<div class="p-0 d-flex" style="flex-direction: column; justify-content: center">
+						<h4 id="analysis_eventname"></h4>
+						<h6 class="mb-0" id="analysis_eventdate"></h6>
+					</div>
+					<div class="p-3 d-flex" style="border: 1px solid rgba(255,255,255,0.1)">
+						<div class="p-0 pe-3" style="display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1)">
+							<h4 id="analysis_icao"></h4>
+							<h6 id="analysis_name"></h6>
+							<h6 class="mb-0" id="analysis_city"></h6>
+						</div>
+						<div class="p-0 ps-3" style="position: relative; min-width: 100px; align-items: center; display: flex; flex-direction: column; justify-content: center; ">
+							<small style="position: absolute; right: 0px; top: 0px; font-size: 0.8rem" class="text-muted" data-toggle="tooltip" data-placement="bottom" title="AAR: Airport arrival rate capacity"><i class="fas fa-question-circle"></i></small>
+							<h2 id="analysis_realworldaar"></h2>
+							<p class="mb-0" id="analysis_config"></p>
+						</div>
+					</div>
 				</div>
-			</div>
-		</div>
-		<div class="col-lg-12 pt-5 pb-4 text-muted" style="border: 1px solid rgba(255,255,255,0.1); border-bottom: none">
-			<h5>Traffic Efficiency Analysis</h5>
-			<p class="mb-0">The graph below shows all arrivals for a given event, and shows the amount of time spent within 80 miles of the arrival field.  This is a good indicator of whether a low aircraft arrival rate is due to low traffic or controller efficiency.  Note that some flights are marked as "Omitted"; either the flight is incomplete or too short to provide an accurate time spent within 80mi of the field.</p>
-		</div>
-		<div class="col-lg-12 py-3 mb-3" style="border-bottom: 1px solid rgba(255,255,255,0.1); border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
-			<table style="width: 100%; color: #bbb; font-family: 'Roboto Mono', monospace; font-size: 0.8rem; border-top: 1px solid #888" id="analysis_toptable">
-			</table>
-			<div class="px-0" style="position: relative; border-bottom: 1px solid #888;" id="analysis_flights">
+				<div class="col-lg-12 px-3 pt-5 pb-4 text-muted" style="border: 1px solid rgba(255,255,255,0.1); border-bottom: none">
+					<h5>Traffic Efficiency Analysis</h5>
+					<p class="mb-0">The graph below shows all arrivals for a given event, and shows the amount of time spent within 80 miles of the arrival field.  This is a good indicator of whether a low aircraft arrival rate is due to low traffic or controller efficiency.  Note that some flights are marked as "Omitted"; either the flight is incomplete or too short to provide an accurate time spent within 80mi of the field.</p>
+				</div>
+				<div class="col-lg-12 p-3 mb-3" style="border-bottom: 1px solid rgba(255,255,255,0.1); border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
+					<table style="width: 100%; color: #bbb; font-family: 'Roboto Mono', monospace; font-size: 0.8rem; border-top: 1px solid #888" id="analysis_toptable">
+					</table>
+					<div class="px-0" style="position: relative; border-bottom: 1px solid #888;" id="analysis_flights">
 
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -91,7 +95,7 @@
                 var width = endPeriod.diff(startPeriod, 'minutes') / timeInMins * 100;
                 borderleft = (idx == 0) ? "solid" : "dashed";
                 borderright = (idx == analysis.analysis[icao].$aar.length - 1) ? "solid" : "dashed";
-                table += '<td style="border-left: 1px '+borderleft+' #888; border-right: 1px '+borderright+' #888; vertical-align: top;  text-align: left width: '+width+'%"><div style="color: rgb(136, 136, 136); font-size: 0.9rem; font-family: \'Roboto Mono\', monospace; height: 100px; width: 100px;" class="rotate">'+startPeriod.format('HHmm')+' Z</div></td>';
+                table += '<td style="border-left: 1px '+borderleft+' #888; border-right: 1px '+borderright+' #888; vertical-align: top;  text-align: left width: '+width+'%"><div style="color: rgb(136, 136, 136); font-size: 0.9rem; font-family: \'Roboto Mono\', monospace; height: 60px; width: 60px;" class="rotate">'+startPeriod.format('HHmm')+' Z</div></td>';
             })
             table += '</tr>';
         }
@@ -108,7 +112,7 @@
                 flights += '<div onclick="zoomToFlight(\''+flight.uid+'\')"style="width: 100%; height: 10px; font-size: 0.1rem; white-space: nowrap; text-align: right"><a href="#" class="px-1 badge text-white hover" data-toggle="tooltip" data-placement="right" title="'+flight.callsign+' | Omitted" style="z-index: 2; background-color: #aaa; margin-right: '+(flight.offst*100)+'%; min-width: '+(flight.size*100)+'%; height: 6px; border-radius: 0px">&nbsp;</a></div>';
             }
 	    })
-        flights = '<div class="mx-0" style="height: 100%; position: absolute; left: 0px; width: 100%; z-index: -1;">' + table + '</div>' + flights;
+        flights = '<div class="mx-0" style="height: 100%; position: absolute; left: 0px; width: 100%; z-index: -1; overflow: hidden">' + table + '</div>' + flights;
 	    $('#analysis_flights').html(flights);
         
         $('.analysis_chooser').each(function() {

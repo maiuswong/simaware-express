@@ -51,7 +51,7 @@ async function loadEvent(id)
             $.each(latlon, (idx, obj) => {
                 ll.push([obj[1], obj[0]]);
             })
-            polyline = new L.Polyline(ll, {color:'#fff', opacity: 0.2, weight: 2});
+            polyline = new L.Wrapped.Polyline(ll, {color:'#fff', opacity: 0.2, weight: 2});
             polyline.on('mouseup', function() {
                 zoomToFlight(uid);
             });
