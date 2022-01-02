@@ -47,6 +47,8 @@ async function initialize()
     eventsByAirport = await loadUpcomingEvents();
     airlines = await loadAirlines();
 
+    map.setMaxZoom(8);
+
     await initializeNexrad();
     await initializeNat();
     await initializeATC();
