@@ -46,6 +46,7 @@ async function initialize()
     flights = await refreshFlights(filterName, filterCriteria);
     eventsByAirport = await loadUpcomingEvents();
     airlines = await loadAirlines();
+    await initializePatrons();
 
     map.setMaxZoom(8);
 
