@@ -1252,7 +1252,7 @@ async function zoomToFlight(uid)
     }
 
     // If currently in the users view, hide appropriately
-    if(user_sidebar)
+    if(typeof(user_sidebar) != 'undefined' && user_sidebar)
     {
         $('#user-sidebar').hide();
     }
@@ -1462,7 +1462,7 @@ async function returnToView()
             {
                 map.addLayer(plane_featuregroup); 
             }
-            if(user_sidebar)
+            if(typeof(user_sidebar) != 'undefined' && user_sidebar)
             {
                 $('#user-sidebar').show();
             }
