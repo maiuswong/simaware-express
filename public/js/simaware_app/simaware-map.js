@@ -1500,6 +1500,8 @@ function handleCookies()
     {
         toggleNexrad();
     }
+    $('.map-button').removeClass('d-none');
+    $('.loading').addClass('d-none');
 }
 
 // Update the flights box

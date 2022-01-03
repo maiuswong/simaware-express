@@ -27,6 +27,23 @@ body
   margin-bottom: 6px;
   border-radius: 1rem;
 }
+
+.loading
+{
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.8rem;
+  width: 255px;
+  margin-left: 6px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  border-radius: 1rem;
+}
+
 .mono
 {
   font-family: 'JetBrains Mono', sans-serif;

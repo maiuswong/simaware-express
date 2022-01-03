@@ -95,7 +95,7 @@ function infobar_streamers_scroll(idx, type)
         }
         else if(type == 'controllers')
         {
-            $('#infobar-content').html('<div class="d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</td><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div>');
+            $('#infobar-content').html('<div class="px-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</td><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div>');
 
             // Set colors
             $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {
