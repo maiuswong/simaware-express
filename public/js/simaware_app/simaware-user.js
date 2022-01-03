@@ -21,7 +21,7 @@ async function initializeUser(cid)
         
         if(typeof(plane_array[obj.uid]) != 'undefined')
         {
-            html += '<span class="bg-danger text-white px-2">Live</span>';
+            html += '<span class="live text-white px-2">Live</span>';
         }
         else
         {

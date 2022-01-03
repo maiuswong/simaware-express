@@ -377,6 +377,24 @@ a
   50% { opacity: 0; }
 }
 
+@keyframes glowing-red {
+  0% {
+    background-color: #dc3545;
+  }
+  50% {
+    background-color: #ad2835;
+  }
+  100% {
+    background-color: #dc3545;
+  }
+}
+
+.live
+{
+  animation: glowing-red 10 00ms infinite;
+}
+
+
 #fullscreen-container
 {
   min-height: 100%;
