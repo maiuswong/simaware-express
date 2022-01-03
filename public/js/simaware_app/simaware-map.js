@@ -182,8 +182,8 @@ function initializeATC()
             var layer = firmap.getLayer(index);
             
             // Get the layer properties
-            var is_fss = obj.feature.properties.IsOceanic;
-            var icao = obj.feature.properties.ICAO;
+            var is_fss = obj.feature.properties.oceanic;
+            var icao = obj.feature.properties.id;
             
             // Add to the array
             if(typeof firs_array[icao + is_fss] === 'undefined')
