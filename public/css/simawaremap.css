@@ -391,7 +391,7 @@ a
 
 .live
 {
-  animation: glowing-red 10 00ms infinite;
+  animation: glowing-red 1000ms infinite;
 }
 
 
