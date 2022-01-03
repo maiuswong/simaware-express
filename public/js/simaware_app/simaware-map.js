@@ -18,6 +18,7 @@ function initializeMap(manual = 0, landscape = 0)
     firs_array  = [];
     firmarkers_array = [];
     sigmets_array = [];
+    sigmarkers_array = [];
     active_flight = null; 
 
     // Initialize the icons that will be used
@@ -726,21 +727,27 @@ async function updateSigmet()
     for(let sigmet in sigmets_array)
     {
         sigmets_featuregroup.removeLayer(sigmets_array[sigmet]);
+        sigmets_featuregroup.removeLayer(sigmarkers_array[sigmet]);
     }
 
     $.each(data.AIRSIGMET, (idx, sigmet) => {
         if(sigmet.hazard['@attributes'].type == 'CONVECTIVE')
         {
             let latlon = [];
+            let latlon_polylabel = [];
             let code = getSigmetCode(sigmet);
             $.each(sigmet.area.point, (idx, point) => {
-                latlon.push([point.latitude, point.longitude]);
+                latlon.push([Number(point.latitude), Number(point.longitude)]);
+                latlon_polylabel.push([Number(point.longitude), Number(point.latitude)]);
             })
             if(code != '')
             {
-                sigmets_array[code] = new L.Polygon(latlon, {color: '#ffcc33', weight: 1.5});
-                sigmets_array[code].bindTooltip(getSigmetBlock(sigmet), {opacity: 0.9})
+                sigmets_array[code] = new L.Polygon(latlon, {color: '#ffcc33', weight: 1.5 });
+                let di = new L.divIcon({className: 'simaware-ap-tooltip', html: '<div style="position: relative"><div style="position: absolute; top: -8px; right: -25%; font-family: \'Roboto Mono\'"><span onmouseenter="highlightSigmet(\''+code+'\')" onmouseleave="dehighlightSigmet(\''+code+'\')" style="color: #fc3">'+code+'</span></div></div>', iconSize: 'auto'});
                 sigmets_featuregroup.addLayer(sigmets_array[code]);
+                sigmarkers_array[code] = new L.marker(polylabel([latlon_polylabel], 1.0), { icon: di });
+                sigmarkers_array[code].bindTooltip(getSigmetBlock(sigmet), {opacity: 0.9});
+                sigmets_featuregroup.addLayer(sigmarkers_array[code]);
             }
         }
     })
@@ -782,6 +789,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
             else
             {
                 $.each(firmarkers_array[index], (idx2, obj) => {
+                    firmarkers_array[index][idx2].closeTooltip();
                     firmarkers_array[index][idx2].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1, sticky: true});
                 })
             }
@@ -914,6 +922,15 @@ function dehighlightFIR(index)
     $.each(firs_array[index], (idx, obj) => {
         obj.setStyle({fillOpacity: 0.1});
     })
+}
+
+function highlightSigmet(index)
+{
+    sigmets_array[index].setStyle({fillOpacity: 0.4});
+}
+function dehighlightSigmet(index)
+{
+    sigmets_array[index].setStyle({fillOpacity: 0.1});
 }
 
 // Get Local Tooltip
