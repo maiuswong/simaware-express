@@ -51,6 +51,8 @@ async function zoomToUser(user)
     
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();
+
+    user_sidebar = true;
     
     await initializeUser(user);
 }

@@ -1251,6 +1251,12 @@ async function zoomToFlight(uid)
         $('#airport-sidebar').hide();
     }
 
+    // If currently in the users view, hide appropriately
+    if(user_sidebar)
+    {
+        $('#user-sidebar').hide();
+    }
+
     $('#events-container').hide();
 
     // Handle departure/arrival airports
@@ -1455,6 +1461,10 @@ async function returnToView()
             else
             {
                 map.addLayer(plane_featuregroup); 
+            }
+            if(user_sidebar)
+            {
+                $('#user-sidebar').show();
             }
         }
 
