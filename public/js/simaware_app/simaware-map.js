@@ -777,7 +777,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
             obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#fff', fillOpacity: 0.1});
 
             // Add a marker and tooltip
-            latlng = polylabel(obj[idx].feature.geometry.coordinates[0], 1.0)
+            latlng = [Number(obj[idx].feature.properties.label_lat), Number(obj[idx].feature.properties.label_lon)];
             var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getFirTooltip(firicao, index, firMembers), iconSize: 'auto'});
 
             // Add a marker if it doesn't exist
