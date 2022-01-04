@@ -82,7 +82,7 @@ function initializeIcons()
     })
 }
 
-function returnSidebarToView(id)
+function returnSidebarToView(id, closeid)
 {
     if($('#map').width() > 576)
     {
@@ -93,6 +93,7 @@ function returnSidebarToView(id)
         var right = (($('#map').width() - 350) / 2) + 'px';
     }
     el = $('#'+id).animate({right: right}, 200);
+    $('#'+closeid).hide();
 }
 
 function getBadge(rating)

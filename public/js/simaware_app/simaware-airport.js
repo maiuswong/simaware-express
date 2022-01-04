@@ -31,6 +31,9 @@ function zoomToAirport(icao)
 
     // Get back from flight view
     returnToView();
+
+    // If the airports view is hidden, show it
+    returnSidebarToView('airport-sidebar', 'control-airport-pullout')
     $('#user-sidebar').hide(0);
 
     // Hide the user sidebar if it's showing
