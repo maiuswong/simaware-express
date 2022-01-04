@@ -21,7 +21,7 @@ function initializeAirport(icao)
     
 }
 
-function zoomToAirport(icao)
+function zoomToAirport(icao, inhibit_zoom = 0)
 {
     
     if(!$('#map').length || manual)
@@ -62,7 +62,10 @@ function zoomToAirport(icao)
     })
     console.log(bounds);
     map.addLayer(ap_featuregroup);
-    map.fitBounds(bounds);
+    if(!inhibit_zoom)
+    {
+        map.fitBounds(bounds);
+    }
 
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();

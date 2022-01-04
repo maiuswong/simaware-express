@@ -1007,7 +1007,7 @@ function getLocalTooltip(icao)
     {
         var event = '';
     }
-    var tt = '<div onclick="zoomToAirport(\''+icao+'\')" style="position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
+    var tt = '<div onclick="zoomToAirport(\''+icao+'\', 1)" style="position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
 
 
 
