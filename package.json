@@ -8,7 +8,7 @@
     "dev": "nodemon app"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MPL-2.0",
   "dependencies": {
     "bootstrap": "^4.6.0",
     "express": "^4.17.1",

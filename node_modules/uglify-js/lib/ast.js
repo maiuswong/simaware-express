@@ -50,41 +50,39 @@ function DEFNODE(type, props, methods, base) {
     if (base && base.PROPS) props = props.concat(base.PROPS);
     var code = [
         "return function AST_", type, "(props){",
+        // not essential, but speeds up compress by a few percent
+        "this._bits=0;",
         "if(props){",
     ];
     props.forEach(function(prop) {
         code.push("this.", prop, "=props.", prop, ";");
     });
     code.push("}");
-    var proto = base && new base;
-    if (proto && proto.initialize || methods && methods.initialize) code.push("this.initialize();");
-    code.push("}");
+    var proto = Object.create(base && base.prototype);
+    if (methods.initialize || proto.initialize) code.push("this.initialize();");
+    code.push("};");
     var ctor = new Function(code.join(""))();
-    if (proto) {
-        ctor.prototype = proto;
-        ctor.BASE = base;
-    }
-    if (base) base.SUBCLASSES.push(ctor);
+    ctor.prototype = proto;
     ctor.prototype.CTOR = ctor;
-    ctor.PROPS = props || null;
-    ctor.SELF_PROPS = self_props;
-    ctor.SUBCLASSES = [];
-    if (type) {
-        ctor.prototype.TYPE = ctor.TYPE = type;
-    }
-    if (methods) for (var name in methods) if (HOP(methods, name)) {
-        if (/^\$/.test(name)) {
-            ctor[name.substr(1)] = methods[name];
-        } else {
-            ctor.prototype[name] = methods[name];
-        }
+    ctor.prototype.TYPE = ctor.TYPE = type;
+    if (base) {
+        ctor.BASE = base;
+        base.SUBCLASSES.push(ctor);
     }
     ctor.DEFMETHOD = function(name, method) {
         this.prototype[name] = method;
     };
-    if (typeof exports !== "undefined") {
-        exports["AST_" + type] = ctor;
+    ctor.PROPS = props;
+    ctor.SELF_PROPS = self_props;
+    ctor.SUBCLASSES = [];
+    for (var name in methods) if (HOP(methods, name)) {
+        if (/^\$/.test(name)) {
+            ctor[name.substr(1)] = methods[name];
+        } else {
+            ctor.DEFMETHOD(name, methods[name]);
+        }
     }
+    if (typeof exports !== "undefined") exports["AST_" + type] = ctor;
     return ctor;
 }
 
@@ -138,6 +136,52 @@ var AST_Node = DEFNODE("Node", "start end", {
         }));
     },
 }, null);
+
+DEF_BITPROPS(AST_Node, [
+    "_optimized",
+    "_squeezed",
+    // AST_Call
+    "call_only",
+    "collapse_scanning",
+    // AST_SymbolRef
+    "defined",
+    "evaluating",
+    "falsy",
+    // AST_SymbolRef
+    "in_arg",
+    // AST_Return
+    "in_bool",
+    // AST_SymbolRef
+    "is_undefined",
+    // AST_LambdaExpression
+    // AST_LambdaDefinition
+    "inlined",
+    // AST_Lambda
+    "length_read",
+    // AST_Yield
+    "nested",
+    // AST_Lambda
+    "new",
+    // AST_Call
+    // AST_PropAccess
+    "optional",
+    // AST_ClassProperty
+    "private",
+    // AST_Call
+    "pure",
+    // AST_Assign
+    "redundant",
+    // AST_ClassProperty
+    "static",
+    // AST_Call
+    // AST_PropAccess
+    "terminal",
+    "truthy",
+    // AST_Scope
+    "uses_eval",
+    // AST_Scope
+    "uses_with",
+]);
 
 (AST_Node.log_function = function(fn, verbose) {
     if (typeof fn != "function") {
@@ -257,13 +301,13 @@ var AST_SimpleStatement = DEFNODE("SimpleStatement", "body", {
     },
 }, AST_Statement);
 
-var AST_BlockScope = DEFNODE("BlockScope", "enclosed functions make_def parent_scope variables", {
+var AST_BlockScope = DEFNODE("BlockScope", "_var_names enclosed functions make_def parent_scope variables", {
     $documentation: "Base class for all statements introducing a lexical scope",
     $propdoc: {
         enclosed: "[SymbolDef*/S] a list of all symbol definitions that are accessed from this scope or any subscopes",
-        functions: "[Object/S] like `variables`, but only lists function declarations",
+        functions: "[Dictionary/S] like `variables`, but only lists function declarations",
         parent_scope: "[AST_Scope?/S] link to the parent scope",
-        variables: "[Object/S] a map of name ---> SymbolDef for all variables/functions defined in this scope",
+        variables: "[Dictionary/S] a map of name ---> SymbolDef for all variables/functions defined in this scope",
     },
     clone: function(deep) {
         var node = this._clone(deep);
@@ -488,7 +532,7 @@ var AST_With = DEFNODE("With", "expression", {
 
 /* -----[ scope and functions ]----- */
 
-var AST_Scope = DEFNODE("Scope", "uses_eval uses_with", {
+var AST_Scope = DEFNODE("Scope", "fn_defs may_call_this uses_eval uses_with", {
     $documentation: "Base class for all statements introducing a lexical scope",
     $propdoc: {
         uses_eval: "[boolean/S] tells whether this scope contains a direct call to the global `eval`",
@@ -506,7 +550,7 @@ var AST_Scope = DEFNODE("Scope", "uses_eval uses_with", {
 var AST_Toplevel = DEFNODE("Toplevel", "globals", {
     $documentation: "The toplevel scope",
     $propdoc: {
-        globals: "[Object/S] a map of name ---> SymbolDef for all undeclared names",
+        globals: "[Dictionary/S] a map of name ---> SymbolDef for all undeclared names",
     },
     wrap: function(name) {
         var body = this.body;
@@ -547,13 +591,13 @@ var AST_Toplevel = DEFNODE("Toplevel", "globals", {
     }
 }, AST_Scope);
 
-var AST_Lambda = DEFNODE("Lambda", "argnames length_read rest uses_arguments", {
+var AST_Lambda = DEFNODE("Lambda", "argnames length_read rest safe_ids uses_arguments", {
     $documentation: "Base class for functions",
     $propdoc: {
         argnames: "[(AST_DefaultValue|AST_Destructured|AST_SymbolFunarg)*] array of function arguments and/or destructured literals",
         length_read: "[boolean/S] whether length property of this function is accessed",
         rest: "[(AST_Destructured|AST_SymbolFunarg)?] rest parameter, or null if absent",
-        uses_arguments: "[boolean/S] whether this function accesses the arguments array",
+        uses_arguments: "[boolean|number/S] whether this function accesses the arguments array",
     },
     each_argname: function(visit) {
         var tw = new TreeWalker(function(node) {
@@ -1293,11 +1337,14 @@ function must_be_expressions(node, prop, allow_spread, allow_hole) {
     });
 }
 
-var AST_Call = DEFNODE("Call", "expression args pure", {
+var AST_Call = DEFNODE("Call", "args expression optional pure terminal", {
     $documentation: "A function call expression",
     $propdoc: {
+        args: "[AST_Node*] array of arguments",
         expression: "[AST_Node] expression to invoke as function",
-        args: "[AST_Node*] array of arguments"
+        optional: "[boolean] whether the expression is optional chaining",
+        pure: "[boolean/S] marker for side-effect-free call expression",
+        terminal: "[boolean] whether the chain has ended",
     },
     walk: function(visitor) {
         var node = this;
@@ -1315,7 +1362,11 @@ var AST_Call = DEFNODE("Call", "expression args pure", {
 });
 
 var AST_New = DEFNODE("New", null, {
-    $documentation: "An object instantiation.  Derives from a function call since it has exactly the same properties"
+    $documentation: "An object instantiation.  Derives from a function call since it has exactly the same properties",
+    _validate: function() {
+        if (this.optional) throw new Error("optional must be false");
+        if (this.terminal) throw new Error("terminal must be false");
+    },
 }, AST_Call);
 
 var AST_Sequence = DEFNODE("Sequence", "expressions", {
@@ -1337,22 +1388,23 @@ var AST_Sequence = DEFNODE("Sequence", "expressions", {
     },
 });
 
-var AST_PropAccess = DEFNODE("PropAccess", "expression property", {
+function root_expr(prop) {
+    while (prop instanceof AST_PropAccess) prop = prop.expression;
+    return prop;
+}
+
+var AST_PropAccess = DEFNODE("PropAccess", "expression optional property terminal", {
     $documentation: "Base class for property access expressions, i.e. `a.foo` or `a[\"foo\"]`",
     $propdoc: {
         expression: "[AST_Node] the “container” expression",
-        property: "[AST_Node|string] the property to access.  For AST_Dot this is always a plain string, while for AST_Sub it's an arbitrary AST_Node"
+        optional: "[boolean] whether the expression is optional chaining",
+        property: "[AST_Node|string] the property to access.  For AST_Dot this is always a plain string, while for AST_Sub it's an arbitrary AST_Node",
+        terminal: "[boolean] whether the chain has ended",
     },
-    getProperty: function() {
+    get_property: function() {
         var p = this.property;
-        if (p instanceof AST_Constant) {
-            return p.value;
-        }
-        if (p instanceof AST_UnaryPrefix
-            && p.operator == "void"
-            && p.expression instanceof AST_Constant) {
-            return;
-        }
+        if (p instanceof AST_Constant) return p.value;
+        if (p instanceof AST_UnaryPrefix && p.operator == "void" && p.expression instanceof AST_Constant) return;
         return p;
     },
     _validate: function() {
@@ -1686,7 +1738,7 @@ var AST_ObjectMethod = DEFNODE("ObjectMethod", null, {
     _validate: function() {
         if (!(this.value instanceof AST_LambdaExpression)) throw new Error("value must be AST_LambdaExpression");
         if (is_arrow(this.value)) throw new Error("value cannot be AST_Arrow or AST_AsyncArrow");
-        if (this.value.name != null) throw new Error("name of class method's lambda must be null");
+        if (this.value.name != null) throw new Error("name of object method's lambda must be null");
     },
 }, AST_ObjectKeyVal);
 
@@ -1743,7 +1795,7 @@ var AST_SymbolVar = DEFNODE("SymbolVar", null, {
     $documentation: "Symbol defining a variable",
 }, AST_SymbolDeclaration);
 
-var AST_SymbolFunarg = DEFNODE("SymbolFunarg", null, {
+var AST_SymbolFunarg = DEFNODE("SymbolFunarg", "unused", {
     $documentation: "Symbol naming a function argument",
 }, AST_SymbolVar);
 
@@ -1757,11 +1809,11 @@ var AST_SymbolLambda = DEFNODE("SymbolLambda", null, {
 
 var AST_SymbolDefClass = DEFNODE("SymbolDefClass", null, {
     $documentation: "Symbol defining a class",
-}, AST_SymbolLet);
+}, AST_SymbolConst);
 
 var AST_SymbolClass = DEFNODE("SymbolClass", null, {
     $documentation: "Symbol naming a class expression",
-}, AST_SymbolLet);
+}, AST_SymbolConst);
 
 var AST_SymbolCatch = DEFNODE("SymbolCatch", null, {
     $documentation: "Symbol naming the exception in catch",
@@ -1995,7 +2047,7 @@ TreeWalker.prototype = {
     },
     find_parent: function(type) {
         var stack = this.stack;
-        for (var i = stack.length; --i >= 0;) {
+        for (var i = stack.length - 1; --i >= 0;) {
             var x = stack[i];
             if (x instanceof type) return x;
         }

@@ -43,7 +43,7 @@ exports.underscoredIf = underscoredIf;
 
 function isPrimitive(val) {
   const type = typeof val;
-  return type === 'string' || type === 'number' || type === 'boolean';
+  return ['string', 'number', 'boolean'].includes(type);
 }
 exports.isPrimitive = isPrimitive;
 
@@ -186,6 +186,7 @@ exports.mapOptionFieldNames = mapOptionFieldNames;
 
 function mapWhereFieldNames(attributes, Model) {
   if (attributes) {
+    attributes = cloneDeep(attributes);
     getComplexKeys(attributes).forEach(attribute => {
       const rawAttribute = Model.rawAttributes[attribute];
 
@@ -322,7 +323,7 @@ function removeNullValuesFromHash(hash, omitNull, options) {
 }
 exports.removeNullValuesFromHash = removeNullValuesFromHash;
 
-const dialects = new Set(['mariadb', 'mysql', 'postgres', 'sqlite', 'mssql']);
+const dialects = new Set(['mariadb', 'mysql', 'postgres', 'sqlite', 'mssql', 'db2']);
 
 function now(dialect) {
   const d = new Date();

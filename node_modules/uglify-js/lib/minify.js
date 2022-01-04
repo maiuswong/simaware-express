@@ -76,6 +76,7 @@ function minify(files, options) {
             annotations: undefined,
             compress: {},
             enclose: false,
+            ie: false,
             ie8: false,
             keep_fnames: false,
             mangle: {},
@@ -96,17 +97,18 @@ function minify(files, options) {
         var timings = options.timings && { start: Date.now() };
         if (options.rename === undefined) options.rename = options.compress && options.mangle;
         if (options.annotations !== undefined) set_shorthand("annotations", options, [ "compress", "output" ]);
-        if (options.ie8) set_shorthand("ie8", options, [ "compress", "mangle", "output" ]);
+        if (options.ie8) options.ie = options.ie || options.ie8;
+        if (options.ie) set_shorthand("ie", options, [ "compress", "mangle", "output" ]);
         if (options.keep_fnames) set_shorthand("keep_fnames", options, [ "compress", "mangle" ]);
         if (options.toplevel) set_shorthand("toplevel", options, [ "compress", "mangle" ]);
         if (options.v8) set_shorthand("v8", options, [ "mangle", "output" ]);
-        if (options.webkit) set_shorthand("webkit", options, [ "mangle", "output" ]);
+        if (options.webkit) set_shorthand("webkit", options, [ "compress", "mangle", "output" ]);
         var quoted_props;
         if (options.mangle) {
             options.mangle = defaults(options.mangle, {
                 cache: options.nameCache && (options.nameCache.vars || {}),
                 eval: false,
-                ie8: false,
+                ie: false,
                 keep_fnames: false,
                 properties: false,
                 reserved: [],
@@ -204,27 +206,29 @@ function minify(files, options) {
         if (options.mangle && options.mangle.properties) mangle_properties(toplevel, options.mangle.properties);
         if (timings) timings.output = Date.now();
         var result = {};
-        if (options.output.ast) {
-            result.ast = toplevel;
-        }
-        if (!HOP(options.output, "code") || options.output.code) {
+        var output = defaults(options.output, {
+            ast: false,
+            code: true,
+        });
+        if (output.ast) result.ast = toplevel;
+        if (output.code) {
             if (options.sourceMap) {
-                options.output.source_map = SourceMap(options.sourceMap);
+                output.source_map = SourceMap(options.sourceMap);
                 if (options.sourceMap.includeSources) {
                     if (files instanceof AST_Toplevel) {
                         throw new Error("original source content unavailable");
                     } else for (var name in files) if (HOP(files, name)) {
-                        options.output.source_map.setSourceContent(name, files[name]);
+                        output.source_map.setSourceContent(name, files[name]);
                     }
                 }
             }
-            delete options.output.ast;
-            delete options.output.code;
-            var stream = OutputStream(options.output);
+            delete output.ast;
+            delete output.code;
+            var stream = OutputStream(output);
             toplevel.print(stream);
             result.code = stream.get();
             if (options.sourceMap) {
-                result.map = options.output.source_map.toString();
+                result.map = output.source_map.toString();
                 var url = options.sourceMap.url;
                 if (url) {
                     result.code = result.code.replace(/\n\/\/# sourceMappingURL=\S+\s*$/, "");

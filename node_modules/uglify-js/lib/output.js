@@ -49,8 +49,6 @@ function is_some_comments(comment) {
 }
 
 function OutputStream(options) {
-
-    var readonly = !options;
     options = defaults(options, {
         annotations      : false,
         ascii_only       : false,
@@ -58,7 +56,7 @@ function OutputStream(options) {
         braces           : false,
         comments         : false,
         galio            : false,
-        ie8              : false,
+        ie               : false,
         indent_level     : 4,
         indent_start     : 0,
         inline_script    : true,
@@ -103,12 +101,35 @@ function OutputStream(options) {
         }
     }
 
-    var indentation = options.indent_start;
     var current_col = 0;
     var current_line = 1;
     var current_pos = 0;
-    var OUTPUT = "";
+    var indentation = options.indent_start;
+    var last;
+    var line_end = 0;
+    var line_fixed = true;
+    var mappings = options.source_map && [];
+    var mapping_name;
+    var mapping_token;
+    var might_need_space;
+    var might_need_semicolon;
+    var need_newline_indented = false;
+    var need_space = false;
+    var newline_insert = -1;
+    var stack;
+    var OUTPUT;
 
+    function reset() {
+        last = "";
+        might_need_space = false;
+        might_need_semicolon = false;
+        stack = [];
+        var str = OUTPUT;
+        OUTPUT = "";
+        return str;
+    }
+
+    reset();
     var to_utf8 = options.ascii_only ? function(str, identifier) {
         if (identifier) str = str.replace(/[\ud800-\udbff][\udc00-\udfff]/g, function(ch) {
             return "\\u{" + (ch.charCodeAt(0) - 0xd7c0 << 10 | ch.charCodeAt(1) - 0xdc00).toString(16) + "}";
@@ -141,6 +162,25 @@ function OutputStream(options) {
         return j == 0 ? str : s + str.slice(j);
     };
 
+    function quote_single(str) {
+        return "'" + str.replace(/\x27/g, "\\'") + "'";
+    }
+
+    function quote_double(str) {
+        return '"' + str.replace(/\x22/g, '\\"') + '"';
+    }
+
+    var quote_string = [
+        null,
+        quote_single,
+        quote_double,
+        function(str, quote) {
+            return quote == "'" ? quote_single(str) : quote_double(str);
+        },
+    ][options.quote_style] || function(str, quote, dq, sq) {
+        return dq > sq ? quote_single(str) : quote_double(str);
+    };
+
     function make_string(str, quote) {
         var dq = 0, sq = 0;
         str = str.replace(/[\\\b\f\n\r\v\t\x22\x27\u2028\u2029\0\ufeff]/g, function(s, i) {
@@ -153,7 +193,7 @@ function OutputStream(options) {
               case "\t": return "\\t";
               case "\b": return "\\b";
               case "\f": return "\\f";
-              case "\x0B": return options.ie8 ? "\\x0B" : "\\v";
+              case "\x0B": return options.ie ? "\\x0B" : "\\v";
               case "\u2028": return "\\u2028";
               case "\u2029": return "\\u2029";
               case "\ufeff": return "\\ufeff";
@@ -162,53 +202,10 @@ function OutputStream(options) {
             }
             return s;
         });
-        function quote_single() {
-            return "'" + str.replace(/\x27/g, "\\'") + "'";
-        }
-        function quote_double() {
-            return '"' + str.replace(/\x22/g, '\\"') + '"';
-        }
-        str = to_utf8(str);
-        switch (options.quote_style) {
-          case 1:
-            return quote_single();
-          case 2:
-            return quote_double();
-          case 3:
-            return quote == "'" ? quote_single() : quote_double();
-          default:
-            return dq > sq ? quote_single() : quote_double();
-        }
-    }
-
-    function encode_string(str, quote) {
-        var ret = make_string(str, quote);
-        if (options.inline_script) {
-            ret = ret.replace(/<\x2f(script)([>\/\t\n\f\r ])/gi, "<\\/$1$2");
-            ret = ret.replace(/\x3c!--/g, "\\x3c!--");
-            ret = ret.replace(/--\x3e/g, "--\\x3e");
-        }
-        return ret;
-    }
-
-    function make_name(name) {
-        name = name.toString();
-        name = to_utf8(name, true);
-        return name;
+        return quote_string(to_utf8(str), quote, dq, sq);
     }
 
     /* -----[ beautification/minification ]----- */
-
-    var has_parens = false;
-    var line_end = 0;
-    var line_fixed = true;
-    var might_need_space = false;
-    var might_need_semicolon = false;
-    var need_newline_indented = false;
-    var need_space = false;
-    var newline_insert = -1;
-    var last = "";
-    var mapping_token, mapping_name, mappings = options.source_map && [];
 
     var adjust_mappings = mappings ? function(line, col) {
         mappings.forEach(function(mapping) {
@@ -257,8 +254,14 @@ function OutputStream(options) {
 
     var requireSemicolonChars = makePredicate("( [ + * / - , .");
 
-    function print(str) {
-        str = String(str);
+    var print = options.beautify
+        || options.comments
+        || options.max_line_len
+        || options.preserve_line
+        || options.shebang
+        || !options.semicolons
+        || options.source_map
+        || options.width ? function(str) {
         var ch = str.charAt(0);
         if (need_newline_indented && ch) {
             need_newline_indented = false;
@@ -328,7 +331,6 @@ function OutputStream(options) {
         }
 
         OUTPUT += str;
-        has_parens = str.slice(-1) == "(";
         current_pos += str.length;
         var a = str.split(/\r?\n/), n = a.length - 1;
         current_line += n;
@@ -338,7 +340,30 @@ function OutputStream(options) {
             current_col = a[n].length;
         }
         last = str;
-    }
+    } : function(str) {
+        var ch = str.charAt(0);
+        var prev = last.slice(-1);
+        if (might_need_semicolon) {
+            might_need_semicolon = false;
+            if (prev == ":" && ch == "}" || (!ch || ";}".indexOf(ch) < 0) && prev != ";") {
+                OUTPUT += ";";
+                might_need_space = false;
+            }
+        }
+        if (might_need_space) {
+            if (is_identifier_char(prev) && (is_identifier_char(ch) || ch == "\\")
+                || (ch == "/" && ch == prev)
+                || ((ch == "+" || ch == "-") && ch == last)
+                || str == "--" && last == "!"
+                || str == "in" && prev == "/"
+                || last == "--" && ch == ">") {
+                OUTPUT += " ";
+            }
+            if (prev != "<" || str != "!") might_need_space = false;
+        }
+        OUTPUT += str;
+        last = str;
+    };
 
     var space = options.beautify ? function() {
         print(" ");
@@ -351,14 +376,12 @@ function OutputStream(options) {
         print(repeat_string(" ", half ? indentation - (options.indent_level >> 1) : indentation));
     } : noop;
 
-    var with_indent = options.beautify ? function(col, cont) {
-        if (col === true) col = next_indent();
+    var with_indent = options.beautify ? function(cont) {
         var save_indentation = indentation;
-        indentation = col;
-        var ret = cont();
+        indentation += options.indent_level;
+        cont();
         indentation = save_indentation;
-        return ret;
-    } : function(col, cont) { return cont() };
+    } : function(cont) { cont() };
 
     var may_add_newline = options.max_line_len || options.preserve_line ? function() {
         fix_line();
@@ -387,41 +410,28 @@ function OutputStream(options) {
         print(";");
     }
 
-    function next_indent() {
-        return indentation + options.indent_level;
-    }
-
     function with_block(cont) {
-        var ret;
         print("{");
         newline();
-        with_indent(next_indent(), function() {
-            ret = cont();
-        });
+        with_indent(cont);
         indent();
         print("}");
-        return ret;
     }
 
     function with_parens(cont) {
         print("(");
         may_add_newline();
-        //XXX: still nice to have that for argument lists
-        //var ret = with_indent(current_col, cont);
-        var ret = cont();
+        cont();
         may_add_newline();
         print(")");
-        return ret;
     }
 
     function with_square(cont) {
         print("[");
         may_add_newline();
-        //var ret = with_indent(current_col, cont);
-        var ret = cont();
+        cont();
         may_add_newline();
         print("]");
-        return ret;
     }
 
     function comma() {
@@ -472,31 +482,37 @@ function OutputStream(options) {
         return true;
     }
 
+    function should_merge_comments(node, parent) {
+        if (parent instanceof AST_Binary) return parent.left === node;
+        if (parent.TYPE == "Call") return parent.expression === node;
+        if (parent instanceof AST_Conditional) return parent.condition === node;
+        if (parent instanceof AST_Dot) return parent.expression === node;
+        if (parent instanceof AST_Exit) return true;
+        if (parent instanceof AST_Sequence) return parent.expressions[0] === node;
+        if (parent instanceof AST_Sub) return parent.expression === node;
+        if (parent instanceof AST_UnaryPostfix) return true;
+        if (parent instanceof AST_Yield) return true;
+    }
+
     function prepend_comments(node) {
         var self = this;
-        var scan = node instanceof AST_Exit && node.value;
+        var scan;
+        if (node instanceof AST_Exit) {
+            scan = node.value;
+        } else if (node instanceof AST_Yield) {
+            scan = node.expression;
+        }
         var comments = dump(node);
         if (!comments) comments = [];
 
         if (scan) {
             var tw = new TreeWalker(function(node) {
-                var parent = tw.parent();
-                if (parent instanceof AST_Exit
-                    || parent instanceof AST_Binary && parent.left === node
-                    || parent.TYPE == "Call" && parent.expression === node
-                    || parent instanceof AST_Conditional && parent.condition === node
-                    || parent instanceof AST_Dot && parent.expression === node
-                    || parent instanceof AST_Sequence && parent.expressions[0] === node
-                    || parent instanceof AST_Sub && parent.expression === node
-                    || parent instanceof AST_UnaryPostfix) {
-                    var before = dump(node);
-                    if (before) comments = comments.concat(before);
-                } else {
-                    return true;
-                }
+                if (!should_merge_comments(node, tw.parent())) return true;
+                var before = dump(node);
+                if (before) comments = comments.concat(before);
             });
             tw.push(node);
-            node.value.walk(tw);
+            scan.walk(tw);
         }
 
         if (current_pos == 0) {
@@ -553,15 +569,14 @@ function OutputStream(options) {
         if (OUTPUT.length > insert) newline_insert = insert;
     }
 
-    var stack = [];
     return {
         get             : get,
-        toString        : get,
+        reset           : reset,
         indent          : indent,
-        should_break    : readonly ? noop : function() {
-            return options.width && current_col - indentation >= options.width;
-        },
-        has_parens      : function() { return has_parens },
+        should_break    : options.width ? function() {
+            return current_col - indentation >= options.width;
+        } : return_false,
+        has_parens      : function() { return last.slice(-1) == "(" },
         newline         : newline,
         print           : print,
         space           : space,
@@ -571,20 +586,21 @@ function OutputStream(options) {
         semicolon       : semicolon,
         force_semicolon : force_semicolon,
         to_utf8         : to_utf8,
-        print_name      : function(name) { print(make_name(name)) },
-        print_string    : function(str, quote) { print(encode_string(str, quote)) },
-        next_indent     : next_indent,
+        print_name      : function(name) { print(to_utf8(name.toString(), true)) },
+        print_string    : options.inline_script ? function(str, quote) {
+            str = make_string(str, quote).replace(/<\x2f(script)([>\/\t\n\f\r ])/gi, "<\\/$1$2");
+            print(str.replace(/\x3c!--/g, "\\x3c!--").replace(/--\x3e/g, "--\\x3e"));
+        } : function(str, quote) {
+            print(make_string(str, quote));
+        },
         with_indent     : with_indent,
         with_block      : with_block,
         with_parens     : with_parens,
         with_square     : with_square,
         add_mapping     : add_mapping,
         option          : function(opt) { return options[opt] },
-        prepend_comments: readonly ? noop : prepend_comments,
-        append_comments : readonly || comment_filter === return_false ? noop : append_comments,
-        line            : function() { return current_line },
-        col             : function() { return current_col },
-        pos             : function() { return current_pos },
+        prepend_comments: options.comments || options.shebang ? prepend_comments : noop,
+        append_comments : options.comments ? append_comments : noop,
         push_node       : function(node) { stack.push(node) },
         pop_node        : options.preserve_line ? function() {
             var node = stack.pop();
@@ -629,10 +645,19 @@ function OutputStream(options) {
             stream.append_comments(self);
         }
     });
+    var readonly = OutputStream({
+        inline_script: false,
+        shebang: false,
+        width: false,
+    });
     AST_Node.DEFMETHOD("print_to_string", function(options) {
-        var s = OutputStream(options);
-        this.print(s);
-        return s.get();
+        if (options) {
+            var stream = OutputStream(options);
+            this.print(stream);
+            return stream.get();
+        }
+        this.print(readonly);
+        return readonly.reset();
     });
 
     /* -----[ PARENTHESES ]----- */
@@ -684,6 +709,8 @@ function OutputStream(options) {
         // (x++)[y]
         // (typeof x).y
         if (p instanceof AST_PropAccess) return p.expression === this;
+        // (~x)`foo`
+        if (p instanceof AST_Template) return p.tag === this;
     }
     PARENS(AST_Await, needs_parens_unary);
     PARENS(AST_Unary, needs_parens_unary);
@@ -757,39 +784,50 @@ function OutputStream(options) {
         if (p instanceof AST_Class) return true;
         // (foo && bar)["prop"], (foo && bar).prop
         if (p instanceof AST_PropAccess) return p.expression === this;
+        // (foo && bar)``
+        if (p instanceof AST_Template) return p.tag === this;
         // typeof (foo && bar)
         if (p instanceof AST_Unary) return true;
     });
 
+    function need_chain_parens(node, parent) {
+        if (!node.terminal) return false;
+        if (!(parent instanceof AST_Call || parent instanceof AST_PropAccess)) return false;
+        return parent.expression === node;
+    }
+
     PARENS(AST_PropAccess, function(output) {
         var node = this;
         var p = output.parent();
-        if (p instanceof AST_New && p.expression === node) {
-            // i.e. new (foo().bar)
-            //
-            // if there's one call into this subtree, then we need
-            // parens around it too, otherwise the call will be
-            // interpreted as passing the arguments to the upper New
-            // expression.
-            do {
-                node = node.expression;
-            } while (node instanceof AST_PropAccess);
-            return node.TYPE == "Call";
-        }
+        // i.e. new (foo().bar)
+        //
+        // if there's one call into this subtree, then we need
+        // parens around it too, otherwise the call will be
+        // interpreted as passing the arguments to the upper New
+        // expression.
+        if (p instanceof AST_New && p.expression === node && root_expr(node).TYPE == "Call") return true;
+        // (foo?.bar)()
+        // (foo?.bar).baz
+        // new (foo?.bar)()
+        return need_chain_parens(node, p);
     });
 
     PARENS(AST_Call, function(output) {
+        var node = this;
         var p = output.parent();
-        if (p instanceof AST_New) return p.expression === this;
+        if (p instanceof AST_New) return p.expression === node;
         // https://bugs.webkit.org/show_bug.cgi?id=123506
-        if (output.option("webkit")) {
+        if (output.option("webkit")
+            && node.expression instanceof AST_Function
+            && p instanceof AST_PropAccess
+            && p.expression === node) {
             var g = output.parent(1);
-            return this.expression instanceof AST_Function
-                && p instanceof AST_PropAccess
-                && p.expression === this
-                && g instanceof AST_Assign
-                && g.left === p;
+            if (g instanceof AST_Assign && g.left === p) return true;
         }
+        // (foo?.())()
+        // (foo?.()).bar
+        // new (foo?.())()
+        return need_chain_parens(node, p);
     });
 
     PARENS(AST_New, function(output) {
@@ -915,7 +953,7 @@ function OutputStream(options) {
     });
     function print_braced_empty(self, output) {
         output.print("{");
-        output.with_indent(output.next_indent(), function() {
+        output.with_indent(function() {
             output.append_comments(self, true);
         });
         output.print("}");
@@ -936,7 +974,6 @@ function OutputStream(options) {
     DEFPRINT(AST_Do, function(output) {
         var self = this;
         output.print("do");
-        output.space();
         make_block(self.body, output);
         output.space();
         output.print("while");
@@ -953,7 +990,6 @@ function OutputStream(options) {
         output.with_parens(function() {
             self.condition.print(output);
         });
-        output.space();
         force_statement(self.body, output);
     });
     DEFPRINT(AST_For, function(output) {
@@ -983,7 +1019,6 @@ function OutputStream(options) {
                 self.step.print(output);
             }
         });
-        output.space();
         force_statement(self.body, output);
     });
     function print_for_enum(prefix, infix) {
@@ -998,7 +1033,6 @@ function OutputStream(options) {
                 output.space();
                 self.object.print(output);
             });
-            output.space();
             force_statement(self.body, output);
         };
     }
@@ -1012,7 +1046,6 @@ function OutputStream(options) {
         output.with_parens(function() {
             self.expression.print(output);
         });
-        output.space();
         force_statement(self.body, output);
     });
     DEFPRINT(AST_ExportDeclaration, function(output) {
@@ -1119,8 +1152,9 @@ function OutputStream(options) {
         });
     }
     function print_arrow(self, output) {
-        if (self.argnames.length == 1 && self.argnames[0] instanceof AST_SymbolFunarg && !self.rest) {
-            self.argnames[0].print(output);
+        var argname = self.argnames.length == 1 && !self.rest && self.argnames[0];
+        if (argname instanceof AST_SymbolFunarg && argname.name != "yield") {
+            argname.print(output);
         } else {
             print_funargs(self, output);
         }
@@ -1251,7 +1285,7 @@ function OutputStream(options) {
     function make_then(self, output) {
         var b = self.body;
         if (output.option("braces") && !(b instanceof AST_Const || b instanceof AST_Let)
-            || output.option("ie8") && b instanceof AST_Do)
+            || output.option("ie") && b instanceof AST_Do)
             return make_block(b, output);
         // The squeezer replaces "block"-s that contain only a single
         // statement with the statement itself; technically, the AST
@@ -1281,16 +1315,16 @@ function OutputStream(options) {
         output.with_parens(function() {
             self.condition.print(output);
         });
-        output.space();
         if (self.alternative) {
             make_then(self, output);
             output.space();
             output.print("else");
-            output.space();
-            if (self.alternative instanceof AST_If)
+            if (self.alternative instanceof AST_If) {
+                output.space();
                 self.alternative.print(output);
-            else
+            } else {
                 force_statement(self.alternative, output);
+            }
         } else {
             force_statement(self.body, output);
         }
@@ -1431,7 +1465,7 @@ function OutputStream(options) {
             parent = output.parent(level++);
             if (parent instanceof AST_Call && parent.expression === node) return;
         } while (parent instanceof AST_PropAccess && parent.expression === node);
-        output.print("/*" + self.pure + "*/");
+        output.print("/*@__PURE__*/");
     }
     function print_call_args(self, output) {
         if (self.expression instanceof AST_Call || self.expression instanceof AST_Lambda) {
@@ -1448,6 +1482,7 @@ function OutputStream(options) {
         var self = this;
         print_annotation(self, output);
         self.expression.print(output);
+        if (self.optional) output.print("?.");
         print_call_args(self, output);
     });
     DEFPRINT(AST_New, function(output) {
@@ -1475,27 +1510,24 @@ function OutputStream(options) {
         var expr = self.expression;
         expr.print(output);
         var prop = self.property;
-        if (output.option("ie8") && RESERVED_WORDS[prop]) {
-            output.print("[");
+        if (output.option("ie") && RESERVED_WORDS[prop]) {
+            output.print(self.optional ? "?.[" : "[");
             output.add_mapping(self.end);
             output.print_string(prop);
             output.print("]");
         } else {
-            if (expr instanceof AST_Number && expr.value >= 0) {
-                if (!/[xa-f.)]/i.test(output.last())) {
-                    output.print(".");
-                }
-            }
-            output.print(".");
+            if (expr instanceof AST_Number && !/[ex.)]/i.test(output.last())) output.print(".");
+            output.print(self.optional ? "?." : ".");
             // the name after dot would be mapped about here.
             output.add_mapping(self.end);
             output.print_name(prop);
         }
     });
     DEFPRINT(AST_Sub, function(output) {
-        this.expression.print(output);
-        output.print("[");
-        this.property.print(output);
+        var self = this;
+        self.expression.print(output);
+        output.print(self.optional ? "?.[" : "[");
+        self.property.print(output);
         output.print("]");
     });
     DEFPRINT(AST_Spread, function(output) {
@@ -1592,7 +1624,19 @@ function OutputStream(options) {
         var self = this;
         var key = print_property_key(self, output);
         var value = self.value;
-        if (key && value instanceof AST_SymbolDeclaration && key == get_symbol_name(value)) return;
+        if (key) {
+            if (value instanceof AST_DefaultValue) {
+                if (value.name instanceof AST_Symbol && key == get_symbol_name(value.name)) {
+                    output.space();
+                    output.print("=");
+                    output.space();
+                    value.value.print(output);
+                    return;
+                }
+            } else if (value instanceof AST_Symbol) {
+                if (key == get_symbol_name(value)) return;
+            }
+        }
         output.colon();
         value.print(output);
     });
@@ -1641,28 +1685,21 @@ function OutputStream(options) {
 
     function print_property_key(self, output) {
         var key = self.key;
-        if (key instanceof AST_Node) {
-            output.with_square(function() {
-                key.print(output);
-            });
-        } else if (output.option("quote_keys")) {
-            output.print_string(key);
+        if (key instanceof AST_Node) return output.with_square(function() {
+            key.print(output);
+        });
+        var quote = self.start && self.start.quote;
+        if (output.option("quote_keys") || quote && output.option("keep_quoted_props")) {
+            output.print_string(key, quote);
         } else if ("" + +key == key && key >= 0) {
             output.print(make_num(key));
+        } else if (self.private) {
+            output.print_name(key);
+        } else if (RESERVED_WORDS[key] ? !output.option("ie") : is_identifier_string(key)) {
+            output.print_name(key);
+            return key;
         } else {
-            var quote = self.start && self.start.quote;
-            if (self.private) {
-                output.print_name(key);
-            } else if (RESERVED_WORDS[key] ? !output.option("ie8") : is_identifier_string(key)) {
-                if (quote && output.option("keep_quoted_props")) {
-                    output.print_string(key, quote);
-                } else {
-                    output.print_name(key);
-                    return key;
-                }
-            } else {
-                output.print_string(key, quote);
-            }
+            output.print_string(key, quote);
         }
     }
     DEFPRINT(AST_ObjectKeyVal, function(output) {
@@ -1735,7 +1772,7 @@ function OutputStream(options) {
         output.print("`");
     });
     DEFPRINT(AST_Constant, function(output) {
-        output.print(this.value);
+        output.print("" + this.value);
     });
     DEFPRINT(AST_String, function(output) {
         output.print_string(this.value, this.quote);
@@ -1791,9 +1828,10 @@ function OutputStream(options) {
     function force_statement(stat, output) {
         if (output.option("braces") && !(stat instanceof AST_Const || stat instanceof AST_Let)) {
             make_block(stat, output);
-        } else if (!stat || stat instanceof AST_EmptyStatement) {
+        } else if (stat instanceof AST_EmptyStatement) {
             output.force_semicolon();
         } else {
+            output.space();
             stat.print(output);
         }
     }
@@ -1842,11 +1880,12 @@ function OutputStream(options) {
     }
 
     function make_block(stmt, output) {
-        if (!stmt || stmt instanceof AST_EmptyStatement)
-            output.print("{}");
-        else if (stmt instanceof AST_BlockStatement)
+        output.space();
+        if (stmt instanceof AST_EmptyStatement) {
+            print_braced_empty(stmt, output);
+        } else if (stmt instanceof AST_BlockStatement) {
             stmt.print(output);
-        else output.with_block(function() {
+        } else output.with_block(function() {
             output.indent();
             stmt.print(output);
             output.newline();
@@ -1893,7 +1932,11 @@ function OutputStream(options) {
         output.add_mapping(this.start);
     });
 
-    DEFMAP([ AST_DestructuredKeyVal, AST_ObjectProperty ], function(output) {
+    DEFMAP([
+        AST_ClassProperty,
+        AST_DestructuredKeyVal,
+        AST_ObjectProperty,
+    ], function(output) {
         if (typeof this.key == "string") output.add_mapping(this.start, this.key);
     });
 })();
