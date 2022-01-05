@@ -697,7 +697,7 @@ async function refreshATC()
         {
           icon: di,
         })
-        oloc.bindTooltip(getLocalBlock(local.loc.icao), {opacity: 1});
+        oloc.bindTooltip(getLocalBlock(local.loc.icao), {opacity: 1, sticky: true});
         locals_featuregroup.addLayer(oloc);
     })
     for(icao in eventsByAirport) 
@@ -711,12 +711,11 @@ async function refreshATC()
             {
                 icon: di,
             })
-            oloc.bindTooltip(getLocalBlock(icao), {opacity: 1});
+            oloc.bindTooltip(getLocalBlock(icao), {opacity: 1, sticky: true});
             locals_featuregroup.addLayer(oloc);
         }
     }
     atc_featuregroup.addLayer(locals_featuregroup);
-    
 }
 
 // Update Convective Sigmets
@@ -774,7 +773,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         var firmarkers_array_temp = [];
         for(idx in obj)
         {
-            obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#fff', fillOpacity: 0.1});
+            obj[idx].setStyle({color: '#fff', weight: 2, fillColor: '#fff', fillOpacity: 0.1});
 
             // Add a marker and tooltip
             latlng = [Number(obj[idx].feature.properties.label_lat), Number(obj[idx].feature.properties.label_lon)];
@@ -1007,7 +1006,7 @@ function getLocalTooltip(icao)
     {
         var event = '';
     }
-    var tt = '<div onclick="zoomToAirport(\''+icao+'\', true)" style="position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
+    var tt = '<div ondblclick="zoomToAirport(\''+icao+'\', true)" style="position: relative; border-radius: 0.2rem; background-color: rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
 
 
 
