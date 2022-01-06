@@ -30,9 +30,9 @@ function infobar_streamers_bar()
         html += '<div onclick="zoomToFlight(\''+obj.uid+'\')" class="streamer-bar-item rounded-3 me-3 p-3 border border-secondary bg-dark text-white" style="width: 350px; display: inline-block; font-family: \'Jost\', sans-serif"><h5><i class="fab fa-twitch"></i> '+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td>'+obj.callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="streamers-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="streamers-flights-progressbar-elapsed" style="width: '+getInfoElapsedWidth(infoflight)+'%; background-color: '+flight_status.color+'"></div><i id="streamers-flights-progressbar-plane" class="fas fa-plane" style="color: '+flight_status.color+'"></i><div id="streamers-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div>'
     })
     $.each(infostreamers['controllers'], (idx, obj) => {
-        html += '<div onclick="zoomToFlight(\''+obj.uid+'\')" class="streamer-bar-item rounded-3 me-3 p-3 border border-secondary bg-dark text-white" style="width: 350px; display: inline-block; font-family: \'Jost\', sans-serif"><h5><i class="fab fa-twitch"></i> '+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td><b>'+obj.callsign+'</b></td><td class="ps-3">'+obj.position+'</td></tr></table></div>'
+        html += '<div class="streamer-bar-item rounded-3 me-3 p-3 border border-secondary bg-dark text-white" style="width: 350px; display: inline-block; font-family: \'Jost\', sans-serif"><h5><i class="fab fa-twitch"></i> '+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td><b>'+obj.callsign+'</b></td><td class="ps-3">'+obj.position+'</td></tr></table></div>'
     })
-    $('.streamers-container').html(html);
+    $('.streamers-container').html(html+html+html);
 }
 
 function infobar_airports()
