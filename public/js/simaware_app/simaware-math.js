@@ -12,7 +12,15 @@ function getElapsedWidth(flight)
 // Pctg of infoflight
 function getInfoElapsedWidth(flight)
 {
-  return (getDfd(flight) / getTotalDistance(flight)) * 100 - 6;
+  value = (getDfd(flight) / getTotalDistance(flight)) * 100 - 6;
+  if(value < 0)
+  {
+    return 0;
+  }
+  else
+  {
+    return value;
+  }
 }
 
 // Returns the heading to latlon2 from latlon1

@@ -54,4 +54,10 @@ app.get('/patreon', (req, res) => {
     res.render('patreon', {id: req.params.id});
 })
 
+/* 404 Page */
+app.use(function(req, res, next) {
+    res.status(404);
+    res.render('404', {layout: false});
+});
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

@@ -279,6 +279,14 @@ a
   color: #fff;
   font-size: 0.9rem;
 }
+.hidescroll {
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+}
+
+.hidescroll::-webkit-scrollbar {
+  display: none;
+}
 #airport-list-wrapper, #flight-list-wrapper
 {
   max-height: 80%;
@@ -362,18 +370,18 @@ a
   min-width: 0;
   background-color: #aaa;
 }
-#infobar-flights-progressbar-elapsed
+#infobar-flights-progressbar-elapsed, #streamers-flights-progressbar-elapsed
 {
   height: 2px;
   width: 30px;
 }
-#infobar-flights-progressbar-plane
+#infobar-flights-progressbar-plane, #streamers-flights-progressbar-plane
 {
   margin-left: 2px;
   margin-right: 2px;
   font-size: 1rem
 }
-#infobar-flights-progressbar-remaining
+#infobar-flights-progressbar-remaining, #streamers-flights-progressbar-remaining
 {
   height: 2px;
   flex-grow: 1;

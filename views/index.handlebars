@@ -7,6 +7,7 @@
             <div class="map-button py-1 d-none" onclick="toggleATC()" id="atc">ATC</div>
             <div class="map-button py-1 d-none" onclick="toggleSigmet()" id="sigmet">SIGMET</div>
             <div class="map-button py-1 d-none" onclick="toggleNat()" id="nat">NAT</div>
+            <div class="map-button py-1 d-none" onclick="toggleStreamers()" id="streamers"><i class="fas fa-podcast"></i></div>
         </div>
     </div>
 
@@ -18,6 +19,9 @@
 
     <!-- Users Sidebar -->
     {{> user-sidebar }}
+
+    <!-- Streamers Bottom Bar -->
+    {{> streamers-bar }}
 
     <!-- Footer Group -->
     {{> footer}}

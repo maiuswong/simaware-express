@@ -38,11 +38,12 @@ function initializeMap(manual = 0, landscape = 0)
         map.attributionControl.setPosition('topright');
 
         // Make the search box clickable
-        $.each(['controls', 'flights-sidebar', 'search-field', 'user-sidebar', 'footer-background'], (idx, obj) => {
+        $.each(['controls', 'flights-sidebar', 'search-field', 'user-sidebar', 'footer-background', 'streamers-bar'], (idx, obj) => {
             el = document.getElementById(obj);
             if(el)
             {
                 L.DomEvent.disableClickPropagation(el);
+                L.DomEvent.disableScrollPropagation(el);
             }
         })
 
@@ -1218,6 +1219,12 @@ async function zoomToFlight(uid)
         window.location.href = '/?uid='+uid;
     }
 
+    // If streamerrs bar visible, hide it
+    if($('#streamers-bar').is(':visible'))
+    {
+        $('#streamers-bar').addClass('d-none').removeClass('d-flex');
+    }
+
     historical = (typeof(plane_array[uid]) === 'undefined') ? 1 : 0;
 
     if(typeof plane != 'undefined')
@@ -1347,6 +1354,20 @@ async function addFlightPath(url, dep, arr, flight)
     var latlons = await response.json();
     flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {color: '#00D300', weight: 1.5, nowrap: true});
     await active_featuregroup.addLayer(flightpath);
+}
+
+function toggleStreamers()
+{
+    if($('.map-button#streamers').hasClass('map-button-active'))
+    {
+        $('#streamers-bar').removeClass('d-flex').addClass('d-none');
+        $('.map-button#streamers').removeClass('map-button-active');
+    }
+    else
+    {
+        $('#streamers-bar').removeClass('d-none').addClass('d-flex');
+        $('.map-button#streamers').addClass('map-button-active');
+    }
 }
 
 function toggleBasemap()
@@ -1495,6 +1516,12 @@ async function returnToView()
         // Return the sidebar if it exists on the page
         $('#sidebar').show();
         $('#events-container').show();
+
+        // If streamers bar was active, re-show it
+        if($('.map-button#streamers').hasClass('map-button-active'))
+        {
+            $('#streamers-bar').addClass('d-flex').removeClass('d-none');
+        }
 
         // Remove active flight tag
         active_flight = null;
