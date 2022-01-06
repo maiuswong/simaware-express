@@ -375,6 +375,14 @@ a
   height: 2px;
   width: 30px;
 }
+.streamer-bar-item
+{
+  background-color: #222;
+}
+.streamer-bar-item:hover
+{
+  background-color: #2e2e2e;
+}
 #infobar-flights-progressbar-plane, #streamers-flights-progressbar-plane
 {
   margin-left: 2px;
