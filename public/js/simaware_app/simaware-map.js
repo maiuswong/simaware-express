@@ -1174,44 +1174,44 @@ async function loadAircraft()
 
 async function initializeNat()
 {
-    response = await fetch(apiserver + 'api/livedata/nats');
-    nats = await response.json();
+    // response = await fetch(apiserver + 'api/livedata/nats');
+    // nats = await response.json();
 
-    $.each(nats, (idx, nat) => {
-        latlons = [];
-        $.each(nat.route, (idx2, fix) => {
-            if(fix.name == 'SOORY')
-            {
-                latlons.push([-fix.longitude, -fix.latitude]);
-            }
-            else
-            {
-                latlons.push([fix.latitude, fix.longitude]);
-            }
-        })
-        var natline = new L.Polyline.AntPath(latlons, {weight: 5, color: '#fff'});
-        natline.bindTooltip(getNatBlock(nat), {opacity: 1, sticky: true});
-        nats_featuregroup.addLayer(natline);
-        $.each(nat.route, (idx2, fix) => {
-            if(fix.name == 'SOORY')
-            {
-                var latlon = [-fix.longitude, -fix.latitude];
-            }
-            else
-            {
-                var latlon = [fix.latitude, fix.longitude];
-            }
-            var return_point = L.circleMarker(latlon, {
-                radius: 5,
-                stroke: true,
-                weight: 3,
-                color: '#2196F3',
-                fillColor: '#eee',
-                fillOpacity: 1,
-            });
-            nats_featuregroup.addLayer(return_point);
-        })
-    })
+    // $.each(nats, (idx, nat) => {
+    //     latlons = [];
+    //     $.each(nat.route, (idx2, fix) => {
+    //         if(fix.name == 'SOORY')
+    //         {
+    //             latlons.push([-fix.longitude, -fix.latitude]);
+    //         }
+    //         else
+    //         {
+    //             latlons.push([fix.latitude, fix.longitude]);
+    //         }
+    //     })
+    //     var natline = new L.Polyline.AntPath(latlons, {weight: 5, color: '#fff'});
+    //     natline.bindTooltip(getNatBlock(nat), {opacity: 1, sticky: true});
+    //     nats_featuregroup.addLayer(natline);
+    //     $.each(nat.route, (idx2, fix) => {
+    //         if(fix.name == 'SOORY')
+    //         {
+    //             var latlon = [-fix.longitude, -fix.latitude];
+    //         }
+    //         else
+    //         {
+    //             var latlon = [fix.latitude, fix.longitude];
+    //         }
+    //         var return_point = L.circleMarker(latlon, {
+    //             radius: 5,
+    //             stroke: true,
+    //             weight: 3,
+    //             color: '#2196F3',
+    //             fillColor: '#eee',
+    //             fillOpacity: 1,
+    //         });
+    //         nats_featuregroup.addLayer(return_point);
+    //     })
+    // })
 }
 
 // Zoom to a flight
