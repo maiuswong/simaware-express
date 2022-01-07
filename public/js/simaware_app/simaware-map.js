@@ -1141,10 +1141,10 @@ function getTraconBlock(obj)
     tracon_name = obj.name;
     list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+'</td></tr>';
     $.each(obj.APP, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="pl-3 text-primary" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="ps-3 text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
     })
     $.each(obj.DEP, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="pl-3 text-primary" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="ps-3 text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
