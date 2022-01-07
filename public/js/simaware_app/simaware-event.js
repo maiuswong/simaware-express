@@ -35,6 +35,11 @@ async function loadEvent(id)
         map.addLayer(oloc);
     })
     map.fitBounds(bounds, [50, 50]);
+
+    if(bounds.length == 1)
+    {
+        map.setZoom(8);
+    }
     
     response = await fetch(apiserver + 'api/eventpaths/' + id);
     eventpaths = await response.json();

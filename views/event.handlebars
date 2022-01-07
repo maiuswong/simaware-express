@@ -48,8 +48,6 @@ async function initialize()
     airlines = await loadAirlines();
     await initializePatrons();
 
-    map.setZoom(8);
-
     await initializeNexrad();
     await initializeNat();
     await initializeATC();
