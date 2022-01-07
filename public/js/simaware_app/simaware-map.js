@@ -1715,13 +1715,13 @@ async function toggleATC()
         await refreshATC();
         setLayerOrder();
         $('.map-button#atc').addClass('map-button-active');
-        $.cookie('atc', 'true');
+        $.cookie('atc', 'true', {expires: 180});
     }
     else
     {
         map.removeLayer(atc_featuregroup);
         $('.map-button#atc').removeClass('map-button-active');
-        $.cookie('atc', 'false');
+        $.cookie('atc', 'false', {expires: 180});
     }
 }
 
@@ -1763,13 +1763,13 @@ function toggleNexrad()
     {
         map.addLayer(nexrad);
         $('.map-button#wx').addClass('map-button-active');
-        $.cookie('wx', 'true');
+        $.cookie('wx', 'true', {expires: 180});
     }
     else
     {
         map.removeLayer(nexrad);
         $('.map-button#wx').removeClass('map-button-active');
-        $.cookie('wx', 'false');
+        $.cookie('wx', 'false', {expires: 180});
     }
 }
 
@@ -1780,14 +1780,14 @@ function toggleSigmet()
         map.addLayer(sigmets_featuregroup);
         $('.map-button#sigmet').addClass('map-button-active');
         setLayerOrder();
-        $.cookie('sigmet', 'true');
+        $.cookie('sigmet', 'true', {expires: 180});
     }
     else
     {
         map.removeLayer(sigmets_featuregroup);
         $('.map-button#sigmet').removeClass('map-button-active');
         setLayerOrder();
-        $.cookie('sigmet', 'false');
+        $.cookie('sigmet', 'false', {expires: 180});
 
     }
 }
@@ -1799,14 +1799,14 @@ function toggleNat()
         map.addLayer(nats_featuregroup);
         $('.map-button#nat').addClass('map-button-active');
         setLayerOrder();
-        $.cookie('nat', 'true');
+        $.cookie('nat', 'true', {expires: 180});
     }
     else
     {
         map.removeLayer(nats_featuregroup);
         $('.map-button#nat').removeClass('map-button-active');
         setLayerOrder();
-        $.cookie('nat', 'false');
+        $.cookie('nat', 'false', {expires: 180});
     }
 }
 
