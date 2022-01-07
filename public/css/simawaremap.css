@@ -11,6 +11,11 @@ body
 {
     flex-direction: column;
 }
+#disclaimer
+{
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
 .map-button
 {
   cursor: pointer;

@@ -24,6 +24,11 @@ function initializeMap(manual = 0, landscape = 0)
     // Initialize the icons that will be used
     initializeIcons();
 
+    if(!$.cookie('init'))
+    {
+        $('#disclaimer').removeClass('d-none').addClass('d-flex');
+    }
+
     // Initialize map data
     initializeFirData();
 
