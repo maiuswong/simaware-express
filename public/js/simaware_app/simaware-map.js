@@ -27,7 +27,7 @@ function initializeMap(manual = 0, landscape = 0)
     if(!$.cookie('init'))
     {
         $('#disclaimer').removeClass('d-none').addClass('d-flex');
-    }
+    }simaw
 
     // Initialize map data
     initializeFirData();
@@ -1348,7 +1348,7 @@ async function zoomToFlight(uid)
     }
     else
     {
-        addedFlightPathPromise = addFlightPath('https://simaware.ca/api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
+        addedFlightPathPromise = addFlightPath(apiserver + 'api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
         await addedFlightPathPromise;
     }
 }

@@ -7,12 +7,12 @@ async function initializeUser(cid)
 
     $('#flight-list').html('<div class="p-3 d-flex" style="justify-content: center; align-items: center"><div class="spinner-border text-secondary" role="status"></div> <h5 class="ms-4 mb-0 text-secondary">Loading...</h5></div>')
     
-    var response = await fetch('https://simaware.ca/api/user/'+cid);
+    var response = await fetch('https://api.simaware.ca/api/user/'+cid);
     user = await response.json();
 
     $('#pilot-name').html(user.name);
 
-    var response = await fetch('https://simaware.ca/api/moreflights/'+cid+'/0');
+    var response = await fetch('https://api.simaware.ca/api/moreflights/'+cid+'/0');
     var flights = await response.json();
 
     html = '';
