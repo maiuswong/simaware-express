@@ -54,6 +54,10 @@ app.get('/patreon', (req, res) => {
     res.render('patreon', {id: req.params.id});
 })
 
+app.get('/selfservice/events/request', (req, res) => {
+    res.redirect('https://api.simaware.ca/selfservice/events/request');
+})
+
 /* 404 Page */
 app.use(function(req, res, next) {
     res.status(404);
