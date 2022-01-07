@@ -1,4 +1,4 @@
-apiserver = 'https://simaware.ca/';
+apiserver = 'https://api.simaware.ca/';
 
 const warnings = {
     'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
