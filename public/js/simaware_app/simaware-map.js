@@ -908,10 +908,10 @@ function getFirTooltip(icao, index, firMembers)
         }
     })
 
-    var tt = '<div style="position: relative"><div class="firlabel" onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.75rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap">'+icao;
+    var tt = '<div style="position: relative"><div class="firlabel" onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.75rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap; text-align: center">'+icao;
     if(is_fss)
     {
-        tt += '<br><span style="background-color: #9370db">'+fssicao+'</span>';
+        tt += '<br><span class="rounded px-1" style="background-color: #9370db">'+fssicao+'</span>';
     }
     tt += '</td></tr></table></div></div>';
     return tt;
