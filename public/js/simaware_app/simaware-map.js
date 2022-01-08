@@ -1593,6 +1593,22 @@ function updateFlightsBox(flight)
         $('#flights-progressbar-plane').removeClass('blinking');
     }
 
+    // Do the time online
+    var timeairborne = getTimeAirborne(flight);
+    if(timeairborne.status != 'nodep')
+    {
+        $('#flights-airborne-container').addClass('d-flex').removeClass('d-none');
+        hrstring = (timeairborne.timeonline[0] == 1) ? timeairborne.timeonline[0] + ' hour, ' : timeairborne.timeonline[0] + ' hours, '
+        mnstring = (timeairborne.timeonline[1] == 1) ? timeairborne.timeonline[1] + ' minute' : timeairborne.timeonline[1] + ' minutes'
+        timestring = (timeairborne.timeonline[0] == 0) ? mnstring : hrstring + mnstring;
+        $('#flights-timeairborne').addClass('mt-2').html('Time Airborne: ' + timestring);
+    }
+    else
+    {
+        $('#flights-airborne-container').addClass('d-none').removeClass('d-flex');
+        $('#flights-timeairborne').removeClass('mt-2').html('');
+    }
+
     // Update the airports
     [dep_airport, dep_point_, dep_name, dep_city] = processAirport(plane.flight.dep);
     [arr_airport, arr_point_, arr_name, arr_city] = processAirport(plane.flight.arr);

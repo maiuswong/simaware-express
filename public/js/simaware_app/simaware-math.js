@@ -146,6 +146,36 @@ function getTotalDistance(flight)
   return dtg;
 }
 
+function getTimeAirborne(flight)
+{
+  var now = moment();
+  departed_at = (flight.departed_at) ? moment(flight.departed_at + ' GMT') : null;
+  arrived_at = (flight.arrived_at) ? moment(flight.arrived_at + ' GMT') : null;
+  if(departed_at != null && arrived_at == null)
+  {
+    var diff = Math.abs(now.diff(departed_at, 'minutes'));
+    var status = 'airborne';
+  }
+  else if(departed_at != null && arrived_at != null)
+  {
+    var diff = Math.abs(arrived_at.diff(departed_at, 'minutes'));
+    var status = 'landed';
+  }
+  else
+  {
+    diff = null;
+    var status = 'nodep';
+  }
+  if(diff != null)
+  {
+    return {status: status, timeonline: [Math.floor(diff / 60), diff % 60]};
+  }
+  else
+  {
+    return {status: status};
+  }
+}
+
 // Base function for distance calculations
 function distance(lat1, lon1, lat2, lon2)
 {
