@@ -1,5 +1,5 @@
 apiserver = 'https://api.simaware.ca/';
-dataserver = 'https:/api2.simaware.ca/';
+dataserver = 'https://api2.simaware.ca/';
 
 const warnings = {
     'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
