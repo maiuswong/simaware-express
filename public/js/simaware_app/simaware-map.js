@@ -728,7 +728,7 @@ async function refreshATC()
 // Update Convective Sigmets
 async function updateSigmet()
 {
-    response = await fetch(apiserver + 'api/wxdata/sigmet');
+    response = await fetch(dataserver + 'api/livedata/sigmets.json');
     data = await response.json();
     
     for(let sigmet in sigmets_array)
