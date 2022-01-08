@@ -1,4 +1,5 @@
 apiserver = 'https://api.simaware.ca/';
+dataserver = 'https:/api2.simaware.ca/';
 
 const warnings = {
     'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
@@ -135,13 +136,13 @@ function initializeAirports()
 
 async function initializeFirData()
 {
-    let response = await fetch(apiserver + 'api/livedata/countries');
+    let response = await fetch(dataserver + 'api/livedata/countries.json');
     countries = await response.json();
 
-    response = await fetch(apiserver + 'api/livedata/firs');
+    response = await fetch(dataserver + 'api/livedata/firs.json');
     firs = await response.json();
 
-    response = await fetch(apiserver + 'api/livedata/uirs');
+    response = await fetch(dataserver + 'api/livedata/uirs.json');
     uirs = await response.json();
 }
 
@@ -206,7 +207,7 @@ function initializeATC()
 // Updates the data based on the current version of live.json
 async function refreshFlights(filterName = null, filterCriteria = null)
 {
-    response = await fetch(apiserver + 'api/livedata/live', { credentials: 'omit' });
+    response = await fetch(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
     flights = await response.json();
     flights = applyFilter(flights, filterName, filterCriteria);
     newactive_uids = [];
@@ -575,7 +576,7 @@ async function refreshATC()
 {
     active_firs = getActiveFIRs();
     newdata = {};
-    response = await fetch(apiserver + 'api/livedata/onlinefirs');
+    response = await fetch(dataserver + 'api/livedata/onlinefirs.json');
     sectors = await response.json();
     // $.each(data, (idx, fir) => {
     //     index = getFirIndex(fir);
@@ -664,7 +665,7 @@ async function refreshATC()
         turnOffFIR(firObj, fir);
     })
 
-    response = await fetch(apiserver + 'api/livedata/tracons');
+    response = await fetch(dataserver + 'api/livedata/tracons.json');
     tracons = await response.json();
 
     if(atc_featuregroup.hasLayer(tracons_featuregroup))
@@ -686,7 +687,7 @@ async function refreshATC()
     })
     atc_featuregroup.addLayer(tracons_featuregroup);
 
-    response = await fetch(apiserver + 'api/livedata/locals');
+    response = await fetch(dataserver + 'api/livedata/locals.json');
     locals = await response.json();
 
     if(atc_featuregroup.hasLayer(locals_featuregroup))
