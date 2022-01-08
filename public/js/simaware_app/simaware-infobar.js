@@ -7,7 +7,7 @@ async function initializeInfobar()
 
 async function updateInfobar()
 {
-    let response = await fetch(dataserver + 'api/livedata/livestats.json');
+    let response = await fetch(dataserver + 'api/livedata/vatsimdata.json');
     let infobardata = await response.json();
     infoairports = await infobardata['airports'];
     infostreamers = await infobardata['streamers'];
