@@ -149,8 +149,8 @@ function getTotalDistance(flight)
 function getTimeAirborne(flight)
 {
   var now = moment();
-  departed_at = (flight.departed_at) ? moment(flight.departed_at + ' GMT') : null;
-  arrived_at = (flight.arrived_at) ? moment(flight.arrived_at + ' GMT') : null;
+  var departed_at = (flight.departed_at) ? moment(flight.departed_at + '+0000') : null;
+  var arrived_at = (flight.arrived_at) ? moment(flight.arrived_at + '+0000') : null;
   if(departed_at != null && arrived_at == null)
   {
     var diff = Math.abs(now.diff(departed_at, 'minutes'));
