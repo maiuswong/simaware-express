@@ -2,15 +2,18 @@ async function initializeInfobar()
 {
     await updateInfobar();
     infobar_streamers();
-    infobar_streamers_bar();
 }
 
 async function updateInfobar()
 {
+    // Get VATSIM data for streamers
     let response = await fetch(dataserver + 'api/livedata/vatsimdata.json');
     let infobardata = await response.json();
     infoairports = await infobardata['airports'];
     infostreamers = await infobardata['streamers'];
+
+    // Update the streamers bar
+    infobar_streamers_bar();
 }
 
 function infobar_streamers_bar()
@@ -103,7 +106,7 @@ function infobar_streamers_scroll(idx, type)
             let arr = infostreamers[type][idx].arr;
             if(!dep) { dep = 'NONE' }
             if(!arr) { arr = 'NONE' }
-            $('#infobar-content').html('<div onmouseup="zoomToFlight(\''+infostreamers[type][idx].uid+'\')" class="px-3 rounded-3 d-flex align-items-center footer-infobar-item" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</td><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div>');
+            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 rounded-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="https://twitch.tv/'+infostreamers[type][idx].streamername+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div onmouseup="zoomToFlight(\''+infostreamers[type][idx].uid+'\')" class="pe-3 rounded-3 d-flex align-items-center footer-infobar-item"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div></div>');
 
             // Set colors
             $('#infobar-flights-progressbar-plane').css({ 'color': flight_status.color });
@@ -118,7 +121,7 @@ function infobar_streamers_scroll(idx, type)
         }
         else if(type == 'controllers')
         {
-            $('#infobar-content').html('<div class="px-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</td><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div>');
+            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 rounded-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="https://twitch.tv/'+infostreamers[type][idx].streamername+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
 
             // Set colors
             $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {

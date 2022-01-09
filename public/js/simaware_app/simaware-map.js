@@ -1376,6 +1376,60 @@ function toggleStreamers()
     }
 }
 
+function toggleLabels()
+{
+    if(typeof(locLabels) == 'undefined')
+    {
+        if(typeof basemap == 'undefined')
+        {
+            locLabels = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+        }
+        else
+        {
+            locLabels = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+        }
+        $('.map-button#labels').addClass('map-button-active');
+        $.cookie('labels', 'true', {expires: 180});
+    }
+    else
+    {
+        map.removeLayer(locLabels);
+        delete locLabels;
+        $('.map-button#labels').removeClass('map-button-active');
+        $.cookie('lightmap', 'false', {expires: 180});
+    }
+}
+
+function flipLabels(delim)
+{
+    map.removeLayer(locLabels);
+
+    if(delim == 'dark')
+    {
+        locLabels = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+    }
+    else
+    {
+        locLabels = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+    }
+}
+
 function toggleBasemap()
 {
   if(typeof basemap == 'undefined')
@@ -1389,7 +1443,11 @@ function toggleBasemap()
     setLayerOrder();
     setBasemapOrder();
     lightbasemap = undefined;
-    $.cookie('lightmap', 'false');
+    $.cookie('lightmap', 'false', {expires: 180});
+    if(map.hasLayer(locLabels))
+    {
+        flipLabels('dark');
+    }
   }
   else
   {
@@ -1402,6 +1460,10 @@ function toggleBasemap()
     setBasemapOrder();
     basemap = undefined;
     $.cookie('lightmap', 'true');
+    if(map.hasLayer(locLabels))
+    {
+        flipLabels('light');
+    }
   }
 }
 
@@ -1559,6 +1621,10 @@ function handleCookies()
     if($.cookie('wx') == 'true')
     {
         toggleNexrad();
+    }
+    if($.cookie('labels') == 'true')
+    {
+        toggleLabels();
     }
     $('.map-button').removeClass('d-none');
     $('.loading').addClass('d-none');
@@ -1744,6 +1810,10 @@ async function toggleATC()
 
 function setBasemapOrder()
 {
+    if(typeof(locLabels) != 'undefined' && map.hasLayer(locLabels))
+    {
+        locLabels.bringToFront();
+    }
     if(map.hasLayer(nexrad))
     {
         nexrad.bringToFront();
