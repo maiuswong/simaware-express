@@ -1404,7 +1404,7 @@ function toggleLabels()
         map.removeLayer(locLabels);
         delete locLabels;
         $('.map-button#labels').removeClass('map-button-active');
-        $.cookie('lightmap', 'false', {expires: 180});
+        $.cookie('labels', 'false', {expires: 180});
     }
 }
 
