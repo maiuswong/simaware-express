@@ -119,7 +119,7 @@ function getBadge(rating)
     }
     if(txt.length)
     {
-        return '<span style="font-size: 0.8rem; border-radius: 1rem; font-weight: normal; color: #fff" class="px-2 badge badge-sm bg-warning">'+txt+'</span>';
+        return '<span style="font-size: 0.8rem; border-radius: 1rem; font-weight: normal; color: #fff" class="me-2 px-2 badge badge-sm bg-warning">'+txt+'</span>';
     }
     else
     {
