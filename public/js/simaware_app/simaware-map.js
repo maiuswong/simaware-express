@@ -212,7 +212,7 @@ function initializeATC()
         success: function(data) {
 
         // Create the geoJSON layers for FIRs
-        traconmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#40d0e0'}});
+        traconmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#40e0d0'}});
 
         // Store the geoJSON by ICAO and if it is a FSS
         $.each(traconmap._layers, function(index, obj) {
@@ -441,7 +441,7 @@ function getActiveFIRs()
 
 function lightUpTracon(tracon, trac, index)
 {
-    tracon.setStyle({weight: 1.5, color: '#40d0e0'});
+    tracon.setStyle({weight: 1.5, color: '#40e0d0'});
     if(tracmarkers_array[index] === undefined)
     {
         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon.feature.properties.id), iconSize: 'auto'});
@@ -1026,7 +1026,7 @@ function getFirTooltip(icao, index, firMembers)
 
 function getTracTooltip(index)
 {
-    var tt = '<div style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40d0e0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
+    var tt = '<div style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
     return tt;
 }
 
