@@ -159,6 +159,13 @@ a
   top: -8px;
   left: -50%;
 }
+.traclabel
+{
+  position: absolute;
+  top: -16px;
+  left: -50%;
+  color: #40d0e0;
+}
 .flight:hover
 {
   background-color: rgba(0,0,0,0.2);

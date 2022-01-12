@@ -17,6 +17,7 @@ function initializeMap(manual = 0, landscape = 0)
     active_firs = [];
     active_tracons = [];
     tracons_array = [];
+    tracmarkers_array = [];
     icons_array = [];
     firs_array  = [];
     firmarkers_array = [];
@@ -222,6 +223,9 @@ function initializeATC()
                 tracons_array[ident] = layer;
             })
         })
+
+        atc_featuregroup.addLayer(traconmap);
+        map.addLayer(tracons_featuregroup);
 
     }});
 }
@@ -435,9 +439,33 @@ function getActiveFIRs()
     return active_firs;
 }
 
-function traconSearch(str)
+function lightUpTracon(tracon, trac, index)
 {
-    
+    tracon.setStyle({weight: 1.5, color: '#40d0e0'});
+    if(tracmarkers_array[index] === undefined)
+    {
+        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon.feature.properties.id), iconSize: 'auto'});
+        var latlng = getTraconMarkerLoc(tracon);
+        tracmarkers_array[index] = new L.marker(latlng, { icon: di });
+        tracmarkers_array[index].bindTooltip(getTraconBlock(trac), {opacity: 1, sticky: true});
+        atc_featuregroup.addLayer(tracmarkers_array[index]);
+    }
+}
+
+function traconSearch(loc)
+{
+    if(loc.callsign != '' && typeof tracons_array[loc.callsign] != 'undefined')
+    {
+        return loc.callsign;
+    }
+    else if(typeof tracons_array[loc.iata] != 'undefined')
+    {
+        return loc.iata;
+    }
+    else if(typeof tracons_array[loc.icao] != 'undefined')
+    {
+        return loc.icao;
+    }
 }
 
 // Search for FIR based on callsign
@@ -522,6 +550,17 @@ function getCallsign(str)
     {
         return null;
     }
+}
+
+function getTraconMarkerLoc(tracon)
+{
+    var poly = polylabel(tracon.feature.geometry.coordinates[0], 1.0);
+    // Put lats in an array for the purpose of getting the max
+    var lats = [];
+    $.each(tracon.getLatLngs()[0][0], (idx, ll) => {
+        lats.push(ll.lat);
+    });
+    return [Math.max(...lats), poly[1]];
 }
 
 function getCallsignByFir(fir, index)
@@ -700,24 +739,47 @@ async function refreshATC()
     response = await fetch(dataserver + 'api/livedata/tracons.json');
     tracons = await response.json();
 
-    if(atc_featuregroup.hasLayer(tracons_featuregroup))
+    if(typeof(tracons_circles_featuregroup) != 'undefined' && tracons_featuregroup.hasLayer(tracons_circles_featuregroup))
     {
-        atc_featuregroup.removeLayer(tracons_featuregroup); tracons_featuregroup = new L.FeatureGroup();
+        tracons_featuregroup.removeLayer(tracons_circles_featuregroup);
     }
+    tracons_circles_featuregroup = new L.FeatureGroup();
 
+    var newactive_tracons = [];
     $.each(tracons, (idx, trac) => {
-        
-        var newCircle = new L.circle([trac.loc.lat, trac.loc.lon],
+
+        if(foundTracon = traconSearch(trac.loc))
         {
-            radius: 60 * 1000,
-            weight: 1.25,
-            fillOpacity: 0,
-            color: '#40e0d0'
-        })
-        newCircle.bindTooltip(getTraconBlock(trac), {opacity: 1});
-        tracons_featuregroup.addLayer(newCircle);
+            if($.inArray(foundTracon, active_tracons) >= 0)
+            {
+                active_tracons.splice(active_tracons.indexOf(foundTracon), 1);
+                tracmarkers_array[foundTracon].bindTooltip(getTraconBlock(trac), {opacity: 1});
+            }
+            else
+            {
+                lightUpTracon(tracons_array[foundTracon], trac, foundTracon);
+            }
+            newactive_tracons.push(foundTracon);
+        }
+        else
+        {
+            var newCircle = new L.circle([trac.loc.lat, trac.loc.lon],
+            {
+                radius: 60 * 1000,
+                weight: 1.25,
+                fillOpacity: 0,
+                color: '#40e0d0'
+            })
+            newCircle.bindTooltip(getTraconBlock(trac), {opacity: 1});
+            tracons_circles_featuregroup.addLayer(newCircle);
+        }
     })
-    atc_featuregroup.addLayer(tracons_featuregroup);
+    $.each(active_tracons, (idx, obj) => {
+        turnOffTracon(obj);
+    })
+    active_tracons = newactive_tracons;
+    tracons_featuregroup.addLayer(tracons_circles_featuregroup);
+
 
     response = await fetch(dataserver + 'api/livedata/locals.json');
     locals = await response.json();
@@ -864,6 +926,17 @@ function turnOffFIR(obj, index)
     }
 }
 
+// Disable a TRACON
+function turnOffTracon(id)
+{
+    if(typeof tracons_array[id] != 'undefined')
+    {
+        tracons_array[id].setStyle({weight: 0, color: '#000'});
+        atc_featuregroup.removeLayer(tracmarkers_array[id]);
+        tracmarkers_array[id] = undefined;
+    }
+}
+
 function getFirIndex(fir)
 {
     var index = fir.fir.icao + Number(fir.fir.is_fss);
@@ -948,6 +1021,12 @@ function getFirTooltip(icao, index, firMembers)
         tt += '<br><span class="rounded px-1" style="background-color: #9370db">'+fssicao+'</span>';
     }
     tt += '</td></tr></table></div></div>';
+    return tt;
+}
+
+function getTracTooltip(index)
+{
+    var tt = '<div style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40d0e0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
     return tt;
 }
 

@@ -12,7 +12,7 @@ app.set('view engine', 'handlebars');
 const PORT = process.env.PORT || 5000;
 
 // Include the public folder as static
-app.use(minify());
+// app.use(minify());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
