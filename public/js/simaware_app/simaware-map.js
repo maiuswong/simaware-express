@@ -15,6 +15,8 @@ function initializeMap(manual = 0, landscape = 0)
     plane_array = [];
     active_uids = [];
     active_firs = [];
+    active_tracons = [];
+    tracons_array = [];
     icons_array = [];
     firs_array  = [];
     firmarkers_array = [];
@@ -180,7 +182,7 @@ function initializeATC()
         xhrFields: {withCredentials: false},
         success: function(data) {
 
-        // Create the geoJSON layer
+        // Create the geoJSON layers for FIRs
         firmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 1, color: '#333'}});
 
         // Store the geoJSON by ICAO and if it is a FSS
@@ -202,6 +204,26 @@ function initializeATC()
 
         atc_featuregroup.addLayer(firmap);
     }})
+    
+    $.ajax({
+        url: '/livedata/traconboundaries.json',
+        xhrFields: {withCredentials: false},
+        success: function(data) {
+
+        // Create the geoJSON layers for FIRs
+        traconmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#40d0e0'}});
+
+        // Store the geoJSON by ICAO and if it is a FSS
+        $.each(traconmap._layers, function(index, obj) {
+
+            var layer = traconmap.getLayer(index);
+            var id = obj.feature.properties.prefix;
+            $.each(id, (idx, ident) => {
+                tracons_array[ident] = layer;
+            })
+        })
+
+    }});
 }
 
 // Updates the data based on the current version of live.json
@@ -241,6 +263,8 @@ async function refreshFlights(filterName = null, filterCriteria = null)
         updateFlightsBox(flights[active_flight]);
     }
     active_uids = newactive_uids;
+
+    $('#topbar_pilot').html(Object.keys(plane_array).length);
     return flights;
 
 }
@@ -409,6 +433,11 @@ function getActiveFIRs()
         }
     }
     return active_firs;
+}
+
+function traconSearch(str)
+{
+    
 }
 
 // Search for FIR based on callsign
@@ -591,6 +620,7 @@ async function refreshATC()
     //     firObj = firs_array[fir];
     //     turnOffFIR(firObj);
     // })
+    var atccount = 0;
     $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
         if(fir && typeof fir.firs === 'undefined') // fir is null if we can't find anything.  Do UIRs after.
@@ -610,6 +640,7 @@ async function refreshATC()
             {
                 newdata[index].members.push(atc);
             }
+            atccount++;
         }
     })
     $.each(sectors, (idx, atc) => {
@@ -634,6 +665,7 @@ async function refreshATC()
                 {
                     newdata[index].members.push(atc);
                 }
+                atccount++;
             })
         }
     })
@@ -722,6 +754,7 @@ async function refreshATC()
             locals_featuregroup.addLayer(oloc);
         }
     }
+    $('#topbar_atc').html(Object.keys(tracons).length + Object.keys(locals).length + atccount)
     atc_featuregroup.addLayer(locals_featuregroup);
 }
 
@@ -1460,7 +1493,7 @@ function toggleBasemap()
     setBasemapOrder();
     basemap = undefined;
     $.cookie('lightmap', 'true');
-    if(map.hasLayer(locLabels))
+    if(typeof(locLabels) != 'undefined' && map.hasLayer(locLabels))
     {
         flipLabels('light');
     }
