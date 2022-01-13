@@ -132,8 +132,12 @@ function getBadge(rating)
 // Initialize airports
 function initializeAirports()
 {
-    $.getJSON('/livedata/airports.json', function(data){ 
-        airports = data; 
+    airportsByIata = [];
+    $.getJSON(dataserver + 'api/livedata/airports.json', function(data){ 
+        airports = data;
+        $.each(airports, (idx, obj) => {
+            airportsByIata[obj.iata] = obj;
+        })
     })
 }
 
@@ -219,8 +223,19 @@ function initializeATC()
 
             var layer = traconmap.getLayer(index);
             var id = obj.feature.properties.prefix;
+            var suffix = (typeof obj.feature.properties.suffix != 'undefined') ? obj.feature.properties.suffix : 'APP';
             $.each(id, (idx, ident) => {
-                tracons_array[ident] = layer;
+                if(tracons_array[id] != undefined)
+                {
+                    tracons_array[id][suffix] = layer;
+                }
+                else
+                {
+                    var tracons_array_temp = [];
+                    tracons_array_temp[suffix] = layer;
+                    tracons_array[id] = tracons_array_temp;
+                }
+                
             })
         })
 
@@ -439,33 +454,105 @@ function getActiveFIRs()
     return active_firs;
 }
 
-function lightUpTracon(tracon, trac, index)
+function lightUpTracon(tracon, traconid)
 {
-    tracon.setStyle({weight: 1.5, color: '#40e0d0'});
-    if(tracmarkers_array[index] === undefined)
+    var tracon_handle = tracons_array[traconid.split('|')[0]][traconid.split('|')[1]];
+    tracon_handle.setStyle({weight: 1.5, color: '#40e0d0'});
+    if(tracmarkers_array[traconid] === undefined)
     {
-        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon.feature.properties.id), iconSize: 'auto'});
-        var latlng = getTraconMarkerLoc(tracon);
-        tracmarkers_array[index] = new L.marker(latlng, { icon: di });
-        tracmarkers_array[index].bindTooltip(getTraconBlock(trac), {opacity: 1, sticky: true});
-        atc_featuregroup.addLayer(tracmarkers_array[index]);
+        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon_handle.feature.properties.id), iconSize: 'auto'});
+        var latlng = getTraconMarkerLoc(tracon_handle);
+        tracmarkers_array[traconid] = new L.marker(latlng, { icon: di });
+        tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon, traconid.slice(-3) == 'DEP'), {opacity: 1, sticky: true});
+        atc_featuregroup.addLayer(tracmarkers_array[traconid]);
+        tracon_handle.bringToFront();
     }
 }
 
-function traconSearch(loc)
+function traconSearch(callsign)
 {
-    if(loc.callsign != '' && typeof tracons_array[loc.callsign] != 'undefined')
+    var prefix = callsign.slice(0,-4); // Removes _APP or _DEP
+    var suffix = callsign.slice(-3);
+
+    if(typeof(tracons_array[prefix]) != 'undefined' && typeof(tracons_array[prefix][suffix]) != 'undefined')
     {
-        return loc.callsign;
+        return [tracons_array[prefix][suffix], 'bounds', prefix + '|' + suffix];
     }
-    else if(typeof tracons_array[loc.iata] != 'undefined')
+    // Default to APP
+    else if(typeof(tracons_array[prefix]) != 'undefined' && typeof(tracons_array[prefix]['APP']) != 'undefined')
     {
-        return loc.iata;
+        return [tracons_array[prefix]['APP'], 'bounds', prefix + '|APP'];
     }
-    else if(typeof tracons_array[loc.icao] != 'undefined')
+    else if(typeof(airportsByIata[prefix]) != 'undefined')
     {
-        return loc.icao;
+        return [airportsByIata[prefix], 'circles', prefix];
     }
+    else if(typeof(airports[prefix]) != 'undefined')
+    {
+        return [airports[prefix], 'circles', prefix];
+    }
+    else
+    {
+        // Repeat with the first slice of the callsign
+        prefix = callsign.split('_')[0];
+        if(typeof(tracons_array[prefix]) != 'undefined' && typeof(tracons_array[prefix][suffix]) != 'undefined')
+        {
+            return [tracons_array[prefix][suffix], 'bounds', prefix + '|' + suffix];
+        }
+        // Default to APP
+        else if(typeof(tracons_array[prefix]) != 'undefined' && typeof(tracons_array[prefix]['APP']) != 'undefined')
+        {
+            return [tracons_array[prefix]['APP'], 'bounds', prefix + '|APP'];
+        }
+        else if(typeof(airportsByIata[prefix]) != 'undefined')
+        {
+            return [airportsByIata[prefix], 'circles', prefix];
+        }
+        else if(typeof(airports[prefix]) != 'undefined')
+        {
+            return [airports[prefix], 'circles', prefix];
+        }
+        else
+        {
+            return null;
+        }
+    }
+}
+
+function groupTracons(tracons)
+{
+    traconsGrouped = [];
+    traconsGrouped['bounds'] = [];
+    traconsGrouped['circles'] = [];
+
+    $.each(tracons, (idx, tracon) => {
+        if(foundTracon = traconSearch(tracon.callsign))
+        {
+            if(traconsGrouped[foundTracon[1]][foundTracon[2]] == undefined)
+            {
+                var traconsGrouped_temp = [];
+                traconsGrouped_temp['loc'] = foundTracon[2];
+                traconsGrouped_temp['members'] = [tracon];
+                if(foundTracon[1] == 'circles')
+                {
+                    traconsGrouped_temp['airport'] = foundTracon[0];
+                    traconsGrouped_temp['name'] = foundTracon[0].city.split(',')[0];
+                }
+                else
+                {
+                    traconsGrouped_temp['name'] = foundTracon[0].feature.properties.name;
+                }
+                traconsGrouped[foundTracon[1]][foundTracon[2]] = traconsGrouped_temp;
+            }
+            else
+            {
+                traconsGrouped[foundTracon[1]][foundTracon[2]]['members'].push(tracon);
+            }
+        }
+    })
+
+    return traconsGrouped;
+
 }
 
 // Search for FIR based on callsign
@@ -609,9 +696,9 @@ function getCallsignByFir(fir, index)
     }
 }
 
-function getTimeOnline(atc)
+function getTimeOnline(atc, unix = 1)
 {
-    let start = moment.unix(atc.created_at_timestamp);
+    let start = (unix) ? moment.unix(atc.created_at_timestamp) : moment(atc.created_at+'+0000');
     let diff = Math.abs(moment().diff(start, 'minutes', false));
 
     let hr = Math.floor(diff / 60).toString();
@@ -736,7 +823,7 @@ async function refreshATC()
         turnOffFIR(firObj, fir);
     })
 
-    response = await fetch(dataserver + 'api/livedata/tracons.json');
+    var response = await fetch(dataserver + 'api/livedata/appdep.json');
     tracons = await response.json();
 
     if(typeof(tracons_circles_featuregroup) != 'undefined' && tracons_featuregroup.hasLayer(tracons_circles_featuregroup))
@@ -745,40 +832,80 @@ async function refreshATC()
     }
     tracons_circles_featuregroup = new L.FeatureGroup();
 
+    traconsGrouped = groupTracons(tracons);
     var newactive_tracons = [];
-    $.each(tracons, (idx, trac) => {
-
-        if(foundTracon = traconSearch(trac.loc))
+    for(traconid in traconsGrouped['bounds'])
+    {
+        var tracon = traconsGrouped['bounds'][traconid];
+        if($.inArray(traconid, active_tracons) >= 0)
         {
-            if($.inArray(foundTracon, active_tracons) >= 0)
-            {
-                active_tracons.splice(active_tracons.indexOf(foundTracon), 1);
-                tracmarkers_array[foundTracon].bindTooltip(getTraconBlock(trac), {opacity: 1});
-            }
-            else
-            {
-                lightUpTracon(tracons_array[foundTracon], trac, foundTracon);
-            }
-            newactive_tracons.push(foundTracon);
+            active_tracons.splice(active_tracons.indexOf(traconid), 1);
+            tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon), {opacity: 1});
+            newactive_tracons.push(traconid);
         }
         else
         {
-            var newCircle = new L.circle([trac.loc.lat, trac.loc.lon],
-            {
-                radius: 60 * 1000,
-                weight: 1.25,
-                fillOpacity: 0,
-                color: '#40e0d0'
-            })
-            newCircle.bindTooltip(getTraconBlock(trac), {opacity: 1});
-            tracons_circles_featuregroup.addLayer(newCircle);
+            lightUpTracon(tracon, traconid);
         }
+    }
+    $.each(active_tracons, (idx) => {
+        turnOffTracon(idx);
     })
-    $.each(active_tracons, (idx, obj) => {
-        turnOffTracon(obj);
-    })
+
+    for(traconid in traconsGrouped['circles'])
+    {
+        trac = traconsGrouped['circles'][traconid];
+        var newCircle = new L.circle([trac.airport.lat, trac.airport.lon],
+        {
+            radius: 60 * 1000,
+            weight: 1.25,
+            fillOpacity: 0,
+            color: '#40e0d0'
+        })
+        newCircle.bindTooltip(getTraconBlock(trac), {opacity: 1});
+        tracons_circles_featuregroup.addLayer(newCircle);
+    }
+
     active_tracons = newactive_tracons;
     tracons_featuregroup.addLayer(tracons_circles_featuregroup);
+
+    // response = await fetch(dataserver + 'api/livedata/tracons.json');
+    // tracons = await response.json();
+
+    // var newactive_tracons = [];
+    // $.each(tracons, (idx, trac) => {
+
+    //     if(foundTracon = traconSearch(trac.loc))
+    //     {
+    //         if($.inArray(foundTracon, active_tracons) >= 0)
+    //         {
+    //             active_tracons.splice(active_tracons.indexOf(foundTracon), 1);
+    //             tracmarkers_array[foundTracon].bindTooltip(getTraconBlock(trac), {opacity: 1});
+    //         }
+    //         else
+    //         {
+    //             lightUpTracon(tracons_array[foundTracon], trac, foundTracon);
+    //         }
+    //         newactive_tracons.push(foundTracon);
+    //     }
+    //     else
+    //     {
+    //         var newCircle = new L.circle([trac.loc.lat, trac.loc.lon],
+    //         {
+    //             radius: 60 * 1000,
+    //             weight: 1.25,
+    //             fillOpacity: 0,
+    //             color: '#40e0d0'
+    //         })
+    //         newCircle.bindTooltip(getTraconBlock(trac), {opacity: 1});
+    //         tracons_circles_featuregroup.addLayer(newCircle);
+    //     }
+    // })
+    // $.each(active_tracons, (idx, obj) => {
+    //     turnOffTracon(obj);
+    // })
+    // active_tracons = newactive_tracons;
+    // tracons_featuregroup.addLayer(tracons_circles_featuregroup);
 
 
     response = await fetch(dataserver + 'api/livedata/locals.json');
@@ -927,14 +1054,12 @@ function turnOffFIR(obj, index)
 }
 
 // Disable a TRACON
-function turnOffTracon(id)
+function turnOffTracon(traconid)
 {
-    if(typeof tracons_array[id] != 'undefined')
-    {
-        tracons_array[id].setStyle({weight: 0, color: '#000'});
-        atc_featuregroup.removeLayer(tracmarkers_array[id]);
-        tracmarkers_array[id] = undefined;
-    }
+    var tracon_handle = tracons_array[traconid.split('|')[0]][traconid.split('|')[1]];
+    tracon_handle.setStyle({weight: 0, color: '#000'});
+    atc_featuregroup.removeLayer(tracmarkers_array[traconid]);
+    tracmarkers_array[traconid] = undefined;
 }
 
 function getFirIndex(fir)
@@ -1249,15 +1374,13 @@ function getControllerBlock(firObj, firMembers, firname, firicao, index)
     return list;
 }
 
-function getTraconBlock(obj)
+function getTraconBlock(obj, dep = false)
 {
     tracon_name = obj.name;
-    list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+'</td></tr>';
-    $.each(obj.APP, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="ps-3 text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
-    })
-    $.each(obj.DEP, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="ps-3 text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.time_online+'</td></tr>';
+    var appdep = (!dep) ? 'Approach' : 'Departure';
+    list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+' '+appdep+'</td></tr>';
+    $.each(obj.members, function(idx, subobj) {
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="ps-3 text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj, unix = false)+'</td></tr>';
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
