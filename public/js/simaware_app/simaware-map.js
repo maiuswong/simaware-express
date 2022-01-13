@@ -536,7 +536,7 @@ function groupTracons(tracons)
                 if(foundTracon[1] == 'circles')
                 {
                     traconsGrouped_temp['airport'] = foundTracon[0];
-                    traconsGrouped_temp['name'] = foundTracon[0].city.split(',')[0];
+                    traconsGrouped_temp['name'] = foundTracon[0].city.split(',')[0] + ' Approach';
                 }
                 else
                 {
@@ -1377,8 +1377,7 @@ function getControllerBlock(firObj, firMembers, firname, firicao, index)
 function getTraconBlock(obj, dep = false)
 {
     tracon_name = obj.name;
-    var appdep = (!dep) ? 'Approach' : 'Departure';
-    list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+' '+appdep+'</td></tr>';
+    list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+'</td></tr>';
     $.each(obj.members, function(idx, subobj) {
         list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="ps-3 text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj, unix = false)+'</td></tr>';
     })
