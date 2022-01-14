@@ -156,14 +156,14 @@ async function refreshStats()
         {{!-- console.log(sector.callsign); --}}
         let index = getFirIndexByCallsign(sector.callsign);
         let firname = getCallsignByFir(firSearch(sector.callsign), index);
-        html += '<tr><td>'+sector.callsign+'</td><td>'+firname+'</td><td>'+sector.freq+'</td><td>'+sector.name+'</td></tr>';
+        html += '<tr class="atcrow"><td>'+sector.callsign+'</td><td>'+firname+'</td><td>'+sector.freq+'</td><td>'+sector.name+'</td></tr>';
     })
     $.each(tracons, (idx, tracon) => {
         $.each(tracon.APP, (idx, app) => {
-            html += '<tr><td>'+app.callsign+'</td><td>'+tracon.name+'</td><td>'+app.freq+'</td><td>'+app.name+'</td></tr>';
+            html += '<tr class="atcrow"><td>'+app.callsign+'</td><td>'+tracon.name+'</td><td>'+app.freq+'</td><td>'+app.name+'</td></tr>';
         })
         $.each(tracon.DEP, (idx, dep) => {
-            html += '<tr><td>'+dep.callsign+'</td><td>'+tracon.name+'</td><td>'+dep.freq+'</td><td>'+dep.name+'</td></tr>';
+            html += '<tr class="atcrow"><td>'+dep.callsign+'</td><td>'+tracon.name+'</td><td>'+dep.freq+'</td><td>'+dep.name+'</td></tr>';
         })
     })
     $.each(locals, (idx, local) => {
@@ -176,13 +176,13 @@ async function refreshStats()
             var callsign = local.loc.city
         }
         $.each(local.DEL, (idx, pos) => {
-            html += '<tr><td>'+pos.callsign+'</td><td>'+callsign+' Delivery</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
+            html += '<tr class="atcrow"><td>'+pos.callsign+'</td><td>'+callsign+' Delivery</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
         })
         $.each(local.GND, (idx, pos) => {
-            html += '<tr><td>'+pos.callsign+'</td><td>'+callsign+' Ground</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
+            html += '<tr class="atcrow"><td>'+pos.callsign+'</td><td>'+callsign+' Ground</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
         })
         $.each(local.TWR, (idx, pos) => {
-            html += '<tr><td>'+pos.callsign+'</td><td>'+callsign+' Tower</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
+            html += '<tr class="atcrow"><td>'+pos.callsign+'</td><td>'+callsign+' Tower</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
         })
     })
     $('#atc').html(html);

@@ -283,7 +283,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     }
     active_uids = newactive_uids;
 
-    $('#topbar_pilot').html(Object.keys(plane_array).length);
+    $('#navbar_pilots').html(Object.keys(plane_array).length);
     return flights;
 
 }
@@ -915,7 +915,6 @@ async function refreshATC()
     {
         atc_featuregroup.removeLayer(locals_featuregroup); locals_featuregroup = new L.FeatureGroup();
     }
-
     $.each(locals, (idx, local) => {
         
         var lat = local.loc.lat;
@@ -943,7 +942,6 @@ async function refreshATC()
             locals_featuregroup.addLayer(oloc);
         }
     }
-    $('#topbar_atc').html(Object.keys(tracons).length + Object.keys(locals).length + atccount)
     atc_featuregroup.addLayer(locals_featuregroup);
 }
 
