@@ -841,12 +841,12 @@ async function refreshATC()
         {
             active_tracons.splice(active_tracons.indexOf(traconid), 1);
             tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon), {opacity: 1});
-            newactive_tracons.push(traconid);
         }
         else
         {
             lightUpTracon(tracon, traconid);
         }
+        newactive_tracons.push(traconid);
     }
     $.each(active_tracons, (idx) => {
         turnOffTracon(idx);
@@ -1151,7 +1151,7 @@ function getFirTooltip(icao, index, firMembers)
 
 function getTracTooltip(index)
 {
-    var tt = '<div style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
+    var tt = '<div style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
     return tt;
 }
 
