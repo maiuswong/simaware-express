@@ -848,8 +848,8 @@ async function refreshATC()
         }
         newactive_tracons.push(traconid);
     }
-    $.each(active_tracons, (idx) => {
-        turnOffTracon(idx);
+    $.each(active_tracons, (idx, traconid) => {
+        turnOffTracon(traconid);
     })
 
     for(traconid in traconsGrouped['circles'])
