@@ -240,7 +240,7 @@ function initializeATC()
         })
 
         atc_featuregroup.addLayer(traconmap);
-        map.addLayer(tracons_featuregroup);
+        atc_featuregroup.addLayer(tracons_featuregroup);
 
     }});
 }
