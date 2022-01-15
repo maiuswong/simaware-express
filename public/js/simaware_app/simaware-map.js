@@ -224,16 +224,16 @@ function initializeATC()
             var layer = traconmap.getLayer(index);
             var id = obj.feature.properties.prefix;
             var suffix = (typeof obj.feature.properties.suffix != 'undefined') ? obj.feature.properties.suffix : 'APP';
-            $.each(id, (idx, ident) => {
-                if(tracons_array[id] != undefined)
+            $.each(id, (idx, prefix) => {
+                if(tracons_array[prefix] != undefined)
                 {
-                    tracons_array[id][suffix] = layer;
+                    tracons_array[prefix][suffix] = layer;
                 }
                 else
                 {
                     var tracons_array_temp = [];
                     tracons_array_temp[suffix] = layer;
-                    tracons_array[id] = tracons_array_temp;
+                    tracons_array[prefix] = tracons_array_temp;
                 }
                 
             })
