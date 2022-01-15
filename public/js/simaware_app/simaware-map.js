@@ -536,7 +536,7 @@ function groupTracons(tracons)
                 if(foundTracon[1] == 'circles')
                 {
                     traconsGrouped_temp['airport'] = foundTracon[0];
-                    traconsGrouped_temp['name'] = foundTracon[0].city.split(',')[0] + ' Approach';
+                    traconsGrouped_temp['name'] = (typeof(foundTracon[0].name) != 'undefined') ? foundTracon[0].name : foundTracon[0].city.split(',')[0] + ' Approach';
                 }
                 else
                 {
