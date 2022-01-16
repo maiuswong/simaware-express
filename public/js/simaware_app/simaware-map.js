@@ -216,7 +216,7 @@ function initializeATC()
         success: function(data) {
 
         // Create the geoJSON layers for FIRs
-        traconmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#40e0d0'}});
+        traconmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0.01, color: '#222'}});
 
         // Store the geoJSON by ICAO and if it is a FSS
         $.each(traconmap._layers, function(index, obj) {
@@ -1563,6 +1563,7 @@ async function zoomToFlight(uid)
     
     // Add the plane
     active_featuregroup.addLayer(plane);
+    plane.bringToFront();
 
     // Make the tooltip permanent
     togglePlaneTooltip(plane, true);
