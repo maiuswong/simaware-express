@@ -349,11 +349,13 @@ function addAircraft(obj)
 function createPlaneMarker(obj)
 {
     // Initialize and get variables
+    var icon = new Image();
+    var mkr = getMarker(obj.aircraft);
     var plane = L.canvasMarker(new L.LatLng(obj.lat, obj.lon), {
         radius: 16,
         img: {
-            url: '/img/aircraft/'+getMarker(obj.aircraft)+'.png',    //image link
-            size: [18, 18],     //image size ( default [40, 40] )
+            url: '/img/aircraft/'+mkr[1]+'.png',    //image link
+            size: [mkr[0], mkr[0]],     //image size ( default [40, 40] )
             rotate: obj.hdg,         //image base rotate ( default 0 )
             offset: { x: 0, y: 0 }, //image offset ( default { x: 0, y: 0 } )
         },
@@ -2151,7 +2153,7 @@ function getMarker(str)
     case 'A319':
     case 'A320':
     case 'A321':
-      return 'A320';
+      return [18, 'A320'];
     case 'B731':
     case 'B732':
     case 'B733':
@@ -2160,25 +2162,25 @@ function getMarker(str)
     case 'B736':
     case 'B737':
     case 'B738':
-      return 'B738';
+      return [18, 'B738'];
     case 'B739':
-      return 'B739';
+      return [18, 'B739'];
     case 'B741':
     case 'B742':
     case 'B743':
     case 'B744':
     case 'B748':
-      return 'B747';
+      return [24, 'B744'];
     case 'B752':
     case 'B753':
-      return 'B752';
+      return [21, 'B752'];
     case 'B762':
     case 'B763':
     case 'B772':
     case 'B77L':
     case 'B773':
     case 'B77W':
-      return 'B777';
+      return [24, 'B777'];
     case 'MD82':
     case 'MD83':
     case 'MD88':
@@ -2187,9 +2189,12 @@ function getMarker(str)
     case 'CRJ2':
     case 'CRJ7':
     case 'CRJ9':
-      return 'CRJ9';
+      return [18, 'CRJ9'];
+    case 'A342':
+    case 'A343':
+      return [24, 'A340'];
     default:
-      return 'A320';
+      return [18, 'A320'];
   }
 
 }
