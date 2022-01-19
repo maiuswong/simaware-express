@@ -462,7 +462,7 @@ function lightUpTracon(tracon, traconid)
     tracon_handle.setStyle({weight: 1.5, color: '#40e0d0'});
     if(tracmarkers_array[traconid] === undefined)
     {
-        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon_handle.feature.properties.id), iconSize: 'auto'});
+        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon_handle.feature.properties.id, traconid), iconSize: 'auto'});
         var latlng = getTraconMarkerLoc(tracon_handle);
         tracmarkers_array[traconid] = new L.marker(latlng, { icon: di });
         tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon, traconid.slice(-3) == 'DEP'), {opacity: 1, sticky: true});
@@ -1149,9 +1149,9 @@ function getFirTooltip(icao, index, firMembers)
     return tt;
 }
 
-function getTracTooltip(index)
+function getTracTooltip(index, traconid)
 {
-    var tt = '<div style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
+    var tt = '<div style="position: relative"><div class="traclabel" onmouseenter="highlightTracon(\''+traconid+'\')" onmouseleave="dehighlightTracon(\''+traconid+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
     return tt;
 }
 
@@ -1166,6 +1166,29 @@ function dehighlightFIR(index)
     $.each(firs_array[index], (idx, obj) => {
         obj.setStyle({fillOpacity: 0.1});
     })
+}
+
+function highlightTracon(index)
+{
+    var split = index.split('|');
+    for(idx in tracons_array[split[0]])
+    {
+        if(idx == split[1])
+        {
+            tracons_array[split[0]][split[1]].setStyle({fillColor: '#40d0e0', fillOpacity: 0.2});
+        }
+    }
+}
+function dehighlightTracon(index)
+{
+    var split = index.split('|');
+    for(idx in tracons_array[split[0]])
+    {
+        if(idx == split[1])
+        {
+            tracons_array[split[0]][split[1]].setStyle({fillOpacity: 0});
+        }
+    }
 }
 
 function highlightSigmet(index)
