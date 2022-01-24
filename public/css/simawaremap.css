@@ -30,7 +30,6 @@ body
   margin-left: 6px;
   margin-top: 6px;
   margin-bottom: 6px;
-  border-radius: 1rem;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */
@@ -52,7 +51,6 @@ body
   margin-left: 6px;
   margin-top: 6px;
   margin-bottom: 6px;
-  border-radius: 1rem;
 }
 
 .mono
@@ -241,8 +239,8 @@ a
   position: absolute;
   top: 1rem;
   right: calc(50% - 175px);
-  border-radius: 0.25rem;
   overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 @media(min-width: 576px)
 {
@@ -275,7 +273,6 @@ a
   z-index: 1000;
   background-color: #353638;
   color: #fff;
-  border-radius: 0.25rem;
   overflow: hidden;
 }
 @media(min-width: 576px)
@@ -301,7 +298,7 @@ a
 }
 #airport-list-wrapper, #flight-list-wrapper
 {
-  max-height: 80%;
+  height: 80%;
   overflow-y: scroll;
 }
 .airport-list-item:hover
@@ -316,8 +313,8 @@ a
 {
   min-height: 0;
   background-color: #353638;
-  border-radius: 0.25rem;
   overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 #flights-body
 {
@@ -352,11 +349,13 @@ a
   background-color: rgba(0,0,0,0.2);
   overflow: hidden;
   color: #eee;
+  border-top: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
 }
 #flights-status
 {
-  border-bottom-left-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-top: none;
   font-size: 1rem;
 }
 #flights-progressbar
@@ -451,7 +450,7 @@ a
 
 #footer-background
 {
-
+  border-top: 1px solid rgba(255,255,255,0.1);
   background-color: #333435;
   position: fixed;
   z-index: 1200;
@@ -513,18 +512,12 @@ a
 }
 #search-selector
 {
-  border-top-left-radius: 0.2rem;
-  border-bottom-left-radius: 0.2rem;
-  border-top-right-radius: 0rem;
-  border-bottom-right-radius: 0rem;
   border-color: #555;
   background-color: #434445;
   color: #eee;
 }
 #search-field
 {
-  border-top-right-radius: 0.2rem;
-  border-bottom-right-radius: 0.2rem;
   border-color: #555;
   background-color: #434445;
 }
@@ -537,7 +530,6 @@ a
   right: calc(50% - 175px);
   bottom: 70px;
   z-index: 1200;
-  border-radius: 0.25rem;
   background-color: #fff;
   box-shadow: rgb(0 0 0 / 40%) 0px -10px 5px;
 }
@@ -629,7 +621,6 @@ a
   color: #555;
   height: 2rem;
   width: 2rem;
-  border-radius: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;

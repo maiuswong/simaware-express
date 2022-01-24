@@ -90,6 +90,12 @@ function getStatus(flight)
     ret.color = gray;
     ret.blink = false;
   }
+  else if(flight.status == 'Diverted')
+  {
+    ret.status = 'Diverted';
+    ret.color = red;
+    ret.blink = false;
+  }
   else
   {
     if(getDfd(flight) < 40)
@@ -159,7 +165,7 @@ function getTotalDistance(flight)
 
 function getTimeAirborne(flight)
 {
-  var now = moment();
+  var now = moment(flight.updated_at + '+0000');
   var departed_at = (flight.departed_at) ? moment(flight.departed_at + '+0000') : null;
   var arrived_at = (flight.arrived_at) ? moment(flight.arrived_at + '+0000') : null;
   if(departed_at != null && arrived_at == null)

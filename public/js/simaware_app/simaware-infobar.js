@@ -30,17 +30,17 @@ function infobar_streamers_bar()
         if(!arr) { arr = 'NONE' }
 
         // Set colors
-        html += '<div onclick="zoomToFlight(\''+obj.uid+'\')" class="streamer-bar-item rounded-3 me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Jost\', sans-serif"><h5><i class="fab fa-twitch"></i> '+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td>'+obj.callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="streamers-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="streamers-flights-progressbar-elapsed" style="width: '+getInfoElapsedWidth(infoflight)+'%; background-color: '+flight_status.color+'"></div><i id="streamers-flights-progressbar-plane" class="fas fa-plane" style="color: '+flight_status.color+'"></i><div id="streamers-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div>'
+        html += '<div onclick="zoomToFlight(\''+obj.uid+'\')" class="streamer-bar-item me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Jost\', sans-serif"><h5><i class="fab fa-twitch"></i> '+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td>'+obj.callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="streamers-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="streamers-flights-progressbar-elapsed" style="width: '+getInfoElapsedWidth(infoflight)+'%; background-color: '+flight_status.color+'"></div><i id="streamers-flights-progressbar-plane" class="fas fa-plane" style="color: '+flight_status.color+'"></i><div id="streamers-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div>'
     })
     $.each(infostreamers['controllers'], (idx, obj) => {
-        html += '<div class="streamer-bar-item rounded-3 me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Jost\', sans-serif"><h5><i class="fab fa-twitch"></i> '+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td><b>'+obj.callsign+'</b></td><td class="ps-3">'+obj.position+'</td></tr></table></div>'
+        html += '<div class="streamer-bar-item me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Jost\', sans-serif"><h5><i class="fab fa-twitch"></i> '+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td><b>'+obj.callsign+'</b></td><td class="ps-3">'+obj.position+'</td></tr></table></div>'
     })
-    $('.streamers-container').html(html);
+$('.streamers-container').html(html);
 }
 
 function infobar_airports()
 {
-    $('#infobar-title').html('<span class="badge bg-primary" style="border-radius: 0.2rem; font-size: 0.8rem; font-weight: normal">Popular Airports</span>');
+    $('#infobar-title').html('<span class="badge bg-primary" style="font-size: 0.8rem; font-weight: normal; border: 1px solid rgba(255,255,255,0.3)">Popular Airports</span>');
     $('#infobar-title').delay(500).fadeIn(250, () => {
         infobar_airports_scroll(0);
     })
@@ -57,7 +57,7 @@ function infobar_airports_scroll(idx, limit = 10)
     else
     {
         airport = airports[infoairports[idx].icao];
-        $('#infobar-content').html('<div onclick="zoomToAirport(\''+infoairports[idx].icao+'\')" class="px-3 rounded-3 footer-infobar-item d-flex align-items-center" style="min-height: 100%"><table class="text-white"><tr><td><span class="badge bg-secondary"; style="border-radius: 0.2rem; font-family: \'JetBrains Mono\', monospace">#'+(idx + 1)+'</span></td><td class="ps-3" style="font-family: \'JetBrains mono\', sans-serif">'+getLocalTooltip(infoairports[idx].icao)+'</td><td class="ps-3" style="font-size: 0.9rem; line-height: 0.9rem">'+airport.name+'<br><small class="text-muted">'+airport.city+'</small></td><td class="ps-3"><i class="fas fa-plane-departure"></i> '+infoairports[idx].departures+'</td><td class="ps-2"><i class="fas fa-plane-arrival"></i> '+infoairports[idx].arrivals+'</td></tr></table></div>');
+        $('#infobar-content').html('<div onclick="zoomToAirport(\''+infoairports[idx].icao+'\')" class="px-3 footer-infobar-item d-flex align-items-center" style="min-height: 100%"><table class="text-white"><tr><td><span class="badge bg-secondary"; style="font-family: \'JetBrains Mono\', monospace">#'+(idx + 1)+'</span></td><td class="ps-3" style="font-family: \'JetBrains mono\', sans-serif">'+getLocalTooltip(infoairports[idx].icao)+'</td><td class="ps-3" style="font-size: 0.9rem; line-height: 0.9rem">'+airport.name+'<br><small class="text-muted">'+airport.city+'</small></td><td class="ps-3"><i class="fas fa-plane-departure"></i> '+infoairports[idx].departures+'</td><td class="ps-2"><i class="fas fa-plane-arrival"></i> '+infoairports[idx].arrivals+'</td></tr></table></div>');
         $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {
             $('#infobar-content').delay(5000).animate({opacity: 0}, 250, function() {
                 $('#infobar-content').css({top: '100%'});
@@ -75,7 +75,7 @@ function infobar_streamers()
     }
     else
     {
-        $('#infobar-title').html('<span class="badge bg-purple" style="border-radius: 0.2rem; font-size: 0.8rem; font-weight: normal">Streamers</span>')
+        $('#infobar-title').html('<span class="badge bg-purple" style="font-size: 0.8rem; font-weight: normal; border: 1px solid rgba(255,255,255,0.2)">Streamers</span>')
         $('#infobar-title').delay(500).fadeIn(250, () => {
         infobar_streamers_scroll(0, 'pilots');
     })
@@ -106,7 +106,7 @@ function infobar_streamers_scroll(idx, type)
             let arr = infostreamers[type][idx].arr;
             if(!dep) { dep = 'NONE' }
             if(!arr) { arr = 'NONE' }
-            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 rounded-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="https://twitch.tv/'+infostreamers[type][idx].streamername+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div onmouseup="zoomToFlight(\''+infostreamers[type][idx].uid+'\')" class="pe-3 rounded-3 d-flex align-items-center footer-infobar-item"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div></div>');
+            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="https://twitch.tv/'+infostreamers[type][idx].streamername+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div onmouseup="zoomToFlight(\''+infostreamers[type][idx].uid+'\')" class="pe-3 rounded-3 d-flex align-items-center footer-infobar-item"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div></div>');
 
             // Set colors
             $('#infobar-flights-progressbar-plane').css({ 'color': flight_status.color });
@@ -121,7 +121,7 @@ function infobar_streamers_scroll(idx, type)
         }
         else if(type == 'controllers')
         {
-            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 rounded-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="https://twitch.tv/'+infostreamers[type][idx].streamername+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
+            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="https://twitch.tv/'+infostreamers[type][idx].streamername+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
 
             // Set colors
             $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {
