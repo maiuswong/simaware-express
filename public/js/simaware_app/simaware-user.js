@@ -55,4 +55,7 @@ async function zoomToUser(user)
     user_sidebar = true;
     
     await initializeUser(user);
+
+    // Set the URL permalink
+    window.history.pushState(user, user, '/?user=' + user);
 }

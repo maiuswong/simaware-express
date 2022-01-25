@@ -69,6 +69,9 @@ function zoomToAirport(icao, inhibit_zoom = 0)
 
     // If the searchbox is showing, hide it
     $('#search-wrapper').hide();
+
+    // Set the URL permalink
+    window.history.pushState(icao, icao, '/?airport=' + icao);
 }
 
 function returnFromAirport()

@@ -1610,6 +1610,9 @@ async function zoomToFlight(uid)
         addedFlightPathPromise = addFlightPath(apiserver +'api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
         await addedFlightPathPromise;
     }
+
+    // Set the permalink for the URL
+    window.history.pushState(uid, uid, '/?uid=' + uid);
 }
 
 async function addFlightPath(url, dep, arr, flight)
@@ -1856,6 +1859,8 @@ async function returnToView()
     {
         map.addLayer(polyline_featuregroup);
     }
+
+    window.history.pushState('home', 'home', '/');
 }
 
 function handleCookies()
