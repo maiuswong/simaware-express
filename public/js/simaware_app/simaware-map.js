@@ -465,7 +465,7 @@ function lightUpTracon(tracon, traconid)
         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon_handle.feature.properties.id, traconid), iconSize: 'auto'});
         var latlng = getTraconMarkerLoc(tracon_handle);
         tracmarkers_array[traconid] = new L.marker(latlng, { icon: di });
-        tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon, traconid.slice(-3) == 'DEP'), {opacity: 1, sticky: true});
+        tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon, traconid.slice(-3) == 'DEP'), { opacity: 1, sticky: true });
         atc_featuregroup.addLayer(tracmarkers_array[traconid]);
         tracon_handle.bringToFront();
     }
@@ -842,7 +842,7 @@ async function refreshATC()
         if($.inArray(traconid, active_tracons) >= 0)
         {
             active_tracons.splice(active_tracons.indexOf(traconid), 1);
-            tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon), {opacity: 1});
+            tracmarkers_array[traconid].setTooltipContent(getTraconBlock(tracon));
         }
         else
         {
@@ -1018,8 +1018,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
             else
             {
                 $.each(firmarkers_array[index], (idx2, obj) => {
-                    firmarkers_array[index][idx2].closeTooltip();
-                    firmarkers_array[index][idx2].bindTooltip(getControllerBlock(obj[idx], firMembers, firname, firicao, index), {opacity: 1, sticky: true});
+                    obj.setTooltipContent(getControllerBlock(obj[idx], firMembers, firname, firicao, index));
                 })
             }
             
@@ -1170,7 +1169,6 @@ function dehighlightFIR(index)
 
 function highlightTracon(index)
 {
-    var split = index.split('|');
     for(idx in tracons_array[split[0]])
     {
         if(idx == split[1])
