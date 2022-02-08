@@ -1169,6 +1169,7 @@ function dehighlightFIR(index)
 
 function highlightTracon(index)
 {
+    var split = index.split('|');
     for(idx in tracons_array[split[0]])
     {
         if(idx == split[1])
