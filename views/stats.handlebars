@@ -155,7 +155,16 @@ async function refreshStats()
     $.each(sectors, (idx, sector) => {
         {{!-- console.log(sector.callsign); --}}
         let index = getFirIndexByCallsign(sector.callsign);
-        let firname = getCallsignByFir(firSearch(sector.callsign), index);
+        console.log(sector);
+        let fir = firSearch(sector.callsign);
+        if(fir && index)
+        {
+            var firname = getCallsignByFir(fir, index);
+        }
+        else
+        {
+            var firname = 'Unknown Sector';
+        }
         html += '<tr class="atcrow"><td>'+sector.callsign+'</td><td>'+firname+'</td><td>'+sector.freq+'</td><td>'+sector.name+'</td></tr>';
     })
     $.each(tracons, (idx, tracon) => {
