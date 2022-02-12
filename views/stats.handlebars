@@ -175,14 +175,16 @@ async function refreshStats()
             html += '<tr class="atcrow"><td>'+dep.callsign+'</td><td>'+tracon.name+'</td><td>'+dep.freq+'</td><td>'+dep.name+'</td></tr>';
         })
     })
-    $.each(locals, (idx, local) => {
+    for(icao in locals) 
+    {
+        let local = locals[icao];
         if(local.loc.callsign)
         {
             var callsign = local.loc.callsign;
         }
         else
         {
-            var callsign = local.loc.city
+            var callsign = local.loc.city.split(',')[0];
         }
         $.each(local.DEL, (idx, pos) => {
             html += '<tr class="atcrow"><td>'+pos.callsign+'</td><td>'+callsign+' Delivery</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
@@ -193,7 +195,7 @@ async function refreshStats()
         $.each(local.TWR, (idx, pos) => {
             html += '<tr class="atcrow"><td>'+pos.callsign+'</td><td>'+callsign+' Tower</td><td>'+pos.freq+'</td><td>'+pos.name+'</td></tr>';
         })
-    })
+    }
     $('#atc').html(html);
     
     html = '';
