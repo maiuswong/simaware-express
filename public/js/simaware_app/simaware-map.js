@@ -1340,32 +1340,19 @@ function getLocalTooltip(icao)
 // Get the Local Block
 function getLocalBlock(icao)
 {
-    if(locals[icao])
+    console.log(icao);
+    if(typeof airports[icao] != 'undefined')
+    {
+        city = airports[icao].city;
+    }
+    if(typeof locals[icao] != 'undefined')
     {
         var obj = locals[icao];
-        if(obj.loc.city == obj.loc.country)
-        {
-            city = obj.loc.city;
-        }
-        else if(obj.loc.state)
-        {
-            city = obj.loc.city + ', ' + obj.loc.state; 
-        }
-        else
-        {
-            city = obj.loc.city + ', ' + obj.loc.country;
-        }
     }
     else
     {
-        var obj = [];
-        obj.loc = [];
-        obj.loc.icao = icao;
-        if(airports[icao])
-        {
-            city = airports[icao].city;
-            obj.loc.name = airports[icao].name;
-        }
+        obj = [];
+        obj.loc = airports[icao];
     }
     ct = 0;
     tt = '';
