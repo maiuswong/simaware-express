@@ -223,7 +223,7 @@ function initializeATC()
 
             var layer = traconmap.getLayer(index);
             var id = obj.feature.properties.prefix;
-            var suffix = (typeof obj.feature.properties.suffix != 'undefined') ? obj.feature.properties.suffix : 'APP';
+            var suffix = (typeof obj.feature.properties.suffix == 'undefined' || obj.feature.properties.suffix === null) ? 'APP' : obj.feature.properties.suffix;
             $.each(id, (idx, prefix) => {
                 if(tracons_array[prefix] != undefined)
                 {
@@ -1340,7 +1340,6 @@ function getLocalTooltip(icao)
 // Get the Local Block
 function getLocalBlock(icao)
 {
-    console.log(icao);
     if(typeof airports[icao] != 'undefined')
     {
         city = airports[icao].city;
