@@ -1297,6 +1297,8 @@ function getLocalTooltip(icao)
     }
     ct = 0;
     tt = '';
+    let icao_text_style = 'text-white-50'; // ATC offline
+    let icao_background_color = 'rgba(0,0,0,0.1)'
     if(obj.DEL)
     {
         tt += '<td class="text-white" style="background-color: '+blue+'; text-align: center; padding: 0px 5px">D</td>';
@@ -1320,19 +1322,35 @@ function getLocalTooltip(icao)
     if(tt != '')
     {
         tt = '<table style="margin: 0.2rem; margin-top: 0rem; flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr>'+tt+'</tr></table>';
+        icao_text_style = 'text-light'; // ATC online
+        icao_background_color = 'rgba(255,255,255,0.1)'
     }    
-    // If event, apply a border
+    // If event, show "notification dot"
+    let event = '';
     if(eventsByAirport[icao])
     {
-        var event = '<div style="position: absolute; top: -5; right: -5; border-radius: 5px; width: 10; height: 10; background-color: '+red+'"></div>';
+        days_rem = 999
+        for(id in eventsByAirport[icao])
+        {
+            event = eventsByAirport[icao][id];
+            days_rem = Math.min(moment.duration(moment(event.start).diff(moment())).asDays(),days_rem);
+        }
+        let style = '';
+        if (days_rem < 1)
+        {
+            style = 'background-color: '+red; // Today
+        }
+        else if (days_rem < 7)
+        {
+            style = 'border: 2px solid rgba(218,41,46,0.5);background-color: rgba(0,0,0,0.5)'; // This week
+        }
+        else
+        {
+            style = 'border: 2px solid rgba(218,41,46,0.25);background-color: rgba(0,0,0,0.25)'; // In >1 week
+        }
+        event = '<div style="position: absolute; top: -5; left: -5; border-radius: 5px; width: 10; height: 10; '+style+'"></div>';
     }
-    else
-    {
-        var event = '';
-    }
-    var tt = '<div ondblclick="zoomToAirport(\''+icao+'\', true)" style="position: relative; background-color: rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="text-light" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
-
-
+    var tt = '<div ondblclick="zoomToAirport(\''+icao+'\', true)" style="position: relative; background-color: '+icao_background_color+'; display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="'+icao_text_style+'" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
 
     return tt;
 }
