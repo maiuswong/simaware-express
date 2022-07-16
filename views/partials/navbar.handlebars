@@ -22,7 +22,21 @@
         </li>
       </ul>
       <div class="text-muted">
-        Currently tracking <span class="badge bg-dark text-light" id="navbar_pilots"></span> flights
+        Currently tracking <span class="badge bg-dark text-light" id="navbar_pilots"></span> flights <span class="badge bg-dark text-light" id="navbar_clock"></span> Zulu
+        <script>
+          let updateClock = function(){
+              const d = new Date();
+              // Format: Jan 01 00:00
+              const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              let text = monthNames[d.getMonth()] + ' ' + ('0' + d.getUTCDate()).slice(-2) + ' ' + ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2);
+              $('#navbar_clock').html(text);
+              // Update every minute
+              let timeoutMS = (60-d.getUTCSeconds()) * 1000;
+              setTimeout(arguments.callee, timeoutMS);
+          };
+          // Immediate first update
+          updateClock();
+        </script>
       </div>
     </div>
   </div>
