@@ -7,6 +7,55 @@ const warnings = {
     'EGGX0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
 }
 
+const wf = [
+    'YSSY',
+    'YBBN',
+    'AYPY',
+    'WAJJ',
+    'WAAA',
+    'WBKK',
+    'VVTS',
+    'VTCC',
+    'VNKT',
+    'VABB',
+    'OOMS',
+    'HSSK',
+    'HKJK',
+    'FMMI',
+    'FAKM',
+    'FNLU',
+    'DGAA',
+    'GVAC',
+    'GCXO',
+    'LEMG',
+    'LIRF',
+    'LGTS',
+    'EPKK',
+    'EETN',
+    'ENTC',
+    'EKYT',
+    'EBBR',
+    'EGPK',
+    'BIKF',
+    'BGBW',
+    'CYQX',
+    'TXKF',
+    'MYNN',
+    'MWCR',
+    'SKBG',
+    'SEQM',
+    'SLLP',
+    'SCEL',
+    'SCIP',
+    'NTAA',
+    'NCRG',
+    'NFFN',
+    'NZAA',
+    'NZCH',
+    'YMML',
+    'YSSY'
+]
+
 // Initializes the map in the #map container
 function initializeMap(manual = 0, landscape = 0)
 {
@@ -72,15 +121,16 @@ function initializeMap(manual = 0, landscape = 0)
     }
 
     // Set FeatureGroups
-        plane_featuregroup = new L.FeatureGroup();
-        if(!manual) { map.addLayer(plane_featuregroup); }
-        atc_featuregroup = new L.FeatureGroup();
-        active_featuregroup = new L.FeatureGroup();
-        tracons_featuregroup = new L.FeatureGroup();
-        locals_featuregroup = new L.FeatureGroup();
-        sigmets_featuregroup = new L.FeatureGroup();
-        events_featuregroup = new L.FeatureGroup();
-        nats_featuregroup = new L.FeatureGroup();
+    plane_featuregroup = new L.FeatureGroup();
+    if(!manual) { map.addLayer(plane_featuregroup); }
+    atc_featuregroup = new L.FeatureGroup();
+    active_featuregroup = new L.FeatureGroup();
+    tracons_featuregroup = new L.FeatureGroup();
+    locals_featuregroup = new L.FeatureGroup();
+    sigmets_featuregroup = new L.FeatureGroup();
+    events_featuregroup = new L.FeatureGroup();
+    nats_featuregroup = new L.FeatureGroup();
+    wf_featuregroup = new L.FeatureGroup();
 }
 
 // Tells Leaflet what icons are available
@@ -89,6 +139,29 @@ function initializeIcons()
     var icons_list = ['B739'];
     $.each(icons_list, function(idx, icon) {
         icons_array[icon] = new L.divIcon({ className: icon, iconSize: [18, 18] , iconAnchor: [9, 9]});
+    })
+}
+
+function initializeWorldFlight()
+{
+    $.each(wf, (idx, obj) => {
+        if(idx > 0)
+        {
+            var oldap = airports[wf[idx - 1]];
+            if(getAirportLoad(oldap.icao) > 20)
+            {
+                var ln = new L.Wrapped.Polyline([[oldap.lat, oldap.lon], [airports[obj].lat, airports[obj].lon]], {color: '#ffcc33', weight: 5, opacity: 1, nowrap: true});
+            }
+            else
+            {
+                var ln = new L.Wrapped.Polyline([[oldap.lat, oldap.lon], [airports[obj].lat, airports[obj].lon]], {color: '#fff', weight: 5, opacity: 0.5, nowrap: true});
+            }
+            wf_featuregroup.addLayer(ln)
+        }
+        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getWfTooltip(airports[obj]), iconSize: 'auto'});
+        var oloc = new L.marker([airports[obj].lat, airports[obj].lon],{ icon: di, });
+        console.log(idx);
+        wf_featuregroup.addLayer(oloc);
     })
 }
 
@@ -1674,6 +1747,20 @@ function toggleStreamers()
     {
         $('#streamers-bar').removeClass('d-none').addClass('d-flex');
         $('.map-button#streamers').addClass('map-button-active');
+    }
+}
+
+function toggleWorldflight()
+{
+    if(map.hasLayer(wf_featuregroup))
+    {
+        $('.map-button#wf').addClass('map-button-active');
+        map.removeLayer(wf_featuregroup);
+    }
+    else
+    {
+        $('.map-button#wf').removeClass('map-button-active');
+        map.addLayer(wf_featuregroup);
     }
 }
 

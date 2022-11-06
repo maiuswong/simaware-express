@@ -82,6 +82,12 @@ function getEventTooltip(data)
     return text;
 }
 
+function getWfTooltip(data)
+{
+    let text = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(80,80,80,0.9); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+data.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">'+getAirportLoad(data.icao)+'</td></tr></table></div>';
+    return text;
+}
+
 function cycleEvents(index)
 {
     if(index >= Object.keys(eventdata.aarstore).length)

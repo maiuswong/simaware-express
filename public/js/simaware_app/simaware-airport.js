@@ -128,6 +128,18 @@ function updateAirportFlights(airports, flights, icao)
 
 }
 
+function getAirportLoad(icao)
+{
+    var ct = 0;
+    $.each(flights, (idx, obj) => {
+        if(obj.dep == icao || obj.arr == icao)
+        {
+            ct++;
+        }
+    })
+    return ct;
+}
+
 function getAirportDetails(airports, icao)
 {
     if(airports[icao] != null)
