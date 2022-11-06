@@ -446,13 +446,9 @@ function markFIR(obj)
 function airportSearch(str)
 {
     var aus_consts =  ['YS', 'YP', 'YM', 'YB'];
-    if(airports[str])
+    if(airports['Y' + str[0] + str])
     {
-        return airports[str];
-    }
-    else if(airportsByIata[str]) // USA
-    {
-        return airportsByIata[str];
+        return airports['Y' + str[0] + str];
     }
     for(id in aus_consts)
     {
@@ -461,9 +457,13 @@ function airportSearch(str)
             return airports[aus_consts[id] + str];
         }
     }
-    if(airports['Y' + str[0] + str])
+    if(airports[str])
     {
-        return airports['Y' + str[0] + str];
+        return airports[str];
+    }
+    else if(airportsByIata[str]) // USA
+    {
+        return airportsByIata[str];
     }
 }
 
