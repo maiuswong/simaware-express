@@ -1754,12 +1754,12 @@ function toggleWorldflight()
 {
     if(map.hasLayer(wf_featuregroup))
     {
-        $('.map-button#wf').addClass('map-button-active');
+        $('.map-button#wf').removeClass('map-button-active');
         map.removeLayer(wf_featuregroup);
     }
     else
     {
-        $('.map-button#wf').removeClass('map-button-active');
+        $('.map-button#wf').addClass('map-button-active');
         map.addLayer(wf_featuregroup);
     }
 }
