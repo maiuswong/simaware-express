@@ -133,10 +133,15 @@ function getBadge(rating)
 function initializeAirports()
 {
     airportsByIata = [];
+    airportsByPrefix = [];
     $.getJSON(dataserver + 'api/livedata/airports.json', function(data){ 
         airports = data;
         $.each(airports, (idx, obj) => {
             airportsByIata[obj.iata] = obj;
+            if(obj.prefix)
+            {
+                airportsByPrefix[obj.prefix] = obj;
+            }
         })
     })
 }
@@ -445,17 +450,9 @@ function markFIR(obj)
 
 function airportSearch(str)
 {
-    var aus_consts =  ['YS', 'YP', 'YM', 'YB'];
-    if(airports['Y' + str[0] + str])
+    if(airportsByPrefix[str])
     {
-        return airports['Y' + str[0] + str];
-    }
-    for(id in aus_consts)
-    {
-        if(airports[aus_consts[id] + str])
-        {
-            return airports[aus_consts[id] + str];
-        }
+        return airportsByPrefix[str];
     }
     if(airports[str])
     {
