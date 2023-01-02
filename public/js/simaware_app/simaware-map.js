@@ -1330,7 +1330,7 @@ function dehighlightSigmet(index)
 // Get Local Tooltip
 // function getLocalTooltip(obj)
 // {
-//     var tt = '<table class="bg-white" style="font-family: \'Jost\', sans-serif; font-size: 0.7rem; border-radius: 1rem; overflow: hidden;"><tr><td style="padding: 0px 5px;">'+obj.loc.icao+'</td>';
+//     var tt = '<table class="bg-white" style="font-family: \'Figtree\', sans-serif; font-size: 0.7rem; border-radius: 1rem; overflow: hidden;"><tr><td style="padding: 0px 5px;">'+obj.loc.icao+'</td>';
 //     if(obj.DEL)
 //     {
 //         tt += '<td class="text-white bg-primary" style="padding: 0px 5px">D</td>';

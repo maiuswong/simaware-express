@@ -2,7 +2,7 @@
 /* HTML tags*/
 body
 {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Figtree', sans-serif;
     height:100%;
     background-color: #222;
     color: #eee;
@@ -25,7 +25,7 @@ body
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
   font-size: 0.8rem;
   margin-left: 6px;
   margin-top: 6px;
@@ -45,7 +45,7 @@ body
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
   font-size: 0.8rem;
   width: 255px;
   margin-left: 6px;
@@ -149,7 +149,7 @@ a
     font-size: 0.75rem;
     line-height: 0.75rem;
     box-shadow: none !important;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Figtree', sans-serif;
 }
 .firlabel
 {
@@ -185,7 +185,7 @@ a
 {
   background-color: rgba(0,0,0,0) !important;
   color: rgba(255,255,255,0.15);
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
 }
 .leaflet-control-attribution > a
 {
@@ -197,7 +197,7 @@ a
 }
 .leaflet-tooltip
 {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Figtree', sans-serif;
     background-color: rgba(0,0,0,0);
     border: none;
     box-shadow: none;
@@ -231,7 +231,7 @@ a
 /* CSS IDs */
 #flights-sidebar
 {
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
   z-index: 1000;
   width: 350px;
   background-color: #353638;
@@ -269,7 +269,7 @@ a
 
 #events-sidebar
 {
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
   z-index: 1000;
   background-color: #353638;
   color: #fff;
@@ -450,7 +450,7 @@ a
 #map-footer
 {
   z-index: 1100;
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
   font-size: 1rem;
 }
 
@@ -486,7 +486,7 @@ a
 #footer-group
 {
   width: 100%;
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
   display: flex;
   justify-content: center;
 }
@@ -566,7 +566,7 @@ a
   right: 1rem;
   width: 350px;
   z-index: 990;
-  font-family: 'Jost', sans-serif;
+  font-family: 'Figtree', sans-serif;
   border: 1px solid #edeeef;
 }
 
