@@ -1416,7 +1416,7 @@ function getLocalTooltip(icao)
         }
         else
         {
-            style = 'border: 2px solid rgba(218,41,46,0.25);background-color: rgba(0,0,0,0.25)'; // In >1 week
+            style = 'border: 2px solid rgba(218,41,46,0.25);background-color: none'; // In >1 week
         }
         event = '<div style="position: absolute; top: -5; left: -5; border-radius: 5px; width: 10; height: 10; '+style+'"></div>';
     }
