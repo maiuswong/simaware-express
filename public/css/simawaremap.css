@@ -287,6 +287,7 @@ a
 {
   color: #fff;
   font-size: 0.9rem;
+  cursor: pointer;
 }
 .hidescroll {
   -ms-overflow-style: none;
@@ -611,6 +612,11 @@ a
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
 }
+.control-pullout:hover
+{
+  background-color: rgba(255,255,255,0.1);
+  cursor: pointer;
+}
 
 #controls-container
 {
@@ -622,6 +628,7 @@ a
 }
 .control
 {
+  cursor: pointer;
   background-color: rgba(0,0,0,0.1);
   color: #555;
   height: 2rem;
@@ -629,4 +636,8 @@ a
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.control:hover
+{
+  background-color: rgba(0,0,0,0.2);
 }
