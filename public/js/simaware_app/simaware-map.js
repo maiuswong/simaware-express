@@ -1418,7 +1418,7 @@ function getLocalTooltip(icao)
         {
             style = 'border: 2px solid rgba(218,41,46,0.25);background-color: rgba(0,0,0,0.25)'; // In >1 week
         }
-        event = '<div style="position: absolute; top: -5; left: -5; border-radius: 5px; width: 10; height: 10; '+style+'"></div>';
+        event = '<div style="position: absolute; top: -5px; left: -5px; border-radius: 5px; width: 10px; height: 10px; '+style+'"></div>';
     }
     var tt = '<div ondblclick="zoomToAirport(\''+icao+'\', true)" style="position: relative; background-color: '+icao_background_color+'; display: flex; flex-direction: column; justify-content: center;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="'+icao_text_style+'" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
 

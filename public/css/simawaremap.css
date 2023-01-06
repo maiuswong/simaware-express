@@ -19,7 +19,7 @@ body
 .map-button
 {
   cursor: pointer;
-  min-width: 40;
+  min-width: 40px;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   display: flex;
@@ -298,14 +298,14 @@ a
 }
 #airport-list-wrapper, #flight-list-wrapper
 {
-  max-height: 300;
+  max-height: 300px;
   overflow-y: scroll;
 }
 @media(min-width: 576px)
 {
   #airport-list-wrapper, #flight-list-wrapper
   {
-    max-height: 400;
+    max-height: 400px;
   }
 }
 .airport-list-item:hover
@@ -598,10 +598,10 @@ a
 {
   position: absolute;
   display: none;
-  left: -30;
-  top: 40;
-  width: 30;
-  height: 80;
+  left: -30px;
+  top: 40px;
+  width: 30px;
+  height: 80px;
   vertical-align: middle;
   align-items: center;
   justify-content: center;
