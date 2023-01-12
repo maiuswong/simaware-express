@@ -85,6 +85,7 @@ function returnFromAirport()
     {
         map.addLayer(plane_featuregroup);
     }
+    window.history.pushState('home', 'home', '/');
     $('#airport-sidebar').hide();
 }
 
