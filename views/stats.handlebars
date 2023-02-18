@@ -170,16 +170,24 @@ async function refreshStats()
     $.each(tracons, (idx, tracon) => {
 
         var search = traconSearch(tracon.callsign);
-        if(search[1] == 'circles')
+        console.log(tracon.callsign);
+        if(search !== null)
         {
-            var callsign = search[0].name + ' Approach/Departure';
+            if(search[1] == 'circles')
+            {
+                var callsign = search[0].name + ' Approach/Departure';
+            }
+            else
+            {
+                var callsign = search[0].feature.properties.name;
+            }
         }
         else
         {
-            var callsign = search[0].feature.properties.name;
+            var callsign = 'Unknown Approach/Departure';
         }
 
-        html += '<tr class="atcrow"><td>'.+tracon.callsign+'</td><td>'+callsign+'</td><td>'+tracon.freq+'</td><td>'+tracon.name+'</td></tr>';
+        html += '<tr class="atcrow"><td>'+tracon.callsign+'</td><td>'+callsign+'</td><td>'+tracon.freq+'</td><td>'+tracon.name+'</td></tr>';
     })
     for(icao in locals) 
     {
