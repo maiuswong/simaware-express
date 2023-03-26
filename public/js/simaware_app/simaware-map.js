@@ -186,11 +186,11 @@ function getBadge(rating)
     {
         case 1:
             txt = 'PPL'; break;
-        case 2:
-            txt = 'IFR'; break;
         case 3:
+            txt = 'IFR'; break;
+        case 7:
             txt = 'CMEL'; break;
-        case 4:
+        case 15:
             txt = 'ATPL'; break;
     }
     if(txt.length)
