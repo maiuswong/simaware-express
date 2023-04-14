@@ -95,6 +95,11 @@ function initializeMap(manual = 0, landscape = 0)
         basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
         map.attributionControl.setPosition('topright');
 
+        if ($.cookie('mapView')) {
+            var mapView = JSON.parse($.cookie('mapView'));
+            map.setView([mapView.lat, mapView.lng], mapView.zoom, true);
+        }
+
         // Make the search box clickable
         $.each(['controls', 'flights-sidebar', 'search-field', 'user-sidebar', 'footer-background', 'streamers-bar'], (idx, obj) => {
             el = document.getElementById(obj);
@@ -105,6 +110,14 @@ function initializeMap(manual = 0, landscape = 0)
             }
         })
 
+        map.on('moveend', function(e) {
+            var view = {
+                lat: map.getCenter().lat,
+                lng: map.getCenter().lng,
+                zoom: map.getZoom()
+            };
+            $.cookie('mapView', JSON.stringify(view));
+        });
         // Set onclick functions
         map.on('click', function() {
             if(map.hasLayer(active_featuregroup))
