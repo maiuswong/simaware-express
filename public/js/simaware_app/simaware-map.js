@@ -2412,11 +2412,15 @@ function getMarker(str)
     case 'B39M':
         return [35, 43, 'B739'];
     case 'B741':
+        return [60, 70, 'B741'];
     case 'B742':
+        return [60, 70, 'B742'];
     case 'B743':
+        return [60, 70, 'B743'];
     case 'B744':
+        return [64, 70, 'B744'];
     case 'B748':
-        return [75, 69, 'A388'];
+        return [68, 76, 'B748'];
     case 'B752':
         return [38, 47, 'B752'];
     case 'B753':
