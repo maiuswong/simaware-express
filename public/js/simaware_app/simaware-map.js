@@ -445,8 +445,8 @@ function createPlaneMarker(obj)
     var plane = L.canvasMarker(new L.LatLng(obj.lat, obj.lon), {
         radius: 16,
         img: {
-            url: '/img/aircraft/'+mkr[1]+'.png',    //image link
-            size: [mkr[0], mkr[0]],     //image size ( default [40, 40] )
+            url: '/img/aircraft/'+mkr[2]+'.png',    //image link
+            size: [1.2 * Math.pow(mkr[0], 3/4), 1.2 * Math.pow(mkr[1], 3/4)],     //image size ( default [40, 40] )
             rotate: obj.hdg,         //image base rotate ( default 0 )
             offset: { x: 0, y: 0 }, //image offset ( default { x: 0, y: 0 } )
         },
@@ -2336,52 +2336,117 @@ function getMarker(str)
   ac = getAircraftIcao(str);
   switch(ac)
   {
+    case 'A3ST':
+        return [45, 56, 'A3ST'];
+    case 'A35K':
+        return [65, 69, 'A35K'];
+    case 'A300':
+    case 'A306':
+        return [45, 54, 'A300'];
+    case 'A310':
+        return [44, 47, 'A310'];
+    case 'A359':
+        return [65, 62, 'A359'];
     case 'A318':
+        return [34, 32, 'A318'];
     case 'A319':
+    case 'A19N':
+        return [34, 34, 'A319'];
     case 'A320':
+    case 'A20N':
+        return [36, 40, 'A320'];
     case 'A321':
-      return [18, 'A320'];
+    case 'A21N':
+        return [36, 47, 'A321'];
+    case 'A332':
+        return [60, 59, 'A332'];
+    case 'A333':
+    case 'A338':
+    case 'A339':
+        return [60, 64, 'A333'];
+    case 'A342':
+        return [60, 60, 'A342'];
+    case 'A343':
+        return [60, 64, 'A343'];
+    case 'A345':
+        return [63, 67, 'A345'];
+    case 'A346':
+        return [63, 74, 'A346'];
+    case 'A388':
+        return [80, 74, 'A388'];
+    case 'B77L':
+        return [65, 69, 'B77L'];
+    case 'B77W':
+        return [65, 74, 'B77W'];
+    case 'B78X':
+        return [60, 66, 'B78X'];
+    case 'B703':
+        return [44, 47, 'B703'];
+    case 'B712':
+        return [28, 38, 'B712'];
+    case 'B720':
+        return [40, 41, 'B720'];
+    case 'B721':
+        return [33, 41, 'B721'];
+    case 'B722':
+        return [33, 46, 'B722'];
     case 'B731':
+        return [28, 28, 'B731'];
     case 'B732':
+        return [28, 31, 'B732'];
     case 'B733':
+        return [29, 34, 'B733'];
     case 'B734':
+        return [29, 37, 'B734'];
     case 'B735':
+        return [29, 32, 'B735'];
     case 'B736':
+        return [35, 33, 'B736'];
     case 'B737':
+    case 'B37M':
+        return [35, 35, 'B737'];
     case 'B738':
-      return [18, 'B738'];
+    case 'B38M':
+        return [35, 41, 'B738'];
     case 'B739':
-      return [18, 'B739'];
+    case 'B39M':
+        return [35, 43, 'B739'];
     case 'B741':
     case 'B742':
     case 'B743':
     case 'B744':
     case 'B748':
-      return [24, 'B744'];
+        return [75, 69, 'A388'];
     case 'B752':
+        return [38, 47, 'B752'];
     case 'B753':
-      return [21, 'B752'];
+        return [38, 54, 'B753'];
     case 'B762':
+        return [48, 52, 'B762'];
     case 'B763':
+        return [48, 58, 'B763'];
+    case 'B764':
+        return [52, 61, 'B764'];
     case 'B772':
-    case 'B77L':
+        return [61, 65, 'B772'];
     case 'B773':
-    case 'B77W':
-      return [24, 'B777'];
+        return [61, 70, 'B773'];
+    case 'B788':
+        return [60, 57, 'B788'];
+    case 'B789':
+        return [60, 63, 'B789'];
     case 'MD82':
     case 'MD83':
     case 'MD88':
-    case 'B712':
     case 'MD90':
     case 'CRJ2':
     case 'CRJ7':
     case 'CRJ9':
-      return [18, 'CRJ9'];
-    case 'A342':
-    case 'A343':
-      return [24, 'A340'];
+        return [36, 36, 'CRJ9'];
+    case 'CONC':
+        return [26, 62, 'CONC'];
     default:
-      return [18, 'A320'];
+        return [36, 40, 'A320'];
   }
 
 }
