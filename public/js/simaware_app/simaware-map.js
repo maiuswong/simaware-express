@@ -2438,9 +2438,11 @@ function getMarker(str)
     case 'CRJ2':
     case 'CRJ7':
     case 'CRJ9':
-      return [36, 36, 'CRJ9'];
+        return [36, 36, 'CRJ9'];
+    case 'CONC':
+        return [26, 62, 'CONC'];
     default:
-      return [36, 40, 'A320'];
+        return [36, 40, 'A320'];
   }
 
 }
