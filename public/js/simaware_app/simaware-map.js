@@ -2439,8 +2439,6 @@ function getMarker(str)
         return [60, 57, 'B788'];
     case 'B789':
         return [60, 63, 'B789'];
-        case 'B78X':
-        return [60, 66, 'B78X'];
     case 'MD82':
     case 'MD83':
     case 'MD88':
