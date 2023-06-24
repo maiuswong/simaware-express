@@ -2439,128 +2439,128 @@ function getMarker(str)
         return [60, 57, 'B788'];
     case 'B789':
         return [60, 63, 'B789'];
-    case 'MD82':
-    case 'MD83':
-    case 'MD88':
-    case 'MD90':
-          return [33, 45, 'MD8x'];
+    case 'CONC':
+        return [26, 62, 'CONC'];
     case 'CRJ2':
     case 'CRJ7':
     case 'CRJ9':
         return [36, 36, 'CRJ9'];
+    case 'A124':
+        return [73, 73, 'A124'];
     case 'A225':
-        return [88, 84, 'A225'];
+        return [88, 88, 'A225'];
+    case 'AT43':
+    case 'AT44':
+    case 'AT45':
+    case 'AT46':
+        return [25, 25, 'AT4x'];
+    case 'AT72':
+    case 'AT73':
+    case 'AT75':
+    case 'AT76':
+        return [27, 27, 'AT7x'];
     case 'B461':
     case 'B462':
     case 'B463':
     case 'RJ70':
     case 'RJ85':
     case 'RJ1H':
-        return [26, 29, 'B46x'];
+        return [29, 29, 'B46x'];
+    case 'BA11':
+        return [30, 30, 'BA11'];
+    case 'BALL':
+        return [21, 21, 'BALL'];
+    case 'BN2P':
+        return [15, 15, 'BN2P'];
+    case 'C152':
+        return [11, 11, 'C1572'];
+    case 'C172':
+        return [10, 10, 'C1572'];
+    case 'C25C':
+        return [16, 16, 'C25C'];
+    case 'C700':
+        return [22, 22, 'C700'];
+    case 'COMT':
+        return [35, 35, 'COMT'];
+    case 'DA40':
+        return [12, 12, 'DA40'];
+    case 'DA42':
+        return [13, 13, 'DA642'];
+    case 'DA62':
+        return [14, 14, 'DA642'];
     case 'DC10':
-        return [50, 55, 'DC10'];
-    case 'CONC':
-        return [26, 62, 'CONC'];
+        return [55, 55, 'DC10'];
+    case 'DC6':
+        return [36, 36, 'DC6'];
+    case 'DH8A':
+    case 'DH8B':
+        return [26, 26, 'DH8A'];
+    case 'DH8C':
+    case 'DH8D':
+        return [32, 32, 'DH8D'];
+    case 'DHC6':
+        return [20, 20, 'DHC6'];
+    case 'E120':
+        return [20, 20, 'E120'];
+    case 'E135':
+    case 'E145':
+        return [29, 29, 'E135'];
+    case 'E170':
+    case 'E175':
+        return [31, 31, 'E17x'];
+    case 'E190':
+    case 'E195':
+        return [36, 36, 'E19x'];
+    case 'E290':
+    case 'E295':
+        return [39, 39, 'E29x'];
+    case 'E75S':
+    case 'E75L':
+        return [32, 32, 'E75x'];
+    case 'EC35':
+        return [10, 10, 'EC345'];
+    case 'EC45':
+        return [13, 13, 'EC345'];
     case 'EUFI':
-        return [11, 16, 'EUFI'];
+        return [16, 16, 'EUFI'];
     case 'F22':
-        return [14, 19, 'F22'];
+        return [19, 19, 'F22'];
+    case 'GLID':
+        return [17, 17, 'GLID'];
     case 'L101':
         return [50, 50, 'L101'];
     case 'MD11':
-        return [52, 61, 'MD11'];
-    case 'T154':
-        return [38, 48, 'T154'];
+        return [61, 61, 'MD11'];
+    case 'MD82':
+    case 'MD83':
+    case 'MD88':
+    case 'MD90':
+          return [45, 45, 'MD8x'];
     case 'PA28A':
     case 'PA28B':
     case 'PA28R':
     case 'PA28S':
     case 'PA28T':
     case 'PA28U':
-        return [9, 7, 'PA28x'];
-    case 'C152':
-        return [11, 8, 'C1572'];
-    case 'C172':
-        return [10, 7, 'C1572'];
-    case 'GLID':
-        return [17, 8, 'GLID'];
-    case 'AT43':
-    case 'AT44':
-    case 'AT45':
-    case 'AT46':
-        return [25, 23, 'AT4x'];
-    case 'AT72':
-    case 'AT73':
-    case 'AT75':
-    case 'AT76':
-        return [27, 27, 'AT7x'];
-    case 'C25C':
-        return [14, 16, 'C25C'];
-    case 'C700':
-        return [21, 22, 'C700'];
-    case 'DC6':
-        return [36, 32, 'DC6'];
-    case 'BN2P':
-        return [15, 11, 'BN2P'];
-    case 'DA40':
-        return [12, 8, 'DA40'];
-    case 'SR22':
-        return [12, 8, 'SR22'];
-    case 'DA42':
-        return [13, 8, 'DA642'];
-    case 'DA62':
-        return [14, 9, 'DA642'];
-    case 'DH8A':
-    case 'DH8B':
-        return [26, 22, 'DH8A'];
-    case 'DH8C':
-    case 'DH8D':
-        return [28, 32, 'DH8D'];
-    case 'DHC6':
-        return [20, 16, 'DHC6'];
-    case 'E120':
-        return [20, 20, 'E120'];
-    case 'E135':
-    case 'E145':
-        return [26, 29, 'E135'];
-    case 'E170':
-    case 'E175':
-        return [21, 31, 'E17x'];
-    case 'E190':
-    case 'E195':
-        return [29, 36, 'E19x'];
-    case 'E290':
-    case 'E295':
-        return [34, 39, 'E29x'];
-    case 'E75S':
-    case 'E75L':
-        return [31, 32, 'E75x'];
+        return [9, 9, 'PA28x'];
     case 'SB20':
-        return [25, 27, 'SB20'];
-    case 'COMT':
-        return [35, 30, 'COMT'];
-    case 'BA11':
-        return [28, 30, 'BA11'];
-    case 'VC10':
-        return [44, 48, 'VC10'];
-    case 'VISC':
-        return [28, 26, 'VISC'];
+        return [27, 27, 'SB20'];
     case 'SB34':
-        return [21, 20, 'SB34'];
-    case 'A124':
-        return [73, 69, 'A124'];
-    case 'TBM9':
-        return [13, 11, 'TBM9'];
+        return [21, 21, 'SB34'];
     case 'SF50':
-        return [12, 9, 'SF50'];
-    case 'BALL':
-        return [17, 21, 'BALL'];
-    case 'EC35':
-        return [8, 10, 'EC345'];
-    case 'EC45':
-        return [9, 13, 'EC345'];
+        return [12, 12, 'SF50'];
+    case 'SR22':
+        return [12, 12, 'SR22'];
+    case 'T154':
+        return [48, 48, 'T154'];
+    case 'TBM9':
+        return [13, 13, 'TBM9'];
+    case 'VC10':
+        return [48, 48, 'VC10'];
+    case 'VISC':
+        return [28, 28, 'VISC'];
     default:
-        return [36, 40, 'A320'];
+        return [40, 40, 'A320'];
   }
 
 }
