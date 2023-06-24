@@ -446,7 +446,7 @@ function createPlaneMarker(obj)
         radius: 16,
         img: {
             url: '/img/aircraft/'+mkr[2]+'.png',    //image link
-            size: [5.5 * Math.pow(mkr[0], 0.4), 5.5 * Math.pow(mkr[1], 0.4)],     //image size ( default [40, 40] )
+            size: [3.5 * Math.pow(mkr[0], 0.5) + 5, 3.5 * Math.pow(mkr[1], 0.5) + 5 * mkr[0] / mkr[1]],     //image size ( default [40, 40] )
             rotate: obj.hdg,         //image base rotate ( default 0 )
             offset: { x: 0, y: 0 }, //image offset ( default { x: 0, y: 0 } )
         },
