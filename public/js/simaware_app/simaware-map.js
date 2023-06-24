@@ -2453,12 +2453,12 @@ function getMarker(str)
     case 'AT44':
     case 'AT45':
     case 'AT46':
-        return [25, 25, 'AT4x'];
+        return [28, 28, 'AT4x'];
     case 'AT72':
     case 'AT73':
     case 'AT75':
     case 'AT76':
-        return [27, 27, 'AT7x'];
+        return [30, 30, 'AT7x'];
     case 'B461':
     case 'B462':
     case 'B463':
@@ -2469,39 +2469,39 @@ function getMarker(str)
     case 'BA11':
         return [30, 30, 'BA11'];
     case 'BALL':
-        return [21, 21, 'BALL'];
+        return [28, 28, 'BALL'];
     case 'BN2P':
-        return [15, 15, 'BN2P'];
+        return [25, 25, 'BN2P'];
     case 'C152':
-        return [11, 11, 'C1572'];
+        return [25, 25, 'C1572'];
     case 'C172':
-        return [10, 10, 'C1572'];
+        return [26, 26, 'C1572'];
     case 'C25C':
-        return [16, 16, 'C25C'];
+        return [26, 26, 'C25C'];
     case 'C700':
-        return [22, 22, 'C700'];
+        return [27, 27, 'C700'];
     case 'COMT':
         return [35, 35, 'COMT'];
     case 'DA40':
-        return [12, 12, 'DA40'];
+        return [26, 26, 'DA40'];
     case 'DA42':
-        return [13, 13, 'DA642'];
+        return [26, 26, 'DA642'];
     case 'DA62':
-        return [14, 14, 'DA642'];
+        return [28, 28, 'DA642'];
     case 'DC10':
         return [55, 55, 'DC10'];
     case 'DC6':
         return [36, 36, 'DC6'];
     case 'DH8A':
     case 'DH8B':
-        return [26, 26, 'DH8A'];
+        return [28, 28, 'DH8A'];
     case 'DH8C':
     case 'DH8D':
         return [32, 32, 'DH8D'];
     case 'DHC6':
-        return [20, 20, 'DHC6'];
+        return [26, 26, 'DHC6'];
     case 'E120':
-        return [20, 20, 'E120'];
+        return [26, 26, 'E120'];
     case 'E135':
     case 'E145':
         return [29, 29, 'E135'];
@@ -2518,15 +2518,15 @@ function getMarker(str)
     case 'E75L':
         return [32, 32, 'E75x'];
     case 'EC35':
-        return [10, 10, 'EC345'];
+        return [24, 24, 'EC345'];
     case 'EC45':
-        return [13, 13, 'EC345'];
+        return [27, 27, 'EC345'];
     case 'EUFI':
-        return [16, 16, 'EUFI'];
+        return [28, 28, 'EUFI'];
     case 'F22':
-        return [19, 19, 'F22'];
+        return [29, 29, 'F22'];
     case 'GLID':
-        return [17, 17, 'GLID'];
+        return [27, 27, 'GLID'];
     case 'L101':
         return [50, 50, 'L101'];
     case 'MD11':
@@ -2542,19 +2542,19 @@ function getMarker(str)
     case 'PA28S':
     case 'PA28T':
     case 'PA28U':
-        return [9, 9, 'PA28x'];
+        return [25, 25, 'PA28x'];
     case 'SB20':
         return [27, 27, 'SB20'];
     case 'SB34':
-        return [21, 21, 'SB34'];
+        return [27, 27, 'SB34'];
     case 'SF50':
         return [12, 12, 'SF50'];
     case 'SR22':
-        return [12, 12, 'SR22'];
+        return [26, 26, 'SR22'];
     case 'T154':
         return [48, 48, 'T154'];
     case 'TBM9':
-        return [13, 13, 'TBM9'];
+        return [27, 27, 'TBM9'];
     case 'VC10':
         return [48, 48, 'VC10'];
     case 'VISC':
