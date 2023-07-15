@@ -177,6 +177,23 @@ a
 {
   font-size: 0.75rem;
 }
+.flights-link-item
+{
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  padding: 2px;
+  margin-left: -3px;
+  cursor: pointer;
+}
+.flights-link-item:hover
+{
+  background-color: rgba(0,0,0,0.15);
+  border: 1px solid #222;
+}
+.flights-link-item:active
+{
+  background-color: rgba(0,0,0,0.25);
+}
 .leaflet-container
 {
   background-color: #000 !important;
