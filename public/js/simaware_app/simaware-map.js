@@ -2100,8 +2100,11 @@ function updateFlightsBox(flight)
     [dep_airport, dep_point_, dep_name, dep_city] = processAirport(plane.flight.dep);
     [arr_airport, arr_point_, arr_name, arr_city] = processAirport(plane.flight.arr);
 
-    $('#flights-dep-icao').html(dep_airport); $('#flights-airport-dep').html('<div class="flights-link-item" onclick="zoomToAirport(\''+dep_airport+'\')">'+dep_name+'<br><span class="text-muted">'+dep_city+'</span></div>');
-    $('#flights-arr-icao').html(arr_airport); $('#flights-airport-arr').html('<div class="flights-link-item" onclick="zoomToAirport(\''+arr_airport+'\')">'+arr_name+'<br><span class="text-muted">'+arr_city+'</span></div>');
+    $('#flights-dep-icao').html('<div class="flights-link-item" onclick="zoomToAirport(\''+dep_airport+'\')">'+dep_airport+'</div>');
+    $('#flights-airport-dep').html('<div class="flights-link-item" onclick="zoomToAirport(\''+dep_airport+'\')">'+dep_name+'<br><span class="text-muted">'+dep_city+'</span></div>');
+    
+    $('#flights-arr-icao').html('<div class="flights-link-item" onclick="zoomToAirport(\''+arr_airport+'\')">'+arr_airport+'</div>');
+    $('#flights-airport-arr').html('<div class="flights-link-item" onclick="zoomToAirport(\''+arr_airport+'\')">'+arr_name+'<br><span class="text-muted">'+arr_city+'</span></div>');
 
     // Set the progress bar correctly
     $('#flights-progressbar-elapsed').css({ width: getElapsedWidth(flight) + '%' });
