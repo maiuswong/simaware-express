@@ -90,7 +90,7 @@ function initializeMap(manual = 0, landscape = 0)
     // Create the map if it exists.  If not, then it's just a stats page that doesn't need it.
     if($('#map').length)
     {
-        map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([30, 0], 3).setActiveArea(activearea);
+        map = L.map('map', { zoomControl: false, preferCanvas: true, zoomSnap: 0.15 }).setView([30, 0], 3).setActiveArea(activearea);
         map.doubleClickZoom.disable();
         basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
         map.attributionControl.setPosition('topright');
