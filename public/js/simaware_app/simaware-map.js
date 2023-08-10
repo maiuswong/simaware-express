@@ -1657,6 +1657,7 @@ async function zoomToFlight(uid)
         planedata = await response.json();
         bounds = [planedata.flight.lat, planedata.flight.lon];
         plane = createPlaneMarker(planedata.flight);
+        planeImage = createPlaneImage(planedata.flight);
         plane.flight.historical = true;
     } 
     else 
@@ -2101,10 +2102,14 @@ function updateFlightsBox(flight)
     [arr_airport, arr_point_, arr_name, arr_city] = processAirport(plane.flight.arr);
 
     $('#flights-dep-icao').html('<div class="flights-link-item" onclick="zoomToAirport(\''+dep_airport+'\')">'+dep_airport+'</div>');
+    $('#flights-dep-icao-airport').html(dep_airport);
     $('#flights-airport-dep').html('<div class="flights-link-item" onclick="zoomToAirport(\''+dep_airport+'\')">'+dep_name+'<br><span class="text-muted">'+dep_city+'</span></div>');
+    $('#flights-airport-dep-short').html(dep_name);
     
     $('#flights-arr-icao').html('<div class="flights-link-item" onclick="zoomToAirport(\''+arr_airport+'\')">'+arr_airport+'</div>');
+    $('#flights-arr-icao-airport').html(arr_airport);
     $('#flights-airport-arr').html('<div class="flights-link-item" onclick="zoomToAirport(\''+arr_airport+'\')">'+arr_name+'<br><span class="text-muted">'+arr_city+'</span></div>');
+    $('#flights-airport-arr-short').html(arr_name);
 
     // Set the progress bar correctly
     $('#flights-progressbar-elapsed').css({ width: getElapsedWidth(flight) + '%' });
@@ -2114,6 +2119,8 @@ function updateFlightsBox(flight)
 
     // Equipment
     $('#flights-equipment').html(flight.aircraft);
+    $('#flights-equipment-simple').html((flight.aircraft).split('/')[0]);
+    $('#flights-equipment-img').html('<img src="/img/aircraft_full'+(flight.aircraft).split('/')[0])+'.png" alt="aircraft" style="width:80%"></img>';
 
     // Name
     $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+' '+ getPatron(flight.cid));

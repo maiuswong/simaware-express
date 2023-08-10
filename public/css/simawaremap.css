@@ -1,4 +1,5 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap');
 /* HTML tags*/
 body
 {
@@ -248,7 +249,7 @@ a
 /* CSS IDs */
 #flights-sidebar
 {
-  font-family: 'Figtree', sans-serif;
+  font-family: 'Inter', sans-serif;
   z-index: 1000;
   width: 350px;
   background-color: #353638;
@@ -258,6 +259,7 @@ a
   right: calc(50% - 175px);
   overflow: hidden;
   border: 1px solid #edeeef;
+  border-radius: 10px
 }
 @media(min-width: 576px)
 {
@@ -353,10 +355,12 @@ a
 }
 #flights-cap, #airport-cap
 {
-  background-color: #edeeef;
-  color: #333;
+  /*background-color: #edeeef;
+  color: #333;*/
 }
-
+#flights-callsign {
+  font-weight: bold;
+}
 #events-cap
 {
   background-color: #444;
@@ -378,8 +382,7 @@ a
 }
 #flights-status
 {
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-top: none;
+  border-radius: 0 10px 0 10px;
   font-size: 1rem;
 }
 #flights-progressbar
@@ -389,7 +392,7 @@ a
 }
 #flights-progressbar-elapsed
 {
-  height: 2px;
+  height: 4px;
   width: 30px;
 }
 #flights-progressbar-plane
@@ -400,7 +403,7 @@ a
 }
 #flights-progressbar-remaining
 {
-  height: 2px;
+  height: 4px;
   flex-grow: 1;
   min-width: 0;
   background-color: #aaa;

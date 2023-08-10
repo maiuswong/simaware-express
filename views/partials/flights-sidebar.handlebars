@@ -1,68 +1,90 @@
 <div id="flights-sidebar" class="flex-column" style="display: none;">
-    <div id="flights-status" class="text-white py-1 px-3" style="position: absolute; top: 0; right: 1rem;">
+    <div id="flights-status" class="text-white py-1 px-3" style="position: absolute; top: 0; right: 0">
     </div>
-    <div id="flights-cap" class="p-3 d-flex flex-column">
-        <div>
-            <h3 id="flights-callsign"></h3>
+    <div id="flights-cap" class="d-flex flex-column" style="padding-top: 1rem !important;padding-left: 1rem !important;padding-right: 1rem !important;">
+        <h3 id="flights-callsign" style="line-height: 0.5;padding-top:5px"></h3>
+        <div>Airline Name</div>
+        <div id="flights-name" style="display:flex;justify-content: left;align-items:center;padding-bottom: 8px;"></div>
+    </div>
+
+    <div id="flights-body" class="flex-column">
+
+        <div id="aircraft-picture" style="width: 100% !important;height:150px;background-color: #EDEEEF;color:#353638;justify-content: center;align-items:center;display:flex;flex-direction:column">
+            <span id="flights-equipment-img"></span>
+            <img src="/img/aircraft_full/a380.png" alt="aircraft" style="width:80%"></img>
+            <div class="display: flex;">
+                <span id="flights-equipment-simple" class="z-index:1001;color:#353638;font-weight:200;padding-top:10px"></span>
+            </div>
+            
         </div>
-        <div class="d-flex flex-row align-items-center">
-            <h4 id="flights-dep-icao" class="flights-icao mb-0"></h4>
+
+        <div style="color:#353638;display: flex;flex-direction: row;padding-top:4px;justify-content: space-between;height: 90px;">
+            <div style="background-color: #EDEEEF;display:flex;padding: 2px;display: flex;flex-direction: column;width: 49.5%;text-align:center;justify-content: center;line-height: 1;">
+                <span style="font-weight:bold; font-size: 32px" id="flights-dep-icao"></span>
+                <span style="font-weight:bold; font-size: 14px;overflow: hidden;text-overflow:ellipsis;" id="flights-airport-dep-short">
+                </span>
+                <span style="font-size: 12px;padding-top:2px">CEST (UTC +02:00)</span>
+            </div>
+            <div style="background-color: #EDEEEF;display:flex;padding: 2px;display: flex;flex-direction: column;width: 49.5%;text-align:center;justify-content: center;line-height: 1;" >
+                <span style="font-weight:bold; font-size: 32px" id="flights-arr-icao"></span>
+                <span style="font-weight:bold; font-size: 14px;overflow: hidden;text-overflow:ellipsis;" id="flights-airport-arr-short">
+                </span>
+                <span style="font-size: 12px;padding-top:2px">CEST (UTC +02:00)</span>
+            </div>
+        </div>
+
+        <div style="display: flex;flex-direction:row;justify-content: space-between;font-weight:600">
+            <div style="color:#353638;display: flex;flex-direction: row;padding-top:4px;justify-content: space-between;height: 40px;flex-direction:column;width: 49.5%">
+                <div style="background-color: #EDEEEF;display:flex;padding: 2px;display: flex; justify-content:space-between">
+                    <span>
+                        SCHEDULED
+                    </span>
+                    <span>
+                        8:15 pm
+                    </span>
+                </div>
+                <div style="background-color: #EDEEEF;display:flex;padding: 2px;display: flex; justify-content:space-between;margin-top:4px">
+                    <span>
+                        ACTUAL
+                    </span>
+                    <span>
+                        8:45 pm
+                    </span>
+                </div>
+            </div>
+
+            <div style="color:#353638;display: flex;flex-direction: row;padding-top:4px;justify-content: space-between;height: 40px;flex-direction:column;width: 49.5%;">
+                <div style="background-color: #EDEEEF;display:flex;padding: 2px;display: flex; justify-content:space-between">
+                    <span class="font-weight: 600;">
+                        SCHEDULED
+                    </span>
+                    <span class="font-weight: 600;">
+                        8:15 pm
+                    </span>
+                </div>
+                <div style="background-color: #EDEEEF;display:flex;padding: 2px;display: flex; justify-content:space-between;margin-top:4px">
+                    <span class="font-weight: 600;">
+                        ESTIMATED
+                    </span>
+                    <span class="font-weight: 600;">
+                        8:45 pm
+                    </span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="d-flex flex-row align-items-center" style="background-color: #EDEEEF;margin-top: 16px;padding: 15px 5px 15px 5px;">
             <div id="flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1">
                 <div id="flights-progressbar-elapsed"></div>
                 <i id="flights-progressbar-plane" class="fas fa-plane"></i>
                 <div id="flights-progressbar-remaining"></div>
             </div>
-            <h4 id="flights-arr-icao" class="flights-icao mb-0"></h4>
         </div>
-        <div id="flights-airborne-container" class="d-flex justify-content-center">
-            <i class="text-muted mt-2" id="flights-timeairborne"></i>
-        </div>
-    </div>
-    <table id="flights-livetable">
-        <tbody>
-            <tr>
-                <td class="pt-2 text-center" width="33.3333%">Speed</td>
-                <td class="pt-2 text-center" width="33.3333%">Altitude</td>
-                <td class="pt-2 text-center" width="33.3333%">To Go</td>
-            </tr>
-            <tr>
-                <td class="pb-2 flights-liveitem text-center" id="spd"></td>
-                <td class="pb-2 flights-liveitem text-center" id="alt"></td>
-                <td class="pb-2 flights-liveitem text-center" id="togo"></td>
-            </tr>
-        </tbody>
-    </table>
-    <div id="flights-body" class="flex-column p-3">
-        <div>
-            <table id="flights-infotable">
-                <tr>
-                    <td class="pe-3 text-center">Depart</td>
-                    <td id="flights-airport-dep" class="flights-tableitem"></td>
-                </tr>
-                <tr>
-                    <td class="pe-3">
-                        <div href="/timetable/book/1561" class="segment" style="width: 2px; height: 30px; background-color: #eee; margin: 0 auto"></div>
-                    </td>
-                    <td>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="pe-3 text-center">Arrive</td>
-                    <td id="flights-airport-arr" class="flights-tableitem"></td>
-                </tr>
-                <tr>
-                    <td class="pt-3 pe-3 text-center align-top">Route</td>
-                    <td id="flights-route" class="pt-3 flights-tableitem mono"></td>
-                </tr>
-                <tr>
-                    <td class="pt-3 pe-3 text-center align-center">Aircraft</td>
-                    <td id="flights-equipment" class="pt-3 flights-tableitem align-center"></td>
-                </tr>
-                <tr>
-                    <td class="pt-3 pe-3 text-center align-center">Name</td>
-                    <td id="flights-name" class="pt-3 flights-tableitem d-flex align-items-center"></td>
-                </tr>
-            </table>
+       
+        <div style="display:flex;justify-content: center;align-items:center;flex-direction: column;padding-buttom:10px">
+            <h5 style="padding: 5px; 0">Route</h5>
+            <div id="flights-route" class="mono" style="padding: 0 10px 10px;text-align: center;"></div>
         </div>
     </div>
 </div>
