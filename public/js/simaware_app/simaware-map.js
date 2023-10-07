@@ -2393,7 +2393,7 @@ function getMarker(str)
     case 'A359':
         return [67, 67, 'A359'];
     case 'A35K':
-        return 74, 74, 'A35K'];
+        return [74, 74, 'A35K'];
     case 'A388':
         return [80, 80, 'A388'];
     case 'B703':
