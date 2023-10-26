@@ -2614,6 +2614,8 @@ function getMarker(str)
         return [28, 28, 'B06'];
     case 'B407':
         return [28, 28, 'B407'];
+    case 'H160':
+        return [29, 34, 'H160'];    
     default:
         return [40, 40, 'A320'];
   }
