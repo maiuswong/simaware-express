@@ -95,6 +95,25 @@ function initializeMap(manual = 0, landscape = 0)
         basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
         map.attributionControl.setPosition('topright');
 
+        L.control.ruler({
+            lengthUnit: {
+              factor: 0.539956803,
+              display: 'nm',
+              label: "Distance:",
+              decimal: 2
+            },
+
+            circleMarker: {
+                color: "#00d700",
+                radius: 2
+            },
+
+            lineStyle: {
+                color: '#00d700',
+                dashArray: '1,6'
+            }
+          }).addTo(map);
+
         if ($.cookie('mapView')) {
             var mapView = JSON.parse($.cookie('mapView'));
             map.setView([mapView.lat, mapView.lng], mapView.zoom, true);
@@ -2374,7 +2393,7 @@ function getMarker(str)
     case 'A359':
         return [67, 67, 'A359'];
     case 'A35K':
-        return 74, 74, 'A35K'];
+        return [74, 74, 'A35K'];
     case 'A388':
         return [80, 80, 'A388'];
     case 'B703':
