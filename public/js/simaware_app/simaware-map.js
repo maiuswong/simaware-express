@@ -2576,7 +2576,7 @@ function getMarker(str)
     case 'VISC':
         return [28, 24, 'VISC'];
     case 'A748':
-        return [31, 22, 'A478'];
+        return [31, 22, 'A748'];
     case 'BCS1':
         return [35, 35, 'BCS1'];
     case 'BCS3':
@@ -2671,6 +2671,8 @@ function getMarker(str)
         return [28, 24, 'TBM8'];
     case 'H47':
         return [24, 35, 'H47'];
+    case 'DHC7':
+        return [34, 30, 'DHC7'];
     default:
         return [40, 40, 'A320'];
   }
