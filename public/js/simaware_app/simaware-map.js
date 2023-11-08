@@ -2600,6 +2600,7 @@ function getMarker(str)
     case 'CL60':
         return [33, 35, 'CL60'];
     case 'F18':
+    case 'F18':
         return [20, 30, 'F18'];
     case 'F35':
         return [21, 30, 'F35'];
