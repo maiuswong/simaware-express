@@ -9,7 +9,7 @@
             <div class="map-button py-1 d-none" onclick="toggleSigmet()" id="sigmet">SIGMET</div>
             {{!-- <div class="map-button py-1 d-none" onclick="toggleNat()" id="nat">NAT</div> --}}
             <div class="map-button py-1 d-none" onclick="toggleStreamers()" id="streamers"><i class="fas fa-podcast"></i></div>
-            {{!-- <div class="map-button py-1 d-none" onclick="toggleWorldflight()" id="wf">WORLDFLIGHT</div> --}}
+            <div class="map-button py-1 d-none" onclick="toggleWorldflight()" id="wf">WORLDFLIGHT</div>
         </div>
     </div>
 
@@ -78,7 +78,7 @@ async function initialize()
     await initializeInfobar();
     await updateSigmet();
     await initializePatrons();
-    {{!-- initializeWorldFlight(); --}}
+    initializeWorldFlight();
     handleCookies();
 
     // If redirected from another page
