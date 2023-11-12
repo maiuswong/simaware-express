@@ -2677,6 +2677,12 @@ function getMarker(str)
         return [24, 35, 'H47'];
     case 'DHC7':
         return [34, 30, 'DHC7'];
+    case 'RFAL':
+        return [21, 30, 'RFAL'];
+    case 'SHIP':
+        return [125, 26, 'SHIP'];
+    case 'RFAL':
+        return [23, 33, 'AS50'];
     default:
         return [40, 40, 'A320'];
   }
