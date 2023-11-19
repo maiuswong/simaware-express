@@ -6,7 +6,8 @@ function getAtisCode(atis, icao)
   delete code;
   $.each(atis_exploded, function(idx, char)
   {
-    if(char == 'INFO' || char == 'INFORMATION')
+    if(char == 'INFO' || char == 'INFORMATION'
+       || (char == 'ATIS' && atis_exploded[idx-1] == icao && atis_exploded[idx+1] != 'INFO' && atis_exploded[idx+1] != 'INFORMATION'))
     {
       code = atis_exploded[idx + 1];
       return false;
