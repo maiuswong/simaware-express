@@ -183,19 +183,21 @@ function initializeWorldFlight()
         if(idx > 0)
         {
             var oldap = airports[wf[idx - 1]];
-            if(getAirportLoad(oldap.icao) > 20)
+            if(oldap && airports[obj])
             {
-                var ln = new L.Wrapped.Polyline([[oldap.lat, oldap.lon], [airports[obj].lat, airports[obj].lon]], {color: '#ffcc33', weight: 5, opacity: 1, nowrap: true});
+                if(getAirportLoad(oldap.icao) > 20)
+                {
+                    var ln = new L.Wrapped.Polyline([[oldap.lat, oldap.lon], [airports[obj].lat, airports[obj].lon]], {color: '#ffcc33', weight: 5, opacity: 1, nowrap: true});
+                }
+                else
+                {
+                    var ln = new L.Wrapped.Polyline([[oldap.lat, oldap.lon], [airports[obj].lat, airports[obj].lon]], {color: '#fff', weight: 5, opacity: 0.5, nowrap: true});
+                }
+                wf_featuregroup.addLayer(ln)
             }
-            else
-            {
-                var ln = new L.Wrapped.Polyline([[oldap.lat, oldap.lon], [airports[obj].lat, airports[obj].lon]], {color: '#fff', weight: 5, opacity: 0.5, nowrap: true});
-            }
-            wf_featuregroup.addLayer(ln)
         }
         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getWfTooltip(airports[obj]), iconSize: 'auto'});
         var oloc = new L.marker([airports[obj].lat, airports[obj].lon],{ icon: di, });
-        console.log(idx);
         wf_featuregroup.addLayer(oloc);
     })
 }
