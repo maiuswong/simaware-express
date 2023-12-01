@@ -2687,7 +2687,7 @@ function getMarker(str)
         return [125, 26, 'SHIP'];
     case 'RFAL':
         return [23, 33, 'RFAL'];
-	    case 'VULC':
+    case 'VULC':
         return [36, 33, 'VULC'];
     default:
         return [40, 40, 'A320'];
