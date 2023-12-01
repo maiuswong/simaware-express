@@ -2365,106 +2365,108 @@ function getMarker(str)
         return [45, 56, 'A3ST'];
     case 'A30B':
     case 'A306':
-        return [55, 55, 'A300'];
+        return [45, 54, 'A300'];
     case 'A310':
-        return [47, 47, 'A310'];
+        return [44, 47, 'A310'];
     case 'A318':
-        return [34, 34, 'A318'];
+        return [34, 32, 'A318'];
     case 'A319':
     case 'A19N':
-        return [36, 36, 'A319'];
+        return [34, 34, 'A319'];
     case 'A320':
     case 'A20N':
-        return [38, 38, 'A320'];
+        return [36, 40, 'A320'];
     case 'A321':
     case 'A21N':
-        return [45, 45, 'A321'];
+        return [36, 47, 'A321'];
     case 'A332':
-        return [60, 60, 'A332'];
+        return [60, 59, 'A332'];
     case 'A333':
     case 'A338':
     case 'A339':
-        return [64, 64, 'A333'];
+        return [60, 64, 'A333'];
     case 'A342':
         return [60, 60, 'A342'];
     case 'A343':
-        return [64, 64, 'A343'];
+        return [60, 64, 'A343'];
     case 'A345':
-        return [67, 67, 'A345'];
+        return [63, 67, 'A345'];
     case 'A346':
-        return [75, 75, 'A346'];
+        return [63, 74, 'A346'];
     case 'A359':
-        return [67, 67, 'A359'];
+        return [65, 62, 'A359'];
     case 'A35K':
         return [65, 69, 'A35K'];
     case 'A388':
-        return [80, 80, 'A388'];
+        return [80, 74, 'A388'];
     case 'B703':
-        return [46, 46, 'B703'];
+        return [44, 47, 'B703'];
     case 'B720':
-        return [41, 41, 'B720'];
+        return [40, 41, 'B720'];
     case 'B712':
-        return [38, 38, 'B712'];
+        return [28, 38, 'B712'];
     case 'B721':
-        return [41, 41, 'B721'];
+        return [33, 41, 'B721'];
     case 'B722':
-        return [47, 47, 'B722'];
+        return [33, 46, 'B722'];
     case 'B731':
-        return [29, 29, 'B731'];
+        return [28, 28, 'B731'];
     case 'B732':
-        return [31, 31, 'B732'];
+        return [28, 31, 'B732'];
     case 'B733':
-        return [31, 31, 'B733'];
+        return [29, 34, 'B733'];
     case 'B734':
-        return [34, 34, 'B734'];
+        return [29, 37, 'B734'];
     case 'B735':
-        return [37, 37, 'B735'];
+        return [29, 32, 'B735'];
     case 'B736':
-        return [35, 35, 'B736'];
+        return [35, 33, 'B736'];
     case 'B737':
-        return [36, 36, 'B737'];
+        return [35, 35, 'B737'];
     case 'B738':
-        return [40, 40, 'B738'];
+        return [35, 41, 'B738'];
     case 'B739':
-        return [42, 42, 'B739'];
+        return [35, 43, 'B739'];
     case 'B74S':
-        return [60, 60, 'B74S'];
+        return [60, 70, 'B74S'];
     case 'B741':
-        return [71, 71, 'B741'];
+        return [60, 70, 'B741'];
     case 'B742':
-        return [71, 71, 'B742'];
+        return [60, 70, 'B742'];
     case 'B743':
-        return [71, 71, 'B743'];
+        return [60, 70, 'B743'];
     case 'B744':
-        return [71, 71, 'B744'];
+        return [64, 70, 'B744'];
     case 'B748':
-        return [76, 76, 'B748'];
+        return [68, 76, 'B748'];
     case 'BCLF':
-        return [72, 72, 'BCLF'];
+        return [64, 72, 'BCLF'];
     case 'B752':
-        return [47, 47, 'B752'];
+        return [38, 47, 'B752'];
     case 'B753':
-        return [55, 55, 'B753'];
+        return [38, 54, 'B753'];
     case 'B762':
-        return [48, 48, 'B762'];
+        return [48, 52, 'B762'];
     case 'B763':
-        return [55, 55, 'B763'];
+        return [48, 58, 'B763'];
     case 'B764':
-        return [61, 61, 'B764'];
+        return [52, 61, 'B764'];
     case 'B772':
-    case 'B77L':
-        return [64, 64, 'B772'];
+        return [60, 64, 'B772'];
     case 'B773':
+        return [60, 74, 'B773'];
+    case 'B77L':
+        return [64, 64, 'B77L'];
     case 'B77W':
-        return [74, 74, 'B77W'];
+        return [65, 74, 'B77W'];
     case 'B788':
-        return [60, 60, 'B788'];
+        return [60, 57, 'B788'];
     case 'B789':
-        return [63, 63, 'B789'];
+        return [60, 63, 'B789'];
     case 'B78X':
-        return [66, 66, 'B78X'];
+        return [60, 66, 'B78X'];
     case 'CONC':
-        return [62, 62, 'CONC'];
+        return [26, 60, 'CONC'];
     case 'A124':
         return [73, 69, 'A124'];
     case 'A225':
