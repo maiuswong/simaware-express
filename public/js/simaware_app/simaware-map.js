@@ -2607,7 +2607,6 @@ function getMarker(str)
     case 'CL60':
         return [33, 35, 'CL60'];
     case 'F18':
-    case 'F18':
         return [20, 30, 'F18'];
     case 'F35':
         return [21, 30, 'F35'];
@@ -2620,6 +2619,7 @@ function getMarker(str)
     case 'F15':
         return [21, 30, 'F15'];
     case 'F16':
+    case 'F16D':
         return [19, 30, 'F16'];
     case 'U2':
         return [36, 25, 'U2'];
@@ -2633,7 +2633,7 @@ function getMarker(str)
         return [21, 30, 'B407'];
     case 'V22':
         return [30, 20, 'V22'];
-	case 'ATP':
+    case 'ATP':
         return [31, 28, 'ATP'];
     case 'H160':
         return [29, 34, 'H160'];
@@ -2653,7 +2653,7 @@ function getMarker(str)
         return [52, 53, 'C17'];
     case 'DC3':
         return [30, 21, 'DC3'];
-	case 'A400':
+    case 'A400':
         return [42, 46, 'A400'];
     case 'CRJ1':
         return [24, 30, 'CRJ1'];
