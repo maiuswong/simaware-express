@@ -2670,7 +2670,7 @@ function getMarker(str)
     case 'PC12':
         return [28, 23, 'PC12'];
     case 'GLEX':
-        return [34, 5, 'GLEX'];
+        return [34, 35, 'GLEX'];
     case 'GLF5':
         return [31, 32, 'GLF5'];
     case 'FA50':
