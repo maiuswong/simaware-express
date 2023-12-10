@@ -206,6 +206,7 @@ async function loadEvent(id)
         });
         map.addLayer(oloc);
     }
+    map.fitBounds(bounds, [50, 50]);
     cycleEvents(0);
 }
 
