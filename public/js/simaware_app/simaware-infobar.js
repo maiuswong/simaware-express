@@ -15,7 +15,7 @@ async function updateInfobar()
     al = {}
     $.each(bnfoairports, (icao) => {
         al[icao] = bnfoairports[icao].departures + bnfoairports[icao].arrivals;
-    })
+    });
 
     let sort = [];
     for (var ap in al) {
@@ -26,8 +26,10 @@ async function updateInfobar()
         return b[1] - a[1];
     });
 
+    console.log(sort);
+
     infoairports = [];
-    for(let i = 1; i <= 10; i++)
+    for(let i = 0; i < 10; i++)
     {
         infoairports.push(bnfoairports[sort[i][0]]);
     }

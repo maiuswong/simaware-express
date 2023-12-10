@@ -1208,7 +1208,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         var firmarkers_array_temp = [];
         for(idx in obj)
         {
-            obj[idx].setStyle({color: '#fff', weight: 1, fillColor: '#fff', fillOpacity: 0.1});
+            obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#fff', fillOpacity: 0.1});
 
             // Add a marker and tooltip
             latlng = [Number(obj[idx].feature.properties.label_lat), Number(obj[idx].feature.properties.label_lon)];

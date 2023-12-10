@@ -30,16 +30,7 @@ async function loadEvent(id)
             $.each(flight.logs, (idx, obj) => {
                 ll.push([obj[0], obj[1]]);
             })
-            polyline = new L.Wrapped.Polyline(ll, {color:'#02ff00', opacity: 0.4, weight: 2});
-            polyline.on('mouseup', function() {
-                zoomToFlight(uid);
-            });
-            polyline.on('mouseover', function() {
-                this.setStyle({'weight': 3, 'color': '#ffcc33', 'opacity': 1});
-            });
-            polyline.on('mouseout', function() {
-                this.setStyle({'weight': 2, 'color': '#ffffff', 'opacity': 0.2});
-            })
+            polyline = new L.Wrapped.Polyline(ll, {color:'#00cc66', opacity: 0.4, weight: 2});
             polyline_array[uid] = polyline;
             polyline_featuregroup.addLayer(polyline_array[uid]);
         }
@@ -58,7 +49,7 @@ async function loadEvent(id)
             $.each(flight.logs, (idx, obj) => {
                 ll.push([obj[0], obj[1]]);
             })
-            polyline = new L.Wrapped.Polyline(ll, {color:'#02ffff', opacity: 0.4, weight: 2});
+            polyline = new L.Wrapped.Polyline(ll, {color:'#3366ff', opacity: 0.4, weight: 2});
             polyline.on('mouseup', function() {
                 zoomToFlight(uid);
             });
@@ -79,14 +70,31 @@ async function loadEvent(id)
         
     })
 
-    var aarbins = [];
+    aarbins = [];
     var html = '';
-
-    for(var i = eventdata.event.start; i < eventdata.event.end; i += 600000)
+    start = moment(eventdata.event.start);
+    end = moment(eventdata.event.end);
+    if(start.minutes() == 0)
+    {
+        start.add(-60, 'minutes');
+    }
+    else
+    {
+        start.startOf('hour');
+    }
+    if(end.minutes == 0)
+    {
+        end.add(60, 'minutes');
+    }
+    else
+    {
+        end.add(60, 'minutes').startOf('hour');
+    }
+    for(var i = start.unix() * 1000; i < end.unix() * 1000; i += 1800000)
     {
         s = {};
         s.start = i;
-        s.stop = i + 599999;
+        s.stop = i + 1799999;
         aarbins.push(s);
     }
     console.log(aarbins);
@@ -139,11 +147,15 @@ async function loadEvent(id)
 
             console.log(idx)
             if(idx == 0) { html += '<td style="height: 100; min-width: 10px; position: relative; border-left: 1px dashed #999">' }
-            else if((idx) % 6 == 5) {html += '<td style="height: 100; min-width: 10px; position: relative; border-right: 1px dashed #999">' }
+            else if((idx) % 2 == 1) {html += '<td style="height: 100; min-width: 10px; position: relative; border-right: 1px dashed #999">' }
             else { html += '<td style="height: 100; min-width: 10px; position: relative; border-right: 1px solid transparent">' }
-            if(dct > 0 || act > 0)
+            if(act > 0)
             {
-                html += '<div style="border: 1px solid #3366ff; position: absolute; left: 0; width: 100%; bottom: 0; height: '+ act / max * 100 +'%"></div><div style="border: 1px solid #00cc66; position: absolute; left: 0; width: 100%; bottom: '+ act / max * 100 +'%; height: ' + dct / max * 100 + '%"></div>';
+                html += '<div style="border: 1px solid #3366ff; position: absolute; left: 0; width: 100%; bottom: 0; height: '+ act / max * 100 +'%"></div>';
+            }
+            if(dct > 0)
+            {
+                html += '<div style="border: 1px solid #00cc66; position: absolute; left: 0; width: 100%; bottom: '+ act / max * 100 +'%; height: ' + dct / max * 100 + '%"></div>'
             }
             html += '</td>';
         }
@@ -154,15 +166,55 @@ async function loadEvent(id)
             var act = aar[icao].arrs[idx].length;
 
             console.log(idx)
-            if(idx == 0) { html += '<td style="text-align: center; font-size: 0.6rem; min-width: 16px; position: relative; border-left: 1px dashed #999">' }
-            else if((idx) % 6 == 5) {html += '<td style="text-align: center; font-size: 0.6rem; min-width: 16px; position: relative; border-right: 1px dashed #999">' }
-            else { html += '<td style="text-align: center; font-size: 0.6rem; min-width: 16px; position: relative; border-right: 1px solid transparent">' }
-            html += '<span style="color: #00cc66">' + dct * 6 + '</span><br><span style="color: #3366ff;">' + act * 6 + '</span></td>';
+            if(idx == 0) { html += '<td style="font-family: \'JetBrains Mono\', monospace;text-align: center; font-size: 0.7rem; min-width: 16px; position: relative; border-left: 1px dashed #999">' }
+            else if((idx) % 2 == 1) {html += '<td style="font-family: \'JetBrains Mono\', monospace; text-align: center; font-size: 0.7rem; min-width: 16px; position: relative; border-right: 1px dashed #999">' }
+            else { html += '<td style="font-family: \'JetBrains Mono\', monospace;text-align: center; font-size: 0.7rem; min-width: 16px; position: relative; border-right: 1px solid transparent">' }
+            html += '<span style="color: #00cc66">' + dct + '</span><br><span style="color: #3366ff;">' + act + '</span></td>';
+        }
+        html += '</tr><tr>';
+        for(var idx in aarbins)
+        {
+            if(idx % 2 == 0)
+            {
+                if(idx == 0)
+                {
+                    html += '<td colspan="2" style="color: #777; border-left: 1px dashed #999; border-right: 1px dashed #999; font-size: 0.8rem; font-family: \'JetBrains Mono\'; text-align: center">';
+                }
+                else
+                {
+                    html += '<td colspan="2" style="color: #777; border-right: 1px dashed #999; font-size: 0.8rem; font-family: \'JetBrains Mono\'; text-align: center">';
+                }
+                if(moment(aarbins[idx].start).hour() < 10)
+                {
+                    html += '0' + moment(aarbins[idx].start).hour() + 'Z</td>'
+                }
+                else
+                {
+                    html += moment(aarbins[idx].start).hour() + 'Z</td>'
+                }
+                
+            }
         }
         html += '</tr></table>';
     }
     console.log(html);
     $('#events-table').html(html);
+    var bounds = [];
+    for(var i in aar)
+    {
+        var airport = airportSearch(i);
+        var lat = Number(airport.lat);
+        var lon = Number(airport.lon);
+
+        bounds.push([lat, lon]);
+
+        var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getEventTooltipNew(airport, aar), iconSize: 'auto'});
+        oloc = new L.marker([lat, lon],
+        {
+          icon: di,
+        });
+        map.addLayer(oloc);
+    }
     cycleEvents(0);
 }
 
@@ -245,13 +297,29 @@ function getEventTooltip(data)
     $.each(data.aar, (idx, obj) => {
         count += obj[2];
     })
-    let text = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(80,80,80,0.9); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+data.ap.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">'+count+'</td></tr></table></div>';
+    let text = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(80,80,80,0.9); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+data.ap.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">'+count+'</td></tr></table></div>';
+    return text;
+}
+
+function getEventTooltipNew(data)
+{
+    let count = 0;
+    for(var i in aar[data.icao].deps)
+    {
+        count += aar[data.icao].deps[i].length;
+    }
+    for(var i in aar[data.icao].arrs)
+    {
+        count += aar[data.icao].arrs[i].length;
+    }
+
+    let text = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(80,80,80,0.9); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+data.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">'+count+'</td></tr></table></div>';
     return text;
 }
 
 function getWfTooltip(data)
 {
-    let text = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(80,80,80,0.9); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+data.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">'+getAirportLoad(data.icao)+'</td></tr></table></div>';
+    let text = '<div style="padding: 0.2rem; border-radius: 0.2rem; background-color: rgba(80,80,80,0.9); display: flex; flex-direction: column; justify-content: center;"><table style="align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px">'+data.icao+'</td></tr></table><table style="flex: 1; border-radius: 0.18rem; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="background-color: #333; text-align: center; padding: 0px 5px">'+getAirportLoad(data.icao)+'</td></tr></table></div>';
     return text;
 }
 
@@ -264,7 +332,8 @@ function cycleEvents(index)
     else
     {
         var sel = Object.keys(aar)[index];
-        $('#event-ap').html(sel);
+        var ap = airportSearch(sel);
+        $('#event-ap').html('<b>' + ap.icao + '</b> ' + ap.name + '<br /><span class="small text-muted">' + ap.city + '</span>' );
         $('.events-e#'+sel).fadeIn(300, function() {
             if(Object.keys(aar).length > 1)
             {
@@ -280,7 +349,7 @@ function cycleLegacyEvents(index)
 {
     if(index >= Object.keys(eventdata.aarstore).length)
     {
-        cycleEvents(0);
+        cycleLegacyEvents(0);
     }
     else
     {
@@ -289,7 +358,7 @@ function cycleLegacyEvents(index)
         $('#events-airport').animate({opacity: 1}, 300, function() {
             $('.aarelement').each(function() { $(this).delay(5000).animate({opacity: 0}, 150); })
             $(this).delay(5000).animate({opacity: 0}, 150, function() {
-                cycleEvents(index + 1);
+                cycleLegacyEvents(index + 1);
             })
         })
     }
