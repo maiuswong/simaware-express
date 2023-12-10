@@ -27,18 +27,21 @@ $(document).ready(() => {
 })
 async function initialize()
 {
-    response = await fetch(apiserver + 'api/patrons');
+    response = await fetch(dataserver + 'api/livedata/patrons.json');
     patrons = await response.json();
 
     supporter = '';
     streamer = '';
 
-    $.each(patrons[1], (idx, obj) => {
-        supporter += '<tr><td class="pe-3">'+obj.name + '</td><td class="ps-3" style="text-align: right"><span class="text-muted">Patron since '+moment(obj.start).format('MMMM YYYY')+'</span></td></tr>';
-    })
-
-    $.each(patrons[2], (idx, obj) => {
-        streamer += '<tr><td class="pe-3">'+obj.name + '</td><td class="px-3"><i class="fab fa-twitch"></i> '+obj.twitch+'</td><td class="ps-3" style="text-align: right"><span class="text-muted">Patron since '+moment(obj.start).format('MMMM YYYY')+'</span></td></tr>';
+    $.each(patrons, (idx, obj) => {
+        if(obj.tier == 2)
+        {
+            streamer += '<tr><td class="pe-3">'+obj.name + '</td><td class="px-3"><i class="fab fa-twitch"></i> '+obj.twitch+'</td></tr>';
+        }
+        else
+        {
+            supporter += '<tr><td class="pe-3">'+obj.name + '</td></td></tr>';
+        }
     })
 
     $('#supporters').html(supporter);

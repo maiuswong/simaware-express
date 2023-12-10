@@ -1,0 +1,60 @@
+<div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
+
+    <!-- Events Sidebar -->
+    {{> events-sidebar}}
+
+    <!-- Flights Sidebar -->
+    {{> flights-sidebar}}
+
+    <!-- Footer Group -->
+    {{> footer}}
+</div>
+<script>
+
+$(document).ready(function() {
+
+    airports = [];
+    flights = [];
+    manual = true;
+    landscape = true;
+
+    eventid = {{ id }};
+
+    // Airports show everything
+    filterName = null;
+    filterCriteria = null;
+
+    initialize();
+    setInterval(
+        async () => { 
+
+            await refreshATC();
+            flights = await refreshFlights(filterName, filterCriteria);
+            updateInfobar();
+            updateSigmet();
+            setLayerOrder();
+            
+        }, 60 * 1000);
+})
+
+async function initialize()
+{
+    initializeMap(manual, landscape);
+
+    response = await fetch('/livedata/airports.json');
+    airports = await response.json();
+    flights = await refreshFlights(filterName, filterCriteria);
+    eventsByAirport = await loadUpcomingEvents();
+    airlines = await loadAirlines();
+    await initializePatrons();
+
+    await initializeNexrad();
+    await initializeNat();
+    await initializeATC();
+    await initializeAirports();
+    await refreshATC();
+    await initializeInfobar();
+    await updateSigmet();
+    loadLegacyEvent(eventid);
+}
+</script>

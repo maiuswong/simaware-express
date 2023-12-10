@@ -288,7 +288,7 @@ a
 {
   font-family: 'Figtree', sans-serif;
   z-index: 1000;
-  background-color: #353638;
+  background-color: rgba(10,10,10,0.8);
   color: #fff;
   overflow: hidden;
 }
@@ -359,7 +359,6 @@ a
 
 #events-cap
 {
-  background-color: #444;
   color: #fff;
 }
 

@@ -1,5 +1,6 @@
 async function initializeInfobar()
 {
+    await initializePatrons();
     await updateInfobar();
     infobar_streamers();
 }
@@ -9,8 +10,79 @@ async function updateInfobar()
     // Get VATSIM data for streamers
     let response = await fetch(dataserver + 'api/livedata/vatsimdata.json');
     let infobardata = await response.json();
-    infoairports = await infobardata['airports'];
-    infostreamers = await infobardata['streamers'];
+
+    // Horrible spaghetti code to get the most popular airports
+    al = {}
+    $.each(bnfoairports, (icao) => {
+        al[icao] = bnfoairports[icao].departures + bnfoairports[icao].arrivals;
+    })
+
+    let sort = [];
+    for (var ap in al) {
+        sort.push([ap, al[ap]]);
+    }
+
+    sort.sort(function(a, b) {
+        return b[1] - a[1];
+    });
+
+    infoairports = [];
+    for(let i = 1; i <= 10; i++)
+    {
+        infoairports.push(bnfoairports[sort[i][0]]);
+    }
+
+    // Now some horrible spaghetti code for patrons
+    infostreamers = {};
+    infostreamers['pilots'] = [];
+    infostreamers['controllers'] = [];
+    $.each(flights, (idx, obj) => {
+        
+        if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
+        {
+            let s = {};
+            s.uid = idx;
+            s.dep = obj.dep;
+            s.arr = obj.arr;
+            s.streamername = patrons[obj.cid].twitch;
+            s.callsign = obj.callsign;
+            infostreamers.pilots.push(s);
+        }
+    })
+
+    $.each(tracons, (idx, obj) => {
+        if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
+        {
+            let s = {};
+            s.cid = obj.cid;
+            s.name = obj.name;
+            s.streamername = patrons[obj.cid].twitch;
+            s.position = obj.callsign;
+            infostreamers.controllers.push(s);
+        }
+    })
+    $.each(sectors, (idx, obj) => {
+        if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
+        {
+            let s = {};
+            s.cid = obj.cid;
+            s.name = obj.name;
+            s.streamername = patrons[obj.cid].twitch;
+            s.position = obj.callsign;
+            infostreamers.controllers.push(s);
+        }
+    })
+    $.each(localsraw, (idx, obj) => {
+        if(patrons[obj.cid] && !obj.callsign.includes('_ATIS'))
+        {
+            let s = {};
+            s.cid = obj.cid;
+            s.name = obj.name;
+            s.streamername = patrons[obj.cid].twitch;
+            s.position = obj.callsign;
+            infostreamers.controllers.push(s);
+        }
+    })
 
     // Update the streamers bar
     infobar_streamers_bar();
@@ -37,7 +109,7 @@ function infobar_streamers_bar()
         
     })
     $.each(infostreamers['controllers'], (idx, obj) => {
-        html += '<div class="streamer-bar-item me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Figtree\', sans-serif"><h5>'+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td><b>'+obj.callsign+'</b></td><td class="ps-3">'+obj.position+'</td></tr></table></div>'
+        html += '<div class="streamer-bar-item me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Figtree\', sans-serif"><h5>'+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td>'+obj.position+'</td></tr></table></div>'
     })
 $('.streamers-container').html(html);
 }
@@ -110,7 +182,7 @@ function infobar_streamers_scroll(idx, type)
             let arr = infostreamers[type][idx].arr;
             if(!dep) { dep = 'NONE' }
             if(!arr) { arr = 'NONE' }
-            let url = (infostreamers[type][idx].platform == 'twitch') ? 'https://twitch.tv/'+infostreamers[type][idx].streamername : 'https://youtube.com/c/' + infostreamers[type][idx].streamername + '/live';
+            let url = (true) ? 'https://twitch.tv/'+infostreamers[type][idx].streamername : 'https://youtube.com/c/' + infostreamers[type][idx].streamername + '/live';
             $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-'+infostreamers[type][idx].platform+'"></i> '+infostreamers[type][idx].streamername+'</a></div><div onmouseup="zoomToFlight(\''+infostreamers[type][idx].uid+'\')" class="pe-3 rounded-3 d-flex align-items-center footer-infobar-item"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div></div>');
 
             // Set colors

@@ -43,7 +43,14 @@ app.get('/events/', (req, res) => {
 
 /* Events View Page */
 app.get('/event/:id', (req, res) => {
-    res.render('event', {id: req.params.id});
+    if(req.params.id < 1000)
+    {
+        res.render('legacyevent', {id: req.params.id});
+    }
+    else
+    {
+        res.render('event', {id: req.params.id})
+    }
 })
 
 /* Events Analysis Page */

@@ -9,7 +9,7 @@
             <div class="map-button py-1 d-none" onclick="toggleSigmet()" id="sigmet">SIGMET</div>
             {{!-- <div class="map-button py-1 d-none" onclick="toggleNat()" id="nat">NAT</div> --}}
             <div class="map-button py-1 d-none" onclick="toggleStreamers()" id="streamers"><i class="fas fa-podcast"></i></div>
-            <div class="map-button py-1 d-none" onclick="toggleWorldflight()" id="wf">WORLDFLIGHT</div>
+            {{!-- <div class="map-button py-1 d-none" onclick="toggleWorldflight()" id="wf">WORLDFLIGHT</div> --}}
         </div>
     </div>
 
@@ -44,7 +44,7 @@ $(document).ready(function() {
     setInterval(
         async () => { 
 
-            if(new Date().getSeconds() <= 2)
+            if(new Date().getSeconds() % 15 == 0)
             {
                 await refreshATC();
                 flights = await refreshFlights(filterName, filterCriteria);
@@ -57,7 +57,7 @@ $(document).ready(function() {
                 interpolateLoc();
             }
             
-        }, 2 * 1000);
+        }, 1000);
 })
 
 async function initialize()
@@ -77,8 +77,7 @@ async function initialize()
     await refreshATC();
     await initializeInfobar();
     await updateSigmet();
-    await initializePatrons();
-    initializeWorldFlight();
+    {{!-- initializeWorldFlight(); --}}
     handleCookies();
 
     // If redirected from another page

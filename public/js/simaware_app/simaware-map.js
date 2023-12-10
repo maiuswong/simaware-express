@@ -1,5 +1,5 @@
 apiserver = 'https://api.simaware.ca/';
-dataserver = 'https://api2.simaware.ca/';
+dataserver = 'http://localhost:8000/';
 
 const warnings = {
     'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
@@ -289,8 +289,15 @@ async function initializeNexrad()
 
 async function initializePatrons()
 {
-    response = await fetch(apiserver + 'api/patronsbycid');
-    patrons = await response.json();
+    response = await fetch(dataserver + 'api/livedata/patrons.json');
+    ret = await response.json();
+    patrons = {}
+    $.each(ret, (obj) => {
+        if(ret[obj].cid)
+        {
+            patrons[ret[obj].cid] = ret[obj];
+        }
+    })
 }
 
 // Initialize the FIR Boundaries map
@@ -366,6 +373,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     response = await fetch(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
     flights = await response.json();
     flights = applyFilter(flights, filterName, filterCriteria);
+    bnfoairports = {};
     newactive_uids = [];
     
     $.each(flights, function(idx, obj)
@@ -378,6 +386,33 @@ async function refreshFlights(filterName = null, filterCriteria = null)
         else
         {
             addAircraft(obj);
+        }
+        if(obj.dep || obj.arr)
+        {
+            if(bnfoairports[obj.dep])
+            {
+                bnfoairports[obj.dep]['departures']++;
+            }
+            else
+            {
+                bnfoairports[obj.dep] = {
+                    icao: obj.dep,
+                    departures: 1,
+                    arrivals: 0
+                }
+            }
+            if(bnfoairports[obj.arr])
+            {
+                bnfoairports[obj.arr]['arrivals']++;
+            }
+            else
+            {
+                bnfoairports[obj.arr] = {
+                    icao: obj.arr,
+                    departures: 0,
+                    arrivals: 1
+                }
+            }
         }
     });
 
@@ -408,7 +443,7 @@ function interpolateLoc()
 
     for(uid in plane_array)
     {
-        var intervaltime = 2;
+        var intervaltime = 1;
         var latlon = plane_array[uid].getLatLng();
         var R = 6378.1;
         var hdg_rad = Math.PI * plane_array[uid].flight.hdg / 180;
@@ -1042,8 +1077,14 @@ async function refreshATC()
     // tracons_featuregroup.addLayer(tracons_circles_featuregroup);
 
 
-    response = await fetch(dataserver + 'api/livedata/locals.json');
-    localsraw = await response.json();
+    try {
+        response = await fetch(dataserver + 'api/livedata/locals.json');
+        localsraw = await response.json();
+    }
+    catch(e){
+        console.error(e);
+    }
+    
 
     locals = [];
 
@@ -1167,7 +1208,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         var firmarkers_array_temp = [];
         for(idx in obj)
         {
-            obj[idx].setStyle({color: '#fff', weight: 2, fillColor: '#fff', fillOpacity: 0.1});
+            obj[idx].setStyle({color: '#fff', weight: 1, fillColor: '#fff', fillOpacity: 0.1});
 
             // Add a marker and tooltip
             latlng = [Number(obj[idx].feature.properties.label_lat), Number(obj[idx].feature.properties.label_lon)];
@@ -1570,7 +1611,7 @@ function getTraconBlock(obj, dep = false)
     tracon_name = obj.name;
     list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+'</td></tr>';
     $.each(obj.members, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj, unix = false)+'</td></tr>';
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj)+'</td></tr>';
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
@@ -1731,7 +1772,7 @@ async function zoomToFlight(uid)
         active_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
     }
 
-    map.fitBounds(bounds);
+    //map.fitBounds(bounds);
 
     // Swap the layers
     map.addLayer(active_featuregroup);
@@ -1770,12 +1811,12 @@ async function zoomToFlight(uid)
 
     if(historical)
     {
-        flightpath = await new L.Polyline(adjustLogsForAntimeridian(planedata.flight, airports[dep_airport], airports[arr_airport], planedata.logs), {color: '#00D300', weight: 1.5, nowrap: true});
+        flightpath = await new L.Polyline(adjustLogsForAntimeridian(planedata.flight, airports[dep_airport], airports[arr_airport], planedata.logs), {smoothFactor: 1, color: '#00D300', weight: 1, nowrap: true});
         await active_featuregroup.addLayer(flightpath);
     }
     else
     {
-        addedFlightPathPromise = addFlightPath(apiserver +'api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
+        addedFlightPathPromise = addFlightPath(dataserver +'api/livedata/logs/' + uid + '.json', airports[dep_airport], airports[arr_airport], plane.flight);
         await addedFlightPathPromise;
     }
 
@@ -1787,7 +1828,7 @@ async function addFlightPath(url, dep, arr, flight)
 {
     var response = await fetch(url);
     var latlons = await response.json();
-    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {color: '#00D300', weight: 1.5, nowrap: true});
+    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#00D300', weight: 1, nowrap: true});
     await active_featuregroup.addLayer(flightpath);
 }
 
@@ -2146,9 +2187,9 @@ function updateFlightsBox(flight)
 
 function getPatron(cid)
 {
-    if($.inArray(cid.toString(), Object.keys(patrons)) >= 0 && (patrons[cid] == 1 || patrons[cid] == 2))
+    if(patrons[cid])
     {
-        switch(patrons[cid])
+        switch(patrons[cid].tier)
         {
             case 1:
                 return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
