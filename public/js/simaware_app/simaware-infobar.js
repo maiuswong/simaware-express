@@ -199,7 +199,7 @@ function infobar_streamers_scroll(idx, type)
         else if(type == 'controllers')
         {
             let url = (infostreamers[type][idx].platform == 'twitch') ? 'https://twitch.tv/'+infostreamers[type][idx].streamername : 'https://youtube.com/c/' + infostreamers[type][idx].streamername + '/live';
-            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-'+infostreamers[type][idx].platform+'"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
+            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
 
             // Set colors
             $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {
