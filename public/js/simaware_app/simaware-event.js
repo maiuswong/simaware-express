@@ -276,15 +276,6 @@ async function loadLegacyEvent(id)
                 ll.push([obj[1], obj[0]]);
             })
             polyline = new L.Wrapped.Polyline(ll, {color:'#fff', opacity: 0.2, weight: 2});
-            polyline.on('mouseup', function() {
-                zoomToFlight(uid);
-            });
-            polyline.on('mouseover', function() {
-                this.setStyle({'weight': 3, 'color': '#ffcc33', 'opacity': 1});
-            });
-            polyline.on('mouseout', function() {
-                this.setStyle({'weight': 2, 'color': '#ffffff', 'opacity': 0.2});
-            })
             polyline_array[uid] = polyline;
             polyline_featuregroup.addLayer(polyline_array[uid]);
         }
