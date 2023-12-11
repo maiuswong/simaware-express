@@ -88,7 +88,6 @@ async function loadEvent(id)
         s.stop = i + 1799999;
         aarbins.push(s);
     }
-    console.log(aarbins);
 
     var max = 0;
     for(var icao in aar)
@@ -116,7 +115,6 @@ async function loadEvent(id)
                 if(flight.decel > aarbin.start && flight.decel < aarbin.stop)
                 {
                     act.push(flight);
-                    console.log('AddedArr')
                 }
             }
             deps.push(dct);
@@ -136,7 +134,6 @@ async function loadEvent(id)
             var dct = aar[icao].deps[idx].length;
             var act = aar[icao].arrs[idx].length;
 
-            console.log(idx)
             if(idx == 0) { html += '<td style="height: 100; min-width: 10px; position: relative; border-left: 1px dashed #999">' }
             else if((idx) % 2 == 1) {html += '<td style="height: 100; min-width: 10px; position: relative; border-right: 1px dashed #999">' }
             else { html += '<td style="height: 100; min-width: 10px; position: relative; border-right: 1px solid transparent">' }
@@ -156,7 +153,6 @@ async function loadEvent(id)
             var dct = aar[icao].deps[idx].length;
             var act = aar[icao].arrs[idx].length;
 
-            console.log(idx)
             if(idx == 0) { html += '<td style="font-family: \'JetBrains Mono\', monospace;text-align: center; font-size: 0.7rem; min-width: 16px; position: relative; border-left: 1px dashed #999">' }
             else if((idx) % 2 == 1) {html += '<td style="font-family: \'JetBrains Mono\', monospace; text-align: center; font-size: 0.7rem; min-width: 16px; position: relative; border-right: 1px dashed #999">' }
             else { html += '<td style="font-family: \'JetBrains Mono\', monospace;text-align: center; font-size: 0.7rem; min-width: 16px; position: relative; border-right: 1px solid transparent">' }
@@ -188,7 +184,6 @@ async function loadEvent(id)
         }
         html += '</tr></table>';
     }
-    console.log(html);
     $('#events-table').html(html);
     var bounds = [];
     for(var i in aar)
@@ -207,7 +202,50 @@ async function loadEvent(id)
         map.addLayer(oloc);
     }
     map.fitBounds(bounds, [50, 50]);
+
+    // Now do analysis
+    var selbar = '';
+    var html = '';
+    for(var icao in aar)
+    {
+        var a = aar[icao];
+        if(Object.keys(aar)[0] == icao)
+        {
+            selbar += '<a id="'+icao+'" onclick="loadAnalysis(0)" class="analysis_chooser rounded-0 btn btn-outline-secondary bg-secondary text-white" style="border: 1px solid #393939; border-bottom: none;">'+icao+'</a>';
+        }
+
+        html += '<table class="aar" id="'+icao+'">';
+
+        for(var idx in a.arrs)
+        {
+            var bin = a.arrs[idx];
+            for(id2 in bin)
+            {
+                var flight = bin[id2];
+                if(didArrive(flight, eventairports))
+                {
+                    var offstv = getEventOffset(flight, eventairports[icao], eventdata, start);
+                    var offstpct = 100 * ((offstv - start.unix() * 1000) / (1000 * end.unix() - 1000 * start.unix()))
+                    var lenpct = 100 * ((flight.decel - offstv) / (1000 * end.unix() - 1000 * start.unix()))
+                    console.log((flight.decel - (start.unix() * 1000 + offstv) ) / 60000);
+                }
+            }
+        }
+    }
+
     cycleEvents(0);
+}
+
+function getEventOffset(flight, ap, eventdata, start)
+{
+    for(var i in flight.logs)
+    {
+        var ll = flight.logs[i];
+        if(distance(ap.lat, ap.lon, ll[0], ll[1]) < 80)
+        {
+            return i * 15 * 1000;
+        }
+    }
 }
 
 async function loadLegacyEvent(id)

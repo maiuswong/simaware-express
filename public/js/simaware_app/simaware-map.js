@@ -370,8 +370,16 @@ function initializeATC()
 // Updates the data based on the current version of live.json
 async function refreshFlights(filterName = null, filterCriteria = null)
 {
-    response = await fetch(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
-    flights = await response.json();
+    try
+    {
+        response = await fetch(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
+        flights = await response.json();
+    }
+    catch(e)
+    {
+        return;
+    }
+    
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
     newactive_uids = [];
@@ -1082,7 +1090,7 @@ async function refreshATC()
         localsraw = await response.json();
     }
     catch(e){
-        console.error(e);
+        return;
     }
     
 
@@ -1828,7 +1836,7 @@ async function addFlightPath(url, dep, arr, flight)
 {
     var response = await fetch(url);
     var latlons = await response.json();
-    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#00D300', weight: 1, nowrap: true});
+    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#00D300', weight: 1.5, nowrap: true});
     await active_featuregroup.addLayer(flightpath);
 }
 
