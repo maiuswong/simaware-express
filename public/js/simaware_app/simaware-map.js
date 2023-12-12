@@ -2199,6 +2199,10 @@ function updateFlightsBox(flight)
     // Name
     $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+' '+ getPatron(flight.cid));
 
+    // Name
+    console.log(flight);
+    $('#flights-squawk').html(flight.xpdr + ' / ' + flight.axpdr);
+
 }
 
 function getPatron(cid)

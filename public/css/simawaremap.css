@@ -13,8 +13,8 @@ body
 }
 #disclaimer
 {
-  backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
 }
 .map-button
 {
@@ -252,14 +252,15 @@ a
   font-family: 'Figtree', sans-serif;
   z-index: 1000;
   width: 350px;
-  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
   color: #fff;
   position: absolute;
   top: 1rem;
   right: calc(50% - 175px);
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
 }
 @media(min-width: 576px)
 {
@@ -380,8 +381,7 @@ a
 }
 #flights-status
 {
-  border-bottom-left-radius: 0.3rem;
-  border-bottom-right-radius: 0.3rem;
+  border-bottom-left-radius: 0.5rem;
   border-top: none;
   font-size: 1rem;
 }
@@ -484,7 +484,9 @@ a
   left: 0;
   right: 0;
   padding: 0.5rem 1rem;
-  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
+  
 }
 
 .footer-infobar-item
@@ -555,7 +557,7 @@ a
   bottom: 80px;
   z-index: 1200;
   background-color: #fff;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
 }
 
 #ap-wrapper
@@ -567,6 +569,7 @@ a
   left: 1rem;
   bottom: 80px;
   z-index: 1200;
+  -webkit-backdrop-filter: blur(25px);
   backdrop-filter: blur(25px);
   border-radius: 1rem;
   border: 1px solid rgba(255,255,255,0.1);
@@ -581,6 +584,7 @@ a
   left: 1rem;
   bottom: 80px;
   z-index: 1200;
+  -webkit-backdrop-filter: blur(25px);
   backdrop-filter: blur(25px);
   border-radius: 1rem;
   border: 1px solid rgba(255,255,255,0.1);
@@ -589,8 +593,16 @@ a
 #toggle-group
 {
   font-size: 1rem;
-  display:flex;
-  align-items: center;
+  display: none;
+}
+
+@media(min-width: 576px)
+{
+  #toggle-group
+  {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .toggle-item
