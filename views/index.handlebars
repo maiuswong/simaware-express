@@ -1,6 +1,6 @@
 <div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
-    <div class="d-flex" style="justify-content: center; flex-direction: row; position: absolute; left: 0; right: 0; bottom: 70px; z-index: 1199">
-        <div id="controls" class="d-flex" style="border: 1px solid rgba(255,255,255,0.2); background-color: #333; font-size: 1rem; color: #888; overflow: hidden">
+    <div class="d-flex" style="justify-content: center; flex-direction: row; position: absolute; left: 0; right: 0; bottom: 70px; z-index: 1199;">
+        <div id="controls" class="d-flex" style="border-radius: 5rem; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); font-size: 1rem; color: #888; overflow: hidden">
             <div class="loading py-1" style="z-index: 1199">Loading...</div>
             <div class="map-button py-1 d-none" onclick="toggleBasemap()" style="" id="light"><i class="far fa-lightbulb"></i></div>
             <div class="map-button py-1 d-none" onclick="toggleLabels()" style="" id="labels"><i class="fas fa-tags"></i></div>
@@ -8,7 +8,6 @@
             <div class="map-button py-1 d-none" onclick="toggleATC()" id="atc">ATC</div>
             <div class="map-button py-1 d-none" onclick="toggleSigmet()" id="sigmet">SIGMET</div>
             {{!-- <div class="map-button py-1 d-none" onclick="toggleNat()" id="nat">NAT</div> --}}
-            <div class="map-button py-1 d-none" onclick="toggleStreamers()" id="streamers"><i class="fas fa-podcast"></i></div>
             {{!-- <div class="map-button py-1 d-none" onclick="toggleWorldflight()" id="wf">WORLDFLIGHT</div> --}}
         </div>
     </div>

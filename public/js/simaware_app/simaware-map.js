@@ -1000,8 +1000,16 @@ async function refreshATC()
         turnOffFIR(firObj, fir);
     })
 
-    var response = await fetch(dataserver + 'api/livedata/appdep.json');
-    tracons = await response.json();
+    try
+    {
+        var response = await fetch(dataserver + 'api/livedata/appdep.json');
+        tracons = await response.json();
+    }
+    catch(e)
+    {
+        return;
+    }
+    
 
     if(typeof(tracons_circles_featuregroup) != 'undefined' && tracons_featuregroup.hasLayer(tracons_circles_featuregroup))
     {
@@ -2200,9 +2208,9 @@ function getPatron(cid)
         switch(patrons[cid].tier)
         {
             case 1:
-                return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
+                return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
             case 2:
-              return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
+              return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
         }
     }
     else

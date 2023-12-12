@@ -227,7 +227,7 @@ async function loadEvent(id)
                     var offstv = getEventOffset(flight, eventairports[icao], eventdata, start);
                     var offstpct = 100 * ((offstv - start.unix() * 1000) / (1000 * end.unix() - 1000 * start.unix()))
                     var lenpct = 100 * ((flight.decel - offstv) / (1000 * end.unix() - 1000 * start.unix()))
-                    console.log((flight.decel - (start.unix() * 1000 + offstv) ) / 60000);
+                    console.log((flight.decel - (start.unix() * 100 + offstv) ) / 60000);
                 }
             }
         }

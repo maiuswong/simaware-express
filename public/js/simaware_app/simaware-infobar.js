@@ -1,3 +1,18 @@
+$(document).ready(() => {
+    $('#ap-toggle').on('mouseenter', () => {
+        $('#ap-wrapper').show();
+    })
+    $('#ap-toggle').on('mouseleave', () => {
+        $('#ap-wrapper').hide();
+    })
+    $('#streamers-toggle').on('mouseenter', () => {
+        $('#streamers-wrapper').show();
+    })
+    $('#streamers-toggle').on('mouseleave', () => {
+        $('#streamers-wrapper').hide();
+    })
+})
+
 async function initializeInfobar()
 {
     await initializePatrons();
@@ -26,18 +41,23 @@ async function updateInfobar()
         return b[1] - a[1];
     });
 
-    console.log(sort);
-
     infoairports = [];
+
+    var html = '<h5 class="mb-3">Popular Airports</h5><table>';
     for(let i = 0; i < 10; i++)
     {
+        let airport = airportSearch(bnfoairports[sort[i][0]].icao);
         infoairports.push(bnfoairports[sort[i][0]]);
+        html += '<tr onclick="zoomToAirport(\''+bnfoairports[sort[i][0]].icao+'\')" ><td class="py-2"><span class="badge" style="color: #fff; border: 1px solid #fff; border-radius: 1rem; font-family: \'JetBrains Mono\', monospace">#'+(i + 1)+'</span></td><td class="ps-3" style="font-family: \'JetBrains mono\', sans-serif">'+getLocalTooltip(bnfoairports[sort[i][0]].icao)+'</td><td class="ps-3" style="font-size: 0.9rem; line-height: 0.9rem">'+airport.name+'<br><small class="text-muted">'+airport.city+'</small></td><td class="ps-3"><i class="fas fa-plane-departure"></i> '+bnfoairports[sort[i][0]].departures+'</td><td class="ps-2"><i class="fas fa-plane-arrival"></i> '+bnfoairports[sort[i][0]].arrivals+'</td></tr>';
     }
+    html += '</table>'
+    $('#ap-wrapper').html(html);
 
     // Now some horrible spaghetti code for patrons
     infostreamers = {};
     infostreamers['pilots'] = [];
     infostreamers['controllers'] = [];
+    html = '<table style="font-size: 0.9rem"><h5 class="mb-3">Active Streamers</h5>';
     $.each(flights, (idx, obj) => {
         
         if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
@@ -46,11 +66,19 @@ async function updateInfobar()
             s.uid = idx;
             s.dep = obj.dep;
             s.arr = obj.arr;
+            if(!s.dep) { s.dep = 'NONE' }
+            if(!s.arr) { s.arr = 'NONE' }
             s.streamername = patrons[obj.cid].twitch;
             s.callsign = obj.callsign;
             infostreamers.pilots.push(s);
+            let infoflight = plane_array[s.uid].flight;
+            let flight_status = getStatus(infoflight);
+            html += '<tr><td class="py-2"><a class="footer-infobar-item text-white p-2" href="https://twitch.tv/'+s.streamername+'"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td class="ps-3">'+s.callsign+'</td><td class="ps-3">'+s.dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div class="toggle-flights-progressbar-elapsed" id="'+s.uid+'" style="background-color: '+flight_status.color+'; width: '+getInfoElapsedWidth(infoflight)+'%"></div><i class="toggle-flights-progressbar-plane fas fa-plane" id="'+s.uid+'" style="color: '+flight_status.color+'"></i><div class="toggle-flights-progressbar-remaining" id="'+s.uid+'"></div></td><td class="ps-2" style="text-align: right">'+s.arr+'</td></tr>';
         }
     })
+
+    html += '</table>';
+    $('#streamers-wrapper').html(html);
 
     $.each(tracons, (idx, obj) => {
         if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
@@ -61,6 +89,7 @@ async function updateInfobar()
             s.streamername = patrons[obj.cid].twitch;
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
+            html += '<tr><td><a class="footer-infobar-item text-white p-2" href="https://twitch.tv/'+s.streamername+'"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4">'+s.position+'</td></td>';
         }
     })
     $.each(sectors, (idx, obj) => {
@@ -72,6 +101,7 @@ async function updateInfobar()
             s.streamername = patrons[obj.cid].twitch;
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
+            html += '<tr><td><a class="footer-infobar-item text-white p-2" href="https://twitch.tv/'+s.streamername+'"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4">'+s.position+'</td></td>';
         }
     })
     $.each(localsraw, (idx, obj) => {
@@ -83,42 +113,14 @@ async function updateInfobar()
             s.streamername = patrons[obj.cid].twitch;
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
+            html += '<tr><td><a class="footer-infobar-item text-white p-2" href="https://twitch.tv/'+s.streamername+'"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4">'+s.position+'</td></td>';
         }
     })
-
-    // Update the streamers bar
-    infobar_streamers_bar();
-}
-
-function infobar_streamers_bar()
-{
-    let html = '';
-    $.each(infostreamers['pilots'], (idx, obj) => {
-        
-        if(plane_array[obj.uid])
-        {
-            let infoflight = plane_array[obj.uid].flight;
-            let flight_status = getStatus(infoflight);
-            debug_flight = infoflight;
-            let dep = obj.dep;
-            let arr = obj.arr;
-            if(!dep) { dep = 'NONE' }
-            if(!arr) { arr = 'NONE' }
-
-            // Set colors
-            html += '<div onclick="zoomToFlight(\''+obj.uid+'\')" class="streamer-bar-item me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Figtree\', sans-serif"><h5>'+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td>'+obj.callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="streamers-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="streamers-flights-progressbar-elapsed" style="width: '+getInfoElapsedWidth(infoflight)+'%; background-color: '+flight_status.color+'"></div><i id="streamers-flights-progressbar-plane" class="fas fa-plane" style="color: '+flight_status.color+'"></i><div id="streamers-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div>'
-        }
-        
-    })
-    $.each(infostreamers['controllers'], (idx, obj) => {
-        html += '<div class="streamer-bar-item me-3 p-3 border border-secondary text-white" style="width: 350px; display: inline-block; font-family: \'Figtree\', sans-serif"><h5>'+obj.streamername+'</h5><table class="text-white" style="font-size: 0.9rem"><tr><td>'+obj.position+'</td></tr></table></div>'
-    })
-$('.streamers-container').html(html);
 }
 
 function infobar_airports()
 {
-    $('#infobar-title').html('<span class="badge bg-primary" style="font-size: 0.8rem; font-weight: normal; border: 1px solid rgba(255,255,255,0.3)">Popular Airports</span>');
+    $('#infobar-title').html('<span class="badge bg-primary" style="font-size: 0.8rem; font-weight: normal; border-radius: 5rem; ">Popular Airports</span>');
     $('#infobar-title').delay(500).fadeIn(250, () => {
         infobar_airports_scroll(0);
     })
@@ -135,10 +137,10 @@ function infobar_airports_scroll(idx, limit = 10)
     else
     {
         airport = airports[infoairports[idx].icao];
-        $('#infobar-content').html('<div onclick="zoomToAirport(\''+infoairports[idx].icao+'\')" class="px-3 footer-infobar-item d-flex align-items-center" style="min-height: 100%"><table class="text-white"><tr><td><span class="badge bg-secondary"; style="font-family: \'JetBrains Mono\', monospace">#'+(idx + 1)+'</span></td><td class="ps-3" style="font-family: \'JetBrains mono\', sans-serif">'+getLocalTooltip(infoairports[idx].icao)+'</td><td class="ps-3" style="font-size: 0.9rem; line-height: 0.9rem">'+airport.name+'<br><small class="text-muted">'+airport.city+'</small></td><td class="ps-3"><i class="fas fa-plane-departure"></i> '+infoairports[idx].departures+'</td><td class="ps-2"><i class="fas fa-plane-arrival"></i> '+infoairports[idx].arrivals+'</td></tr></table></div>');
-        $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {
-            $('#infobar-content').delay(5000).animate({opacity: 0}, 250, function() {
-                $('#infobar-content').css({top: '100%'});
+        $('#infobar-content').html('<div onclick="zoomToAirport(\''+infoairports[idx].icao+'\')" class="px-3 footer-infobar-item d-flex align-items-center" style="min-height: 100%"><table class="text-white"><tr><td><span class="badge" style="color: #fff; border: 1px solid #fff; border-radius: 1rem; font-family: \'JetBrains Mono\', monospace">#'+(idx + 1)+'</span></td><td class="ps-3" style="font-family: \'JetBrains mono\', sans-serif">'+getLocalTooltip(infoairports[idx].icao)+'</td><td class="ps-3" style="font-size: 0.9rem; line-height: 0.9rem">'+airport.name+'<br><small class="text-muted">'+airport.city+'</small></td><td class="ps-3"><i class="fas fa-plane-departure"></i> '+infoairports[idx].departures+'</td><td class="ps-2"><i class="fas fa-plane-arrival"></i> '+infoairports[idx].arrivals+'</td></tr></table></div>');
+        $('#infobar-content').delay(300).animate({left: '0px', opacity: 1}, 250, 'easeOutSine', () => {
+            $('#infobar-content').delay(5000).animate({opacity: 0}, 250, 'easeOutSine',function() {
+                $('#infobar-content').css({left: '-20px'});
                 infobar_airports_scroll(idx + 1);
             })
         })
@@ -153,7 +155,7 @@ function infobar_streamers()
     }
     else
     {
-        $('#infobar-title').html('<span class="badge bg-purple" style="font-size: 0.8rem; font-weight: normal; border: 1px solid rgba(255,255,255,0.2)">Streamers</span>')
+        $('#infobar-title').html('<span class="badge bg-purple" style="font-size: 0.8rem; font-weight: normal; border-radius: 5rem">Streamers</span>')
         $('#infobar-title').delay(500).fadeIn(250, () => {
         infobar_streamers_scroll(0, 'pilots');
     })
@@ -191,9 +193,9 @@ function infobar_streamers_scroll(idx, type)
             $('#infobar-flights-progressbar-plane').css({ 'color': flight_status.color });
             $('#infobar-flights-progressbar-elapsed').css({ 'background-color': flight_status.color });
             $('#infobar-flights-progressbar-elapsed').css({ width: getInfoElapsedWidth(infoflight) + '%' });
-            $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {
-                $('#infobar-content').delay(5000).animate({opacity: 0}, 250, function() {
-                    $('#infobar-content').css({top: '100%'});
+            $('#infobar-content').delay(300).animate({left: '0px', opacity: 1}, 250, 'easeOutSine', () => {
+                $('#infobar-content').delay(5000).animate({opacity: 0}, 250, 'easeOutSine',function() {
+                    $('#infobar-content').css({left: '-20px'});
                     infobar_streamers_scroll(idx + 1, type);
                 })
             })
@@ -204,9 +206,9 @@ function infobar_streamers_scroll(idx, type)
             $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
 
             // Set colors
-            $('#infobar-content').delay(300).animate({top: '0px', opacity: 1}, 250,  () => {
-                $('#infobar-content').delay(5000).animate({opacity: 0}, 250, function() {
-                   $('#infobar-content').css({top: '100%'});
+            $('#infobar-content').delay(300).animate({left: '0px', opacity: 1}, 250, 'easeOutSine', () => {
+                $('#infobar-content').delay(5000).animate({opacity: 0}, 250, 'easeOutSine',function() {
+                   $('#infobar-content').css({left: '-20px'});
                     infobar_streamers_scroll(idx + 1, type);
                 })
             })

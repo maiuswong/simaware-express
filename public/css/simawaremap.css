@@ -19,6 +19,7 @@ body
 .map-button
 {
   cursor: pointer;
+  border-radius: 5rem;
   min-width: 40px;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -251,13 +252,14 @@ a
   font-family: 'Figtree', sans-serif;
   z-index: 1000;
   width: 350px;
-  background-color: #353638;
+  backdrop-filter: blur(15px);
   color: #fff;
   position: absolute;
   top: 1rem;
   right: calc(50% - 175px);
   overflow: hidden;
-  border: 1px solid #edeeef;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
 }
 @media(min-width: 576px)
 {
@@ -343,6 +345,7 @@ a
 #flights-body
 {
   display: none;
+  background-color: rgba(0,0,0,0.4);
 }
 @media(min-width: 576px)
 {
@@ -369,7 +372,7 @@ a
 }
 #flights-livetable
 {
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(50,50,50,0.3);
   overflow: hidden;
   color: #eee;
   border-top: 1px solid rgba(0,0,0,0.2);
@@ -377,7 +380,8 @@ a
 }
 #flights-status
 {
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom-left-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
   border-top: none;
   font-size: 1rem;
 }
@@ -404,7 +408,7 @@ a
   min-width: 0;
   background-color: #aaa;
 }
-#infobar-flights-progressbar-elapsed, #streamers-flights-progressbar-elapsed
+#infobar-flights-progressbar-elapsed, #streamers-flights-progressbar-elapsed, .toggle-flights-progressbar-elapsed
 {
   height: 2px;
   width: 30px;
@@ -417,13 +421,13 @@ a
 {
   background-color: #2e2e2e;
 }
-#infobar-flights-progressbar-plane, #streamers-flights-progressbar-plane
+#infobar-flights-progressbar-plane, #streamers-flights-progressbar-plane, .toggle-flights-progressbar-plane
 {
   margin-left: 2px;
   margin-right: 2px;
   font-size: 1rem
 }
-#infobar-flights-progressbar-remaining, #streamers-flights-progressbar-remaining
+#infobar-flights-progressbar-remaining, #streamers-flights-progressbar-remaining, .toggle-flights-progressbar-remaining
 {
   height: 2px;
   flex-grow: 1;
@@ -473,31 +477,29 @@ a
 
 #footer-background
 {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  background-color: #333435;
+  border-top: 1px solid rgba(255,255,255,0.05);
   position: fixed;
   z-index: 1200;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 0.5rem 1rem;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(15px);
 }
 
 .footer-infobar-item
 {
   box-sizing: border-box;
-  border: 1px solid transparent;
+  border-radius: 5rem;
 }
 
 .footer-infobar-item:hover
 {
-  background-color: rgba(0,0,0,0.15);
-  border: 1px solid #222;
+  background-color: rgba(255,255,255,0.1);
 }
 .footer-infobar-item:active
 {
-  background-color: rgba(0,0,0,0.25);
+  background-color: rgba(255,255,255,0.25);
 }
 
 #footer-group
@@ -535,14 +537,13 @@ a
 }
 #search-selector
 {
-  border-color: #555;
-  background-color: #434445;
   color: #eee;
 }
 #search-field
 {
-  border-color: #555;
-  background-color: #434445;
+  border-color: rgba(255,255,255,0.15);
+  background-color: rgba(255,255,255,0.1);
+  border-radius:5rem;
 }
 #search-wrapper
 {
@@ -551,10 +552,60 @@ a
   width: 350px;
   position: fixed;
   right: calc(50% - 175px);
-  bottom: 70px;
+  bottom: 80px;
   z-index: 1200;
   background-color: #fff;
-  box-shadow: rgb(0 0 0 / 40%) 0px -10px 5px;
+  border-radius: 1rem;
+}
+
+#ap-wrapper
+{
+  display: none;
+  z-index: 1200;
+  min-width: 350px;
+  position: fixed;
+  left: 1rem;
+  bottom: 80px;
+  z-index: 1200;
+  backdrop-filter: blur(25px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+#streamers-wrapper
+{
+  display: none;
+  z-index: 1200;
+  min-width: 350px;
+  position: fixed;
+  left: 1rem;
+  bottom: 80px;
+  z-index: 1200;
+  backdrop-filter: blur(25px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+#toggle-group
+{
+  font-size: 1rem;
+  display:flex;
+  align-items: center;
+}
+
+.toggle-item
+{
+  color: #999;
+}
+
+.toggle-item:hover
+{
+  background-color: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 5rem;
+  box-sizing: border-box;
+  margin: -1px;
+  color: #fff;
 }
 @media(min-width: 576px)
 {
@@ -570,6 +621,8 @@ a
   {
     left: 1rem;
     width: 350px;
+    display: flex;
+    align-items: center;
   }
   #search-wrapper
   {
