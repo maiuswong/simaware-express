@@ -436,18 +436,18 @@ async function loadUpcomingEvents()
     let events_raw = await response.json();
     let eventsByAirport = [];
 
-    $.each(events_raw, (idx, event) => {
+    $.each(events_raw.future, (idx, event) => {
         if(moment.duration(moment(event.start).diff(moment())).asDays() >= 0 && moment.duration(moment(event.start).diff(moment())).asDays() < 14)
         {
-            let eventairports = event.airports.split(',');
+            let eventairports = event.airports;
             $.each(eventairports, (idx2, airport) => {
-                if(typeof eventsByAirport[airport] != 'undefined')
+                if(typeof eventsByAirport[airport.icao] != 'undefined')
                 {
-                    eventsByAirport[airport].push(event);
+                    eventsByAirport[airport.icao].push(event);
                 }
                 else
                 {
-                    eventsByAirport[airport] = [event];
+                    eventsByAirport[airport.icao] = [event];
                 }
             });
         }
