@@ -68,6 +68,7 @@ async function initialize()
     flights = await refreshFlights(filterName, filterCriteria);
     eventsByAirport = await loadUpcomingEvents();
     airlines = await loadAirlines();
+    regprefixes = await loadRegprefixes();
 
     await initializeNexrad();
     await initializeNat();

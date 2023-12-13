@@ -553,7 +553,6 @@ function updateLocation(obj)
         plane_array[obj.uid]._update();
     } catch(err)
     {
-        console.log(obj.uid);
     }
     plane_array[obj.uid].setTooltipContent(getDatablock(obj));
 
@@ -1659,6 +1658,12 @@ async function loadAirlines()
     return airlinesByIcao;
 }
 
+async function loadRegprefixes()
+{
+    response = await fetch('/livedata/regprefixes.json');
+    return await response.json();
+}
+
 async function loadAircraft()
 {
     response = await fetch('/livedata/aircraft.json');
@@ -2176,15 +2181,7 @@ function updateFlightsBox(flight)
         $('#flights-progressbar-plane').removeClass('blinking');
     }
 
-    if(airlinesByIcao && airlinesByIcao[flight.callsign.substring(0,3)])
-    {
-        let airline = airlinesByIcao[flight.callsign.substring(0,3)];
-        $('#flights-airline').html(airline.name);
-    }
-    else
-    {
-        $('#flights-airline').html('');
-    }
+    updateAirlines(flight);
 
     // Do the time online
     var timeairborne = getTimeAirborne(flight);
@@ -2225,9 +2222,30 @@ function updateFlightsBox(flight)
     $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+' '+ getPatron(flight.cid));
 
     // Name
-    console.log(flight);
     $('#flights-squawk').html(flight.xpdr + ' / ' + flight.axpdr);
 
+}
+
+function updateAirlines(flight)
+{
+    for(i in regprefixes)
+    {
+        if(flight.callsign.match(regprefixes[i].regex))
+        {
+            $('#flights-airline').html('Privately Registered (' + regprefixes[i].country + ')');
+            return;
+        }
+    }
+
+    if(flight.callsign.length > 3 && $.isNumeric(flight.callsign[3]) && airlinesByIcao && airlinesByIcao[flight.callsign.substring(0,3)])
+    {
+        let airline = airlinesByIcao[flight.callsign.substring(0,3)];
+        $('#flights-airline').html(airline.name);
+    }
+    else
+    {
+        $('#flights-airline').html('');
+    }
 }
 
 function getPatron(cid)
