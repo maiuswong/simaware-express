@@ -70,23 +70,31 @@ body
   border-radius: 0rem;
   border: 1px solid transparent;
 }
+
+#navbar-clock, #navbar-status
+{
+  background-color: rgba(255,255,255,0.1);
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+}
 .map-button:last-of-type
 {
   margin-right: 6px;
 }
 .map-button-active
 {
-  background-color: #888;
+  background-color: #3137fd;
   color: #fff;
 }
 .map-button:hover
 {
-  background-color: rgba(255,255,255,0.5);
+  background-color: #141bff;
   color: #eee;
 }
 .map-button:active
 {
-  background-color: rgba(255,255,255,0.7);
+  background-color: #0008ff;
   color: #fff;
 }
 
@@ -169,6 +177,11 @@ a
 {
   background-color: rgba(0,0,0,0.2);
 }
+#flights-airline
+{
+  color: rgba(0,0,0,0.4);
+  font-size: 1rem;
+}
 .flights-tableitem
 {
   font-size: 0.85rem;
@@ -185,11 +198,12 @@ a
   padding: 2px;
   margin-left: -3px;
   cursor: pointer;
-}
+  border-radius: 0.2rem;
+}s
 .flights-link-item:hover
 {
-  background-color: rgba(0,0,0,0.15);
-  border: 1px solid #222;
+  background-color: rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.2);
 }
 .flights-link-item:active
 {
@@ -270,6 +284,11 @@ a
   }
 }
 
+#flights-squawk
+{
+  font-family: 'JetBrains Mono', monospace;
+}
+
 /* CSS IDs */
 #events-container
 {
@@ -321,6 +340,7 @@ a
 {
   max-height: 300px;
   overflow-y: scroll;
+  backdrop-filter: blur(25px);
 }
 @media(min-width: 576px)
 {
@@ -340,8 +360,9 @@ a
 #sidebar-container
 {
   min-height: 0;
-  background-color: #353638;
   overflow: hidden;
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 0.5rem;
 }
 #flights-body
 {
@@ -359,6 +380,8 @@ a
 {
   background-color: #edeeef;
   color: #333;
+  border-top-right-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
 }
 
 #events-cap
@@ -528,6 +551,7 @@ a
   width: 600px;
   display: none;
   font-size: 0.9rem;
+  height: 100%;
 }
 @media(min-width: 576px)
 {
@@ -546,6 +570,11 @@ a
   border-color: rgba(255,255,255,0.15);
   background-color: rgba(255,255,255,0.1);
   border-radius:5rem;
+}
+
+#search-field::placeholder
+{
+  color: rgba(255,255,255,0.4);
 }
 #search-wrapper
 {
@@ -608,6 +637,7 @@ a
 .toggle-item
 {
   color: #999;
+  font-size: 0.9rem;
 }
 
 .toggle-item:hover
@@ -649,7 +679,8 @@ a
   width: 350px;
   z-index: 990;
   font-family: 'Figtree', sans-serif;
-  border: 1px solid #edeeef;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 0.5rem;
 }
 
 @media(max-width: 576px)
@@ -664,6 +695,7 @@ a
 {
   font-size: 1rem;
   text-align: center;
+  background-color: rgba(255,255,255,0.1);
 }
 
 .badge
@@ -717,6 +749,7 @@ a
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 0.3rem;
 }
 .control:hover
 {

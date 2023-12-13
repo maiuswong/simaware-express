@@ -212,7 +212,7 @@ function returnSidebarToView(id, closeid)
     {
         var right = (($('#map').width() - 350) / 2) + 'px';
     }
-    el = $('#'+id).animate({right: right}, 200);
+    el = $('#'+id).animate({right: right}, 250, 'easeOutSine');
     $('#'+closeid).hide();
 }
 
@@ -298,6 +298,9 @@ async function initializePatrons()
             patrons[ret[obj].cid] = ret[obj];
         }
     })
+
+    response = await fetch(dataserver + 'api/livedata/streamers.json');
+    streamers = await response.json();
 }
 
 // Initialize the FIR Boundaries map
@@ -441,7 +444,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     }
     active_uids = newactive_uids;
 
-    $('#navbar_pilots').html(Object.keys(plane_array).length);
+    $('#navbar-pilots').html(Object.keys(plane_array).length);
     return flights;
 
 }
@@ -908,8 +911,18 @@ async function refreshATC()
 {
     active_firs = getActiveFIRs();
     newdata = {};
-    response = await fetch(dataserver + 'api/livedata/onlinefirs.json');
-    sectors = await response.json();
+    var atccount = 0;
+    try
+    {
+        response = await fetch(dataserver + 'api/livedata/onlinefirs.json');
+        sectors = await response.json();
+        atccount += sectors.length;
+    }
+    catch(e)
+    {
+        return;
+    }
+    
     // $.each(data, (idx, fir) => {
     //     index = getFirIndex(fir);
     //     firObj = firs_array[index];
@@ -923,7 +936,6 @@ async function refreshATC()
     //     firObj = firs_array[fir];
     //     turnOffFIR(firObj);
     // })
-    var atccount = 0;
     $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
         if(fir && typeof fir.firs === 'undefined') // fir is null if we can't find anything.  Do UIRs after.
@@ -1004,6 +1016,7 @@ async function refreshATC()
     {
         var response = await fetch(dataserver + 'api/livedata/appdep.json');
         tracons = await response.json();
+        atccount += tracons.length;
     }
     catch(e)
     {
@@ -1096,6 +1109,7 @@ async function refreshATC()
     try {
         response = await fetch(dataserver + 'api/livedata/locals.json');
         localsraw = await response.json();
+        atccount += localsraw.length;
     }
     catch(e){
         return;
@@ -1167,6 +1181,7 @@ async function refreshATC()
         }
     }
     atc_featuregroup.addLayer(locals_featuregroup);
+    $('#navbar-atc').html(atccount);
 }
 
 // Update Convective Sigmets
@@ -2161,6 +2176,16 @@ function updateFlightsBox(flight)
         $('#flights-progressbar-plane').removeClass('blinking');
     }
 
+    if(airlinesByIcao && airlinesByIcao[flight.callsign.substring(0,3)])
+    {
+        let airline = airlinesByIcao[flight.callsign.substring(0,3)];
+        $('#flights-airline').html(airline.name);
+    }
+    else
+    {
+        $('#flights-airline').html('');
+    }
+
     // Do the time online
     var timeairborne = getTimeAirborne(flight);
     if(timeairborne.status != 'nodep')
@@ -2215,6 +2240,8 @@ function getPatron(cid)
                 return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
             case 2:
               return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
+            default:
+                return '';
         }
     }
     else

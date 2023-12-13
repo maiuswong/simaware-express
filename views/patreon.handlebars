@@ -4,7 +4,7 @@
             <h4>Donations make SimAware happen.</h4>
             <p>SimAware is donation-driven and thriving thanks to the generous support of our patrons.  Thank you!</p>
         </div>
-        <a class="btn text-white" style="background-color: #FF424D" href="https://patreon.com/user?u=33982686&fan_landing=true"><i class="fab fa-patreon"></i> Become A Patron</a>
+        <a class="btn text-white" style="border-radius: 2rem; background-color: #FF424D" href="https://patreon.com/user?u=33982686&fan_landing=true"><i class="fab fa-patreon"></i> Become A Patron</a>
     </div>
     <div class="row mb-3">
         <div class="col-lg-5">
@@ -36,9 +36,14 @@ async function initialize()
     $.each(patrons, (idx, obj) => {
         if(obj.tier == 2)
         {
-            streamer += '<tr><td class="pe-3">'+obj.name + '</td><td class="px-3"><i class="fab fa-twitch"></i> '+obj.twitch+'</td></tr>';
+            streamer += '<tr><td class="pe-3">'+obj.name + '</td><td class="px-3">'
+            if(obj.twitch)
+            {
+                streamer += '<i class="fab fa-twitch"></i> '+obj.twitch;
+            }
+            streamer += '</td></tr>';
         }
-        else
+        else if(obj.tier == 1)
         {
             supporter += '<tr><td class="pe-3">'+obj.name + '</td></td></tr>';
         }

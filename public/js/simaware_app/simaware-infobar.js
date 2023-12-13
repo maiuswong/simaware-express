@@ -60,7 +60,7 @@ async function updateInfobar()
     html = '<table style="font-size: 0.9rem"><h5 class="mb-3">Active Streamers</h5>';
     $.each(flights, (idx, obj) => {
         
-        if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
+        if(patrons[obj.cid] && (patrons[obj.cid].tier >= 2 || !patrons[obj.cid].tier) && streamers[patrons[obj.cid].twitch])
         {
             let s = {};
             s.uid = idx;
@@ -77,11 +77,8 @@ async function updateInfobar()
         }
     })
 
-    html += '</table>';
-    $('#streamers-wrapper').html(html);
-
     $.each(tracons, (idx, obj) => {
-        if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
+        if(patrons[obj.cid] && (patrons[obj.cid].tier >= 2 || !patrons[obj.cid].tier) && streamers[patrons[obj.cid].twitch])
         {
             let s = {};
             s.cid = obj.cid;
@@ -89,11 +86,11 @@ async function updateInfobar()
             s.streamername = patrons[obj.cid].twitch;
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
-            html += '<tr><td><a class="footer-infobar-item text-white p-2" href="https://twitch.tv/'+s.streamername+'"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4">'+s.position+'</td></td>';
+            html += '<tr><td class="py-2"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
         }
     })
     $.each(sectors, (idx, obj) => {
-        if(patrons[obj.cid] && patrons[obj.cid].tier >= 2)
+        if(patrons[obj.cid] && (patrons[obj.cid].tier >= 2 || !patrons[obj.cid].tier) && streamers[patrons[obj.cid].twitch])
         {
             let s = {};
             s.cid = obj.cid;
@@ -101,11 +98,11 @@ async function updateInfobar()
             s.streamername = patrons[obj.cid].twitch;
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
-            html += '<tr><td><a class="footer-infobar-item text-white p-2" href="https://twitch.tv/'+s.streamername+'"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4">'+s.position+'</td></td>';
+            html += '<tr><td class="py-2"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
         }
     })
     $.each(localsraw, (idx, obj) => {
-        if(patrons[obj.cid] && !obj.callsign.includes('_ATIS'))
+        if(patrons[obj.cid] && (patrons[obj.cid].tier >= 2 || !patrons[obj.cid].tier) && streamers[patrons[obj.cid].twitch] && !obj.callsign.includes('_ATIS'))
         {
             let s = {};
             s.cid = obj.cid;
@@ -113,9 +110,12 @@ async function updateInfobar()
             s.streamername = patrons[obj.cid].twitch;
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
-            html += '<tr><td><a class="footer-infobar-item text-white p-2" href="https://twitch.tv/'+s.streamername+'"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4">'+s.position+'</td></td>';
+            html += '<tr><td class="py-2"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
         }
     })
+
+    html += '</table>';
+    $('#streamers-wrapper').html(html);
 }
 
 function infobar_airports()
@@ -203,7 +203,7 @@ function infobar_streamers_scroll(idx, type)
         else if(type == 'controllers')
         {
             let url = (infostreamers[type][idx].platform == 'twitch') ? 'https://twitch.tv/'+infostreamers[type][idx].streamername : 'https://youtube.com/c/' + infostreamers[type][idx].streamername + '/live';
-            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
+            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div class="pe-3 d-flex align-items-center" style="min-height: 100%"><table class="text-white" style="font-size: 0.9rem"><tr><td style="vertical-align: middle" class="ps-3">'+infostreamers[type][idx].position+'</td></tr></table></div></div>');
 
             // Set colors
             $('#infobar-content').delay(300).animate({left: '0px', opacity: 1}, 250, 'easeOutSine', () => {
