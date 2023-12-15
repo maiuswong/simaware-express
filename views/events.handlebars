@@ -30,17 +30,17 @@ $(document).ready(() => {
 
 async function initialize()
 {
-    response = await fetch(apiserver + '/api/events');
+    response = await fetch(dataserver + 'api/livedata/events.json');
     data = await response.json();
 
     html = '';
-    $.each(data, (idx, event) => {
+    $.each(data.past, (idx, event) => {
         var id = '<td class="text-center">'+event.id+'</td>';
         var name = '<td>'+event.name+'</td>';
         var date = '<td class="text-center">'+moment(event.start).format('YYYY-MM-DD')+'</td>';
         var apts = '<td>';
-        $.each(event.airports.split(','), (idx, str) => {
-            apts += '<span class="badge bg-secondary">'+str+'</span> ';
+        $.each(event.airports, (idx, ap) => {
+            apts += '<span class="badge bg-secondary">'+ap.icao+'</span> ';
         })
         apts += '</td>';
         if(event.approved == 0)

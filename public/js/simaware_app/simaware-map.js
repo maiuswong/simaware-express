@@ -1108,11 +1108,17 @@ async function refreshATC()
     try {
         response = await fetch(dataserver + 'api/livedata/locals.json');
         localsraw = await response.json();
-        atccount += localsraw.length;
     }
     catch(e){
         return;
     }
+
+    $.each(localsraw, function(idx, obj) {
+        if(!obj.callsign.includes('_ATIS'))
+        {
+            atccount++;
+        }
+    });
     
 
     locals = [];

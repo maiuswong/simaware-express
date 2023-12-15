@@ -1,14 +1,17 @@
 $(document).ready(() => {
-    $('#ap-toggle').on('mouseenter', () => {
-        $('#ap-wrapper').show();
+    $('#ap-toggle').on('click', () => {
+        $('#ap-wrapper').toggle();
+        $('#streamers-wrapper').hide();
+        $('#events-wrapper').hide();
     })
-    $('#ap-toggle').on('mouseleave', () => {
+    $('#streamers-toggle').on('click', () => {
+        $('#streamers-wrapper').toggle();
         $('#ap-wrapper').hide();
+        $('#events-wrapper').hide();
     })
-    $('#streamers-toggle').on('mouseenter', () => {
-        $('#streamers-wrapper').show();
-    })
-    $('#streamers-toggle').on('mouseleave', () => {
+    $('#events-toggle').on('click', () => {
+        $('#events-wrapper').toggle();
+        $('#ap-wrapper').hide();
         $('#streamers-wrapper').hide();
     })
 })
@@ -52,6 +55,44 @@ async function updateInfobar()
     }
     html += '</table>'
     $('#ap-wrapper').html(html);
+
+    html = '<h5 class="mb-3">Upcoming Events</h5><table style="font-size: 0.9rem">';
+    prevdate = null;
+    let i = 0;
+    let ij = 0;
+    while(ij < 10)
+    {
+        if(events.future[i].end > moment.now())
+        {
+            html += '<tr><td class="py-1 pe-2"><div>';
+            if(prevdate != moment.utc(events.future[i].start).format('MMMD'))
+            {
+                html += '<table style="flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="text-transform: uppercase; padding: 0 0.4rem; color: #c2737e; margin: 0.2rem">'+moment.utc(events.future[i].start).format('MMM')+'</td></tr><tr><td style="font-size: 0.9rem; color: #eee; text-align: center">'+moment.utc(events.future[i].start).format('D')+'</td></tr></table>';
+            }
+
+            html += '</div></td>';
+            if(moment.now() > events.future[i].start && moment.now() < events.future[i].end)
+            {
+                html += '<td class="ps-2 py-1 border-success" style="border-left: 2px solid;">';
+            }
+            else
+            {
+                html += '<td class="ps-2 py-1">';
+            }
+
+            html += events.future[i].name + '<br><span style="color: rgba(255,255,255,0.8); font-size: 0.7rem; font-family: \'JetBrains Mono\', monospace">' + moment.utc(events.future[i].start).format('HHmm') + '-'+ moment.utc(events.future[i].end).format('HHmm') +'Z ';
+            for(var j in events.future[i].airports)
+            {
+                html += '<span class="text-muted">'+events.future[i].airports[j].icao + '</span> '
+            }
+            html += '</span></td></tr>';
+            prevdate = moment.utc(events.future[i].start).format('MMMD');
+            ij++;
+        }
+        i++;
+    }
+    html += '</table>';
+    $('#events-wrapper').html(html);
 
     // Now some horrible spaghetti code for patrons
     infostreamers = {};
@@ -187,7 +228,7 @@ function infobar_streamers_scroll(idx, type)
             if(!dep) { dep = 'NONE' }
             if(!arr) { arr = 'NONE' }
             let url = (true) ? 'https://twitch.tv/'+infostreamers[type][idx].streamername : 'https://youtube.com/c/' + infostreamers[type][idx].streamername + '/live';
-            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div onmouseup="zoomToFlight(\''+infostreamers[type][idx].uid+'\')" class="pe-3 rounded-3 d-flex align-items-center footer-infobar-item"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div></div>');
+            $('#infobar-content').html('<div class="d-flex" style="min-height: 100%"><div class="streamer px-3 d-flex align-items-center footer-infobar-item"><a class="text-white" href="'+url+'"><i class="fab fa-twitch"></i> '+infostreamers[type][idx].streamername+'</a></div><div onmouseup="zoomToFlight(\''+infostreamers[type][idx].uid+'\')" class="pe-3 d-flex align-items-center footer-infobar-item"><table class="text-white" style="font-size: 0.9rem"><tr><td class="ps-3">'+infostreamers[type][idx].callsign+'</td><td class="ps-3">'+dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div id="infobar-flights-progressbar-elapsed"></div><i id="infobar-flights-progressbar-plane" class="fas fa-plane"></i><div id="infobar-flights-progressbar-remaining"></div></td><td class="ps-2">'+arr+'</td></tr></table></div></div>');
 
             // Set colors
             $('#infobar-flights-progressbar-plane').css({ 'color': flight_status.color });

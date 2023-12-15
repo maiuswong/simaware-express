@@ -7,7 +7,7 @@ async function loadEvent(id)
     polyline_featuregroup = new L.FeatureGroup();
     map.addLayer(polyline_featuregroup);
 
-    $('#event-name').html(eventdata.event.name);
+    $('#event-name').html('<table style="flex: 1; border: 1px solid rgba(255,255,255,0.4); overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="text-transform: uppercase; padding: 0 0.4rem; color: #c2737e; margin: 0.2rem">'+moment.utc(eventdata.event.start).format('MMM')+'</td></tr><tr><td style="font-size: 0.9rem; color: #eee; text-align: center">'+moment.utc(eventdata.event.start).format('D')+'</td></tr></table><span class="ps-2">' + eventdata.event.name + '<br><small style="font-size: 0.9rem; color: rgba(255,255,255,0.6">'+moment.utc(eventdata.event.start).format('HHmm') + '-'+ moment.utc(eventdata.event.end).format('HHmm') +'Z '+'</small></span>');
     $('#event-date').html(moment(eventdata.event.start).format('MMMM Do, YYYY'));
 
     var aps = '';
@@ -185,6 +185,7 @@ async function loadEvent(id)
         html += '</tr></table>';
     }
     $('#events-table').html(html);
+    $('.analysis-button').attr('onclick', 'showAnalysis(\''+eventdata.event.airports[0].icao +'\'); $(\'#splitmodal\').show();');
     var bounds = [];
     for(var i in aar)
     {
@@ -202,6 +203,10 @@ async function loadEvent(id)
         map.addLayer(oloc);
     }
     map.fitBounds(bounds, [50, 50]);
+    if(map.getZoom() > 10)
+    {
+        map.setZoom(10);
+    }
 
     // Now do analysis
     var selbar = '';
@@ -211,10 +216,18 @@ async function loadEvent(id)
         var a = aar[icao];
         if(Object.keys(aar)[0] == icao)
         {
-            selbar += '<a id="'+icao+'" onclick="loadAnalysis(0)" class="analysis_chooser rounded-0 btn btn-outline-secondary bg-secondary text-white" style="border: 1px solid #393939; border-bottom: none;">'+icao+'</a>';
+            selbar += '<a id="'+icao+'" onclick="showAnalysis(\''+icao+'\')" class="analysis_chooser rounded-0 btn btn-sm text-white" style="border: 1px solid #393939; border-bottom: none; background-color: rgba(255,255,255,0.3)">'+icao+'</a>';
+        }
+        else
+        {
+            selbar += '<a id="'+icao+'" onclick="showAnalysis(\''+icao+'\')" class="analysis_chooser rounded-0 btn btn-sm text-white" style="border: 1px solid #393939; border-bottom: none;">'+icao+'</a>';
         }
 
+        $('#analysis_airports').html(selbar);
+
         html += '<table class="aar" id="'+icao+'">';
+
+        var analysis = [];
 
         for(var idx in a.arrs)
         {
@@ -222,18 +235,89 @@ async function loadEvent(id)
             for(id2 in bin)
             {
                 var flight = bin[id2];
-                if(didArrive(flight, eventairports))
+                if(flight.landoffset && didArrive(flight, eventairports) )
                 {
-                    var offstv = getEventOffset(flight, eventairports[icao], eventdata, start);
-                    var offstpct = 100 * ((offstv - start.unix() * 1000) / (1000 * end.unix() - 1000 * start.unix()))
-                    var lenpct = 100 * ((flight.decel - offstv) / (1000 * end.unix() - 1000 * start.unix()))
-                    console.log((flight.decel - (start.unix() * 100 + offstv) ) / 60000);
+                    var s = {};
+                    var offst = getEventOffset(flight, eventairports[icao], eventdata, start);
+                    s.flight = flight;
+                    s.lenpct = 15 * 1000 * 100 * ((flight.landoffset - offst) / (1000 * end.unix() - 1000 * start.unix()));
+                    s.right = 100 * (1000 * end.unix() - flight.decel) / (1000 * end.unix() - 1000 * start.unix());
+                    s.timeinMins = 15 * 1000  * (flight.landoffset - offst) / 60000;
+                    analysis.push(s);
                 }
             }
+
         }
+        analysis.sort(function(a, b) {
+            return b.right - a.right;
+        });
+        aar[icao].analysis = analysis;
     }
 
+    var selbar = '';
+    var html = '';
+    for(var i in aar)
+    {
+        selbar += '<a id="'+i+'" onclick="loadAnalysis(\''+i+'\')" class="analysis_chooser rounded-0 btn btn-outline-secondary text-white" style="border: 1px solid #393939; border-bottom: none;">'+i+'</a>';
+    }
     cycleEvents(0);
+}
+
+function showAnalysis(i)
+{
+    var html = '';
+
+    $('.analysis_chooser').each(function() {
+        if($(this).attr('id') == i)
+        {
+            $(this).css({'background-color': '#3137fd'});
+        }
+        else
+        {
+            $(this).css({'background-color': 'transparent'});
+        }
+    })
+
+    var toptable = '<tr>';
+    var timeInMins = end.diff(start, 'minutes');
+    $.each(aarbins, (idx, period) => {
+        var startPeriod = moment(period.start);
+        var endPeriod = moment(period.stop);
+        var width = endPeriod.diff(startPeriod, 'minutes') / timeInMins * 100;
+        borderleft = 'dashed';
+        borderright = 'dashed';
+        toptable += '<td style="border-left: 1px '+borderleft+' #888; border-right: 1px '+borderright+' #888; vertical-align: middle; text-align: center; width: '+width+'%">ARR ' + aar[i].arrs[idx].length + '<br>DEP '+aar[i].deps[idx].length;
+    });
+    toptable += '</tr>';
+    console.log(toptable);
+    $('#analysis_toptable').html(toptable);
+
+    for(var j in aar[i].analysis)
+    {
+        if(aar[i].analysis[j].timeinMins > 0)
+        {
+            html += '<div style="width: 100%; height: 10px; font-size: 0.1rem; white-space: nowrap; text-align: right"><a href="#" class="px-1 badge text-white hover" data-toggle="tooltip" data-placement="right" title="'+aar[i].analysis[j].flight.callsign+' | '+Math.round(aar[i].analysis[j].timeinMins)+' min" style="z-index: 2; background-color: '+getFlightColor(aar[i].analysis[j].timeinMins)+'; margin-right: '+ aar[i].analysis[j].right +'%; width: ' + aar[i].analysis[j].lenpct + '%; height: 6px; border-radius: 0px">&nbsp;</a></div>';
+        }
+    }
+    var table = '<div class="mx-0" style="height: 100%; position: absolute; left: 0px; width: 100%; z-index: -1; overflow: hidden"><table style="width: 100%; color: #bbb; font-family: \'Roboto Mono\', monospace; font-size: 0.8rem; height: 100%">';
+    console.log(aar[i]);
+    for(let s = 0; s < Math.ceil(aar[i].analysis.length) / 20; s++)
+    {
+        table += '<tr>';
+        $.each(aarbins, (idx, period) => {
+            console.log(period);
+            var startPeriod = moment(period.start);
+            var endPeriod = moment(period.stop);
+            var width = endPeriod.diff(startPeriod, 'minutes') / timeInMins * 100;
+            borderleft = 'dashed';
+            borderright = 'dashed';
+            table += '<td style="border-left: 1px '+borderleft+' #888; border-right: 1px '+borderright+' #888; vertical-align: middle;  height: 100px; text-align: left; width: '+width+'%"><div style="color: rgb(136, 136, 136); font-size: 0.9rem; font-family: \'Roboto Mono\', monospace; height: 60px; width: 60px;" class="rotate">'+startPeriod.format('HHmm')+' Z</div></td>';
+        })
+        table += '</tr>';
+    }
+    table += '</table></div>'
+    $('#analysis').html(html + table);
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 function getEventOffset(flight, ap, eventdata, start)
@@ -243,7 +327,7 @@ function getEventOffset(flight, ap, eventdata, start)
         var ll = flight.logs[i];
         if(distance(ap.lat, ap.lon, ll[0], ll[1]) < 80)
         {
-            return i * 15 * 1000;
+            return i;
         }
     }
 }
@@ -433,10 +517,10 @@ function replaceAarData(index)
 async function loadUpcomingEvents()
 {
     let response = await fetch(dataserver + 'api/livedata/events.json');
-    let events_raw = await response.json();
+    events = await response.json();
     let eventsByAirport = [];
 
-    $.each(events_raw.future, (idx, event) => {
+    $.each(events.future, (idx, event) => {
         if(moment.duration(moment(event.start).diff(moment())).asDays() >= 0 && moment.duration(moment(event.start).diff(moment())).asDays() < 14)
         {
             let eventairports = event.airports;

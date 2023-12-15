@@ -1,5 +1,31 @@
 
 /* HTML tags*/
+#analysis
+{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.analysis-button
+{
+  color: #999;
+  font-size: 0.9rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-bottom-left-radius: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 0.15rem 0.4rem;
+  box-sizing: border-box;
+  margin: -1px;
+}
+
+.analysis-button:hover
+{
+  background-color: rgba(255,255,255,0.1);
+  color: #fff;
+}
 body
 {
     font-family: 'Figtree', sans-serif;
@@ -292,7 +318,7 @@ a
 /* CSS IDs */
 #events-container
 {
-  bottom: 130px;
+  bottom: 90px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -310,9 +336,11 @@ a
 {
   font-family: 'Figtree', sans-serif;
   z-index: 1000;
-  background-color: rgba(10,10,10,0.8);
+  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
   color: #fff;
   overflow: hidden;
+  border-radius: 0.5rem;
 }
 @media(min-width: 576px)
 {
@@ -526,7 +554,14 @@ a
 {
   background-color: rgba(255,255,255,0.25);
 }
-
+.table-hover td
+{
+  color:white !important;
+}
+.table-hover td:hover
+{
+  color: white !important;
+}
 #footer-group
 {
   width: 100%;
@@ -604,6 +639,21 @@ a
   border: 1px solid rgba(255,255,255,0.1);
 }
 
+#events-wrapper
+{
+  display: none;
+  z-index: 1200;
+  min-width: 350px;
+  position: fixed;
+  left: 1rem;
+  bottom: 80px;
+  z-index: 1200;
+  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
 #streamers-wrapper
 {
   display: none;
@@ -617,6 +667,15 @@ a
   backdrop-filter: blur(25px);
   border-radius: 1rem;
   border: 1px solid rgba(255,255,255,0.1);
+}
+
+.rotate
+{
+transform: rotate(-90deg);
+}
+
+.tooltip {
+  z-index: 100000000; 
 }
 
 #toggle-group
