@@ -69,38 +69,23 @@ function compileSearchResults(str)
     {
         var flights_template = Handlebars.compile('<tr><td class="px-3" style="position: relative"><div style="position: absolute; top: 50%; left: 8; right: 8; height: 2; background-color: #ddd; z-index: -1"></div><small style="color: #bbb" class=" bg-white px-1">Flights ({{ results.length }})</small></td></tr>{{#if results.length}}{{#each results}}<tr class="search-item" onClick="zoomToFlight(\'{{ this.uid }}\')"><td class="px-3"><p class="mb-0">{{ this.callsign }}</p><small style="font-size: 0.8rem">{{ this.cid }} {{#if this.dep }}{{ this.dep }} - {{ this.arr }} - {{ this.aircraft }} - <span style="color: {{ this.status.color }}">{{ this.status.status }}</span></small>{{ else }} No flightplan {{/if}}</td></tr>{{/each}}{{else}}<tr><td class="px-3 text-muted">No results.</td></tr>{{/if}}');
         var airports_template = Handlebars.compile('<tr><td class="px-3" style="position: relative"><div style="position: absolute; top: 50%; left: 8; right: 8; height: 2; background-color: #ddd; z-index: -1"></div><small class="px-1 bg-white" style="color: #bbb">Airports ({{ results.length }})</small></td></tr>{{#if trigger}}{{#if results.length}}{{#each results}}<tr class="search-item" icao="{{ this.icao }}" onclick="zoomToAirport(\'{{ this.icao }}\')"><td class="px-3"><p class="mb-0">{{ this.icao }} / {{ this.iata }}<br><small class="text-muted">{{ this.name }}</small></p></td></tr>{{/each}}{{else}}<tr><td class="px-3 text-muted">No results.</td></tr>{{/if}}{{else}}<tr><td class="px-3 text-muted">At least 3 characters required.</td></tr>{{/if}}');
-        
-        if($.isNumeric(query))
-        {
-            var users_compiled = '<tr><td class="px-3" style="position: relative"><div style="position: absolute; top: 50%; left: 8; right: 8; height: 2; background-color: #ddd; z-index: -1"></div><small class="px-1 bg-white" style="color: #bbb">Users</small></td></tr><tr class="search-item" onclick="zoomToUser('+query+')"><td class="px-3 py-2"><span class="text-muted">User / </span>'+query+'</td></tr>';
-        }
-        else
-        {
-            users_compiled = '';
-        }
-        if(users_compiled == '' && selector == 'user')
-        {
-            users_compiled = '<tr><td class="px-3" style="position: relative"><div style="position: absolute; top: 50%; left: 8; right: 8; height: 2; background-color: #ddd; z-index: -1"></div><small class="px-1 bg-white" style="color: #bbb">Users</small></td></tr><td class="px-3 text-muted">Search must be a number.</td></tr>';
-        } 
         var flights_compiled = flights_template({ results: results.flights});
         var airports_compiled = airports_template({ results: results.airports, trigger: query.length > 2 });
         
         switch(selector){
             case null:
-                return users_compiled + airports_compiled + flights_compiled;
+                return airports_compiled + flights_compiled;
             case 'flight':
             case 'al':
             case 'ac':
                 return flights_compiled;
             case 'ap':
                 return airports_compiled;
-            case 'user':
-                return users_compiled;
         }
     }
     else
     {
-        return '<tr><td class="px-3 text-muted" colspan="2">Begin typing to search.<br><br><small style="color: #aaa">Helpers:</small></td></tr><tr><td class="px-3 small text-muted">ap:</td><td class="px-3 small text-muted">Airport search</td></tr><tr><td class="px-3 small text-muted">al:</td><td class="px-3 small text-muted">Airline search</td></tr><tr><td class="px-3 small text-muted">flight:</td><td class="px-3 small text-muted">Callsign search</td></tr><tr><td class="px-3 small text-muted">user:</td><td class="px-3 small text-muted">Search user by CID</td></tr>';
+        return '<tr><td class="px-3 text-muted" colspan="2">Begin typing to search.<br><br><small style="color: #aaa">Helpers:</small></td></tr><tr><td class="px-3 small text-muted">ap:</td><td class="px-3 small text-muted">Airport search</td></tr><tr><td class="px-3 small text-muted">al:</td><td class="px-3 small text-muted">Airline search</td></tr><tr><td class="px-3 small text-muted">flight:</td><td class="px-3 small text-muted">Callsign search</td></tr>';
     }
 }
 

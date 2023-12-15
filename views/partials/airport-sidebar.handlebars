@@ -3,7 +3,7 @@
         <i class="fas fa-long-arrow-alt-left"></i>
     </div>
     <div id="controls-container">
-        <div class="control" style="margin-right: 0.5rem" onclick="$('#airport-sidebar').animate({right: -350}, 200); $('#control-airport-pullout').css({display: 'flex'})"><i class="fas fa-long-arrow-alt-right"></i></div>
+        <div class="control" style="margin-right: 0.5rem" onclick="$('#airport-sidebar').animate({right: -350}, 250, 'easeOutSine'); $('#control-airport-pullout').css({display: 'flex'})"><i class="fas fa-long-arrow-alt-right"></i></div>
         <div class="control" onclick="returnFromAirport()"><i class="fas fa-times"></i></div>
     </div>
     <div id="sidebar-container">
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div id="airport-list-wrapper" class="os-host-flexbox">
-            <div id="airport-status" class="text-white bg-dark px-3 py-2">
+            <div id="airport-status" class="text-white px-3 py-2">
                 <i class="fas fa-plane-arrival">&nbsp;</i> <span class="me-3" id="arrcount"></span>
                 <i class="fas fa-plane-departure">&nbsp;</i> <span id="depcount"></span>
             </div>

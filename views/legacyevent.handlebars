@@ -1,6 +1,3 @@
-<!-- Events Analysis -->
-{{> events-analysis}}
-
 <div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
 
     <!-- Events Sidebar -->
@@ -58,6 +55,6 @@ async function initialize()
     await refreshATC();
     await initializeInfobar();
     await updateSigmet();
-    loadEvent(eventid);
+    loadLegacyEvent(eventid);
 }
 </script>

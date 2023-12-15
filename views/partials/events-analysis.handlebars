@@ -1,0 +1,26 @@
+<div class="modal" id="splitmodal" style="z-index: 9999">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content" style="background-color: transparent; -webkit-backdrop-filter: blur(25px); backdrop-filter: blur(25px)">
+            <div class="modal-header pb-0" style="align-items: start; border-bottom: 1px solid #333; flex-direction: column">
+               <div class="container d-flex justify-between mb-3">
+                    <h5 class="modal-title" id="modal-title">
+                        Event Analysis
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="$('#splitmodal').hide()" aria-label="Close"></button>
+                </div>
+                <div class="container">
+                    <div class="btn-group rounded-0" role="group" id="analysis_airports">
+					</div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <table style="width: 100%; color: #bbb; font-family: 'Roboto Mono', monospace; font-size: 0.8rem; border-bottom: 1px solid #888" id="analysis_toptable">
+					</table>
+                    <div class="btn-group rounded-0" role="group" id="analysis" style="min-height: 100px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

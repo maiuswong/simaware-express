@@ -1,18 +1,19 @@
 <div id="flights-sidebar" class="flex-column" style="display: none;">
-    <div id="flights-status" class="text-white py-1 px-3" style="position: absolute; top: 0; right: 1rem;">
+    <div id="flights-status" class="text-white py-1 px-3" style="position: absolute; top: 0; right: 0rem;">
     </div>
     <div id="flights-cap" class="p-3 d-flex flex-column">
         <div>
-            <h3 id="flights-callsign"></h3>
+            <h3 class="mb-0" id="flights-callsign"></h3>
         </div>
+        <span class="mb-1" id="flights-airline"></span>
         <div class="d-flex flex-row align-items-center">
-            <h4 id="flights-dep-icao" class="flights-icao mb-0"></h4>
+            <h5 id="flights-dep-icao" class="flights-icao mb-0"></h5>
             <div id="flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1">
                 <div id="flights-progressbar-elapsed"></div>
                 <i id="flights-progressbar-plane" class="fas fa-plane"></i>
                 <div id="flights-progressbar-remaining"></div>
             </div>
-            <h4 id="flights-arr-icao" class="flights-icao mb-0"></h4>
+            <h5 id="flights-arr-icao" class="flights-icao mb-0"></h5>
         </div>
         <div id="flights-airborne-container" class="d-flex justify-content-center">
             <i class="text-muted mt-2" id="flights-timeairborne"></i>
@@ -36,31 +37,35 @@
         <div>
             <table id="flights-infotable">
                 <tr>
-                    <td class="pe-3 text-center">Depart</td>
+                    <td style="font-size: 0.85rem" class="pe-3 text-center">Depart</td>
                     <td id="flights-airport-dep" class="flights-tableitem"></td>
                 </tr>
                 <tr>
                     <td class="pe-3">
-                        <div href="/timetable/book/1561" class="segment" style="width: 2px; height: 30px; background-color: #eee; margin: 0 auto"></div>
+                        <div class="segment" style="width: 2px; height: 30px; background-color: #eee; margin: 0 auto"></div>
                     </td>
                     <td>
                     </td>
                 </tr>
                 <tr>
-                    <td class="pe-3 text-center">Arrive</td>
+                    <td style="font-size: 0.85rem" class="pe-3 text-center">Arrive</td>
                     <td id="flights-airport-arr" class="flights-tableitem"></td>
                 </tr>
                 <tr>
-                    <td class="pt-3 pe-3 text-center align-top">Route</td>
+                    <td style="font-size: 0.85rem" class="pt-3 pe-3 text-center align-top">Route</td>
                     <td id="flights-route" class="pt-3 flights-tableitem mono"></td>
                 </tr>
                 <tr>
-                    <td class="pt-3 pe-3 text-center align-center">Aircraft</td>
+                    <td style="font-size: 0.85rem" class="pt-3 pe-3 text-center align-center">Aircraft</td>
                     <td id="flights-equipment" class="pt-3 flights-tableitem align-center"></td>
                 </tr>
                 <tr>
-                    <td class="pt-3 pe-3 text-center align-center">Name</td>
-                    <td id="flights-name" class="pt-3 flights-tableitem d-flex align-items-center"></td>
+                    <td style="font-size: 0.85rem" class="pt-3 pe-3 text-center align-center">Name</td>
+                    <td id="flights-name" class="pt-3 flights-tableitem d-flex align-center"></td>
+                </tr>
+                <tr>
+                    <td style="font-size: 0.85rem" class="pt-3 pe-3 text-center align-center">Squawk</td>
+                    <td id="flights-squawk" class="pt-3 flights-tableitem d-flex align-center"></td>
                 </tr>
             </table>
         </div>

@@ -2,14 +2,13 @@
     <div class="row">
         <div class="col-12">
             <div class="table-responsive-xl">
-                <table class="mt-3 small table table-dark table-hover table-bordered" style="min-width: 900px">
+                <table class="mt-3 small table border-secondary table-hover table-bordered text-white" style="min-width: 900px">
                     <thead>
                         <tr>
                             <th class="text-center">ID</th>
                             <th>Name</th>
                             <th class="text-center">Date</th>
                             <th>Airports</th>
-                            <th></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -30,17 +29,17 @@ $(document).ready(() => {
 
 async function initialize()
 {
-    response = await fetch(apiserver + '/api/events');
+    response = await fetch(dataserver + 'api/livedata/events.json');
     data = await response.json();
 
     html = '';
-    $.each(data, (idx, event) => {
+    $.each(data.past, (idx, event) => {
         var id = '<td class="text-center">'+event.id+'</td>';
         var name = '<td>'+event.name+'</td>';
         var date = '<td class="text-center">'+moment(event.start).format('YYYY-MM-DD')+'</td>';
         var apts = '<td>';
-        $.each(event.airports.split(','), (idx, str) => {
-            apts += '<span class="badge bg-secondary">'+str+'</span> ';
+        $.each(event.airports, (idx, ap) => {
+            apts += '<span class="badge bg-secondary">'+ap.icao+'</span> ';
         })
         apts += '</td>';
         if(event.approved == 0)
@@ -53,7 +52,7 @@ async function initialize()
         }
         else
         {
-            var va = '<td class="text-center"><a href="/event/'+event.id+'">View</a></td><td class="text-center"><a href="/analysis/'+event.id+'">Analysis</a></td>';
+            var va = '<td class="text-center"><a href="/event/'+event.id+'">View</a>';
         }
 
         html += '<tr>' + id + name + date + apts + va + '</tr>';

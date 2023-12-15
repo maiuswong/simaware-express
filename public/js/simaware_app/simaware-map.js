@@ -1,5 +1,5 @@
 apiserver = 'https://api.simaware.ca/';
-dataserver = 'https://api2.simaware.ca/';
+dataserver = 'https://data.simaware.ca/';
 
 const warnings = {
     'NAT0': 'Oceanic clearance required for entry.  See ganderoceanic.ca for more information.',
@@ -212,7 +212,7 @@ function returnSidebarToView(id, closeid)
     {
         var right = (($('#map').width() - 350) / 2) + 'px';
     }
-    el = $('#'+id).animate({right: right}, 200);
+    el = $('#'+id).animate({right: right}, 250, 'easeOutSine');
     $('#'+closeid).hide();
 }
 
@@ -289,8 +289,18 @@ async function initializeNexrad()
 
 async function initializePatrons()
 {
-    response = await fetch(apiserver + 'api/patronsbycid');
-    patrons = await response.json();
+    response = await fetch(dataserver + 'api/livedata/patrons.json');
+    ret = await response.json();
+    patrons = {}
+    $.each(ret, (obj) => {
+        if(ret[obj].cid)
+        {
+            patrons[ret[obj].cid] = ret[obj];
+        }
+    })
+
+    response = await fetch(dataserver + 'api/livedata/streamers.json');
+    streamers = await response.json();
 }
 
 // Initialize the FIR Boundaries map
@@ -363,9 +373,18 @@ function initializeATC()
 // Updates the data based on the current version of live.json
 async function refreshFlights(filterName = null, filterCriteria = null)
 {
-    response = await fetch(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
-    flights = await response.json();
+    try
+    {
+        response = await fetch(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
+        flights = await response.json();
+    }
+    catch(e)
+    {
+        return;
+    }
+    
     flights = applyFilter(flights, filterName, filterCriteria);
+    bnfoairports = {};
     newactive_uids = [];
     
     $.each(flights, function(idx, obj)
@@ -378,6 +397,33 @@ async function refreshFlights(filterName = null, filterCriteria = null)
         else
         {
             addAircraft(obj);
+        }
+        if(obj.dep || obj.arr)
+        {
+            if(bnfoairports[obj.dep])
+            {
+                bnfoairports[obj.dep]['departures']++;
+            }
+            else
+            {
+                bnfoairports[obj.dep] = {
+                    icao: obj.dep,
+                    departures: 1,
+                    arrivals: 0
+                }
+            }
+            if(bnfoairports[obj.arr])
+            {
+                bnfoairports[obj.arr]['arrivals']++;
+            }
+            else
+            {
+                bnfoairports[obj.arr] = {
+                    icao: obj.arr,
+                    departures: 0,
+                    arrivals: 1
+                }
+            }
         }
     });
 
@@ -398,7 +444,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     }
     active_uids = newactive_uids;
 
-    $('#navbar_pilots').html(Object.keys(plane_array).length);
+    $('#navbar-pilots').html(Object.keys(plane_array).length);
     return flights;
 
 }
@@ -408,7 +454,7 @@ function interpolateLoc()
 
     for(uid in plane_array)
     {
-        var intervaltime = 2;
+        var intervaltime = 1;
         var latlon = plane_array[uid].getLatLng();
         var R = 6378.1;
         var hdg_rad = Math.PI * plane_array[uid].flight.hdg / 180;
@@ -507,7 +553,6 @@ function updateLocation(obj)
         plane_array[obj.uid]._update();
     } catch(err)
     {
-        console.log(obj.uid);
     }
     plane_array[obj.uid].setTooltipContent(getDatablock(obj));
 
@@ -865,8 +910,18 @@ async function refreshATC()
 {
     active_firs = getActiveFIRs();
     newdata = {};
-    response = await fetch(dataserver + 'api/livedata/onlinefirs.json');
-    sectors = await response.json();
+    var atccount = 0;
+    try
+    {
+        response = await fetch(dataserver + 'api/livedata/onlinefirs.json');
+        sectors = await response.json();
+        atccount += sectors.length;
+    }
+    catch(e)
+    {
+        return;
+    }
+    
     // $.each(data, (idx, fir) => {
     //     index = getFirIndex(fir);
     //     firObj = firs_array[index];
@@ -880,7 +935,6 @@ async function refreshATC()
     //     firObj = firs_array[fir];
     //     turnOffFIR(firObj);
     // })
-    var atccount = 0;
     $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
         if(fir && typeof fir.firs === 'undefined') // fir is null if we can't find anything.  Do UIRs after.
@@ -957,8 +1011,17 @@ async function refreshATC()
         turnOffFIR(firObj, fir);
     })
 
-    var response = await fetch(dataserver + 'api/livedata/appdep.json');
-    tracons = await response.json();
+    try
+    {
+        var response = await fetch(dataserver + 'api/livedata/appdep.json');
+        tracons = await response.json();
+        atccount += tracons.length;
+    }
+    catch(e)
+    {
+        return;
+    }
+    
 
     if(typeof(tracons_circles_featuregroup) != 'undefined' && tracons_featuregroup.hasLayer(tracons_circles_featuregroup))
     {
@@ -1042,8 +1105,21 @@ async function refreshATC()
     // tracons_featuregroup.addLayer(tracons_circles_featuregroup);
 
 
-    response = await fetch(dataserver + 'api/livedata/locals.json');
-    localsraw = await response.json();
+    try {
+        response = await fetch(dataserver + 'api/livedata/locals.json');
+        localsraw = await response.json();
+    }
+    catch(e){
+        return;
+    }
+
+    $.each(localsraw, function(idx, obj) {
+        if(!obj.callsign.includes('_ATIS'))
+        {
+            atccount++;
+        }
+    });
+    
 
     locals = [];
 
@@ -1110,6 +1186,7 @@ async function refreshATC()
         }
     }
     atc_featuregroup.addLayer(locals_featuregroup);
+    $('#navbar-atc').html(atccount);
 }
 
 // Update Convective Sigmets
@@ -1167,7 +1244,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         var firmarkers_array_temp = [];
         for(idx in obj)
         {
-            obj[idx].setStyle({color: '#fff', weight: 2, fillColor: '#fff', fillOpacity: 0.1});
+            obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#fff', fillOpacity: 0.1});
 
             // Add a marker and tooltip
             latlng = [Number(obj[idx].feature.properties.label_lat), Number(obj[idx].feature.properties.label_lon)];
@@ -1570,7 +1647,7 @@ function getTraconBlock(obj, dep = false)
     tracon_name = obj.name;
     list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+'</td></tr>';
     $.each(obj.members, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj, unix = false)+'</td></tr>';
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="px-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj)+'</td></tr>';
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
@@ -1585,6 +1662,12 @@ async function loadAirlines()
         airlinesByIcao[airline.icao] = airline;
     })
     return airlinesByIcao;
+}
+
+async function loadRegprefixes()
+{
+    response = await fetch('/livedata/regprefixes.json');
+    return await response.json();
 }
 
 async function loadAircraft()
@@ -1731,7 +1814,7 @@ async function zoomToFlight(uid)
         active_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
     }
 
-    map.fitBounds(bounds);
+    //map.fitBounds(bounds);
 
     // Swap the layers
     map.addLayer(active_featuregroup);
@@ -1770,12 +1853,12 @@ async function zoomToFlight(uid)
 
     if(historical)
     {
-        flightpath = await new L.Polyline(adjustLogsForAntimeridian(planedata.flight, airports[dep_airport], airports[arr_airport], planedata.logs), {color: '#00D300', weight: 1.5, nowrap: true});
+        flightpath = await new L.Polyline(adjustLogsForAntimeridian(planedata.flight, airports[dep_airport], airports[arr_airport], planedata.logs), {smoothFactor: 1, color: '#00D300', weight: 1, nowrap: true});
         await active_featuregroup.addLayer(flightpath);
     }
     else
     {
-        addedFlightPathPromise = addFlightPath(apiserver +'api/logs/' + uid, airports[dep_airport], airports[arr_airport], plane.flight);
+        addedFlightPathPromise = addFlightPath(dataserver +'api/livedata/logs/' + uid + '.json', airports[dep_airport], airports[arr_airport], plane.flight);
         await addedFlightPathPromise;
     }
 
@@ -1787,7 +1870,7 @@ async function addFlightPath(url, dep, arr, flight)
 {
     var response = await fetch(url);
     var latlons = await response.json();
-    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {color: '#00D300', weight: 1.5, nowrap: true});
+    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#00D300', weight: 1.5, nowrap: true});
     await active_featuregroup.addLayer(flightpath);
 }
 
@@ -2104,6 +2187,8 @@ function updateFlightsBox(flight)
         $('#flights-progressbar-plane').removeClass('blinking');
     }
 
+    updateAirlines(flight);
+
     // Do the time online
     var timeairborne = getTimeAirborne(flight);
     if(timeairborne.status != 'nodep')
@@ -2142,18 +2227,45 @@ function updateFlightsBox(flight)
     // Name
     $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+' '+ getPatron(flight.cid));
 
+    // Name
+    $('#flights-squawk').html(flight.xpdr + ' / ' + flight.axpdr);
+
+}
+
+function updateAirlines(flight)
+{
+    for(i in regprefixes)
+    {
+        if(flight.callsign.match(regprefixes[i].regex))
+        {
+            $('#flights-airline').html('Privately Registered (' + regprefixes[i].country + ')');
+            return;
+        }
+    }
+
+    if(flight.callsign.length > 3 && $.isNumeric(flight.callsign[3]) && airlinesByIcao && airlinesByIcao[flight.callsign.substring(0,3)])
+    {
+        let airline = airlinesByIcao[flight.callsign.substring(0,3)];
+        $('#flights-airline').html(airline.name);
+    }
+    else
+    {
+        $('#flights-airline').html('');
+    }
 }
 
 function getPatron(cid)
 {
-    if($.inArray(cid.toString(), Object.keys(patrons)) >= 0 && (patrons[cid] == 1 || patrons[cid] == 2))
+    if(patrons[cid])
     {
-        switch(patrons[cid])
+        switch(patrons[cid].tier)
         {
             case 1:
-                return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
+                return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
             case 2:
-              return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
+              return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
+            default:
+                return '';
         }
     }
     else
