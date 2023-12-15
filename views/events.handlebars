@@ -2,14 +2,13 @@
     <div class="row">
         <div class="col-12">
             <div class="table-responsive-xl">
-                <table class="mt-3 small table table-dark table-hover table-bordered" style="min-width: 900px">
+                <table class="mt-3 small table border-secondary table-hover table-bordered text-white" style="min-width: 900px">
                     <thead>
                         <tr>
                             <th class="text-center">ID</th>
                             <th>Name</th>
                             <th class="text-center">Date</th>
                             <th>Airports</th>
-                            <th></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -53,7 +52,7 @@ async function initialize()
         }
         else
         {
-            var va = '<td class="text-center"><a href="/event/'+event.id+'">View</a></td><td class="text-center"><a href="/analysis/'+event.id+'">Analysis</a></td>';
+            var va = '<td class="text-center"><a href="/event/'+event.id+'">View</a>';
         }
 
         html += '<tr>' + id + name + date + apts + va + '</tr>';
