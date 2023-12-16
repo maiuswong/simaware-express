@@ -515,9 +515,9 @@ function createPlaneMarker(obj)
     var plane = L.canvasMarker(new L.LatLng(obj.lat, obj.lon), {
         radius: 16,
         img: {
-            url: '/img/aircraft/'+mkr[2]+'.png',    //image link
+            url: '/img/aircraft/'+mkr[2]+'.png',     //image link
             size: [1.2 * Math.pow(mkr[0], 3/4), 1.2 * Math.pow(mkr[1], 3/4)],     //image size ( default [40, 40] )
-            rotate: obj.hdg,         //image base rotate ( default 0 )
+            rotate: ["BALL"].includes(obj.aircraft) ? 0 : obj.hdg,                //image base rotate ( default 0 )
             offset: { x: 0, y: 0 }, //image offset ( default { x: 0, y: 0 } )
         },
     });
@@ -549,7 +549,7 @@ function updateLocation(obj)
     // Update the location, heading, and tooltip content
     try{
         plane_array[obj.uid].setLatLng(new L.LatLng(Number(obj.lat), Number(obj.lon)));
-        plane_array[obj.uid].options.img.rotate = obj.hdg;
+        plane_array[obj.uid].options.img.rotate = ["BALL"].includes(obj.aircraft) ? 0 : obj.hdg; // avoids rotating the icon for very specific aircraft such as Hot Air Balloons.
         plane_array[obj.uid]._update();
     } catch(err)
     {
