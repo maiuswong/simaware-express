@@ -258,13 +258,13 @@ function initializeAirports()
 
 async function initializeFirData()
 {
-    let response = await fetch(dataserver + 'api/livedata/countries.json');
+    let response = await fetchRetry(dataserver + 'api/livedata/countries.json');
     countries = await response.json();
 
-    response = await fetch(dataserver + 'api/livedata/firs.json');
+    response = await fetchRetry(dataserver + 'api/livedata/firs.json');
     firs = await response.json();
 
-    response = await fetch(dataserver + 'api/livedata/uirs.json');
+    response = await fetchRetry(dataserver + 'api/livedata/uirs.json');
     uirs = await response.json();
 }
 
@@ -278,7 +278,7 @@ function getAirline(flight)
 
 async function initializeNexrad()
 {
-    response = await fetch('https://tilecache.rainviewer.com/api/maps.json');
+    response = await fetchRetry('https://tilecache.rainviewer.com/api/maps.json');
     data = await response.json();
     ts = data[0];
     nexrad = L.tileLayer('https://tilecache.rainviewer.com/v2/radar/'+ts+'/512/{z}/{x}/{y}/6/0_1.png', {
@@ -289,7 +289,7 @@ async function initializeNexrad()
 
 async function initializePatrons()
 {
-    response = await fetch(dataserver + 'api/livedata/patrons.json');
+    response = await fetchRetry(dataserver + 'api/livedata/patrons.json');
     ret = await response.json();
     patrons = {}
     $.each(ret, (obj) => {
@@ -299,7 +299,7 @@ async function initializePatrons()
         }
     })
 
-    response = await fetch(dataserver + 'api/livedata/streamers.json');
+    response = await fetchRetry(dataserver + 'api/livedata/streamers.json');
     streamers = await response.json();
 }
 
@@ -375,7 +375,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
 {
     try
     {
-        response = await fetch(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
+        response = await fetchRetry(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
         flights = await response.json();
     }
     catch(e)
@@ -913,7 +913,7 @@ async function refreshATC()
     var atccount = 0;
     try
     {
-        response = await fetch(dataserver + 'api/livedata/onlinefirs.json');
+        response = await fetchRetry(dataserver + 'api/livedata/onlinefirs.json');
         sectors = await response.json();
         atccount += sectors.length;
     }
@@ -1013,7 +1013,7 @@ async function refreshATC()
 
     try
     {
-        var response = await fetch(dataserver + 'api/livedata/appdep.json');
+        var response = await fetchRetry(dataserver + 'api/livedata/appdep.json');
         tracons = await response.json();
         atccount += tracons.length;
     }
@@ -1066,7 +1066,7 @@ async function refreshATC()
     active_tracons = newactive_tracons;
     tracons_featuregroup.addLayer(tracons_circles_featuregroup);
 
-    // response = await fetch(dataserver + 'api/livedata/tracons.json');
+    // response = await fetchRetry(dataserver + 'api/livedata/tracons.json');
     // tracons = await response.json();
 
     // var newactive_tracons = [];
@@ -1106,7 +1106,7 @@ async function refreshATC()
 
 
     try {
-        response = await fetch(dataserver + 'api/livedata/locals.json');
+        response = await fetchRetry(dataserver + 'api/livedata/locals.json');
         localsraw = await response.json();
     }
     catch(e){
@@ -1192,7 +1192,7 @@ async function refreshATC()
 // Update Convective Sigmets
 async function updateSigmet()
 {
-    response = await fetch(dataserver + 'api/livedata/sigmets.json');
+    response = await fetchRetry(dataserver + 'api/livedata/sigmets.json');
     data = await response.json();
     
     for(let sigmet in sigmets_array)
@@ -1655,7 +1655,7 @@ function getTraconBlock(obj, dep = false)
 
 async function loadAirlines()
 {
-    response = await fetch('/livedata/airlines.json');
+    response = await fetchRetry('/livedata/airlines.json');
     airlines = await response.json();
     airlinesByIcao = {};
     $.each(airlines, (idx, airline) => {
@@ -1666,13 +1666,13 @@ async function loadAirlines()
 
 async function loadRegprefixes()
 {
-    response = await fetch('/livedata/regprefixes.json');
+response = await fetchRetry('/livedata/regprefixes.json');
     return await response.json();
 }
 
 async function loadAircraft()
 {
-    response = await fetch('/livedata/aircraft.json');
+    response = await fetchRetry('/livedata/aircraft.json');
     aircraft = await response.json();
     aircraftByIcao = {};
     $.each(aircraft, (idx, ac) => {
@@ -1683,7 +1683,7 @@ async function loadAircraft()
 
 async function initializeNat()
 {
-    // response = await fetch(apiserver + 'api/livedata/nats');
+    // response = await fetchRetry(apiserver + 'api/livedata/nats');
     // nats = await response.json();
 
     // $.each(nats, (idx, nat) => {
@@ -1760,7 +1760,7 @@ async function zoomToFlight(uid)
 
     if(historical) 
     {
-        response = await fetch(apiserver + 'api/flight/' + uid);
+        response = await fetchRetry(apiserver + 'api/flight/' + uid);
         planedata = await response.json();
         bounds = [planedata.flight.lat, planedata.flight.lon];
         plane = createPlaneMarker(planedata.flight);
@@ -1868,7 +1868,7 @@ async function zoomToFlight(uid)
 
 async function addFlightPath(url, dep, arr, flight)
 {
-    var response = await fetch(url);
+    var response = await fetchRetry(url);
     var latlons = await response.json();
     flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#00D300', weight: 1.5, nowrap: true});
     await active_featuregroup.addLayer(flightpath);
@@ -2836,4 +2836,19 @@ function getMarker(str)
 function nl2br (str, is_xhtml) {   
     var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';    
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
+}
+
+function wait(delay){
+    return new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+function fetchRetry(url, delay = 1000, tries = 3, fetchOptions = {}) {
+    function onError(err){
+        triesLeft = tries - 1;
+        if(!triesLeft){
+            throw err;
+        }
+        return wait(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
+    }
+    return fetch(url,fetchOptions).catch(onError);
 }

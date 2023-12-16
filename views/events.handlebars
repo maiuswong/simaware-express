@@ -29,7 +29,7 @@ $(document).ready(() => {
 
 async function initialize()
 {
-    response = await fetch(dataserver + 'api/livedata/events.json');
+    response = await fetchRetry(dataserver + 'api/livedata/events.json');
     data = await response.json();
 
     html = '';

@@ -27,7 +27,7 @@ $(document).ready(() => {
 })
 async function initialize()
 {
-    response = await fetch(dataserver + 'api/livedata/patrons.json');
+    response = await fetchRetry(dataserver + 'api/livedata/patrons.json');
     patrons = await response.json();
 
     supporter = '';

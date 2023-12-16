@@ -1,6 +1,6 @@
 async function loadEvent(id)
 {
-    response = await fetch(dataserver + 'api/livedata/events/event' + id + '.json');
+    response = await fetchRetry(dataserver + 'api/livedata/events/event' + id + '.json');
     eventdata = await response.json();
 
     polyline_array = [];
@@ -92,7 +92,7 @@ async function loadEvent(id)
     var max = 0;
     for(var icao in aar)
     {
-        html += '<table class="events-e m-3" id="'+ icao +'"style="display: none; height: 100px"><tr>';
+        html += '<table class="events-e m-3" id="'+ icao +'"style="display: none;"><tr style="height: 100px">';
         var apaars = aar[icao];
         var deps = [];
         var arrs = [];

@@ -708,6 +708,16 @@ transform: rotate(-90deg);
   margin: -1px;
   color: #fff;
 }
+
+.toggle-item-active
+{
+  background-color: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 5rem;
+  box-sizing: border-box;
+  margin: -1px;
+  color: #fff;
+}
 @media(min-width: 576px)
 {
   #main-container

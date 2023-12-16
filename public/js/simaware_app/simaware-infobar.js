@@ -3,16 +3,50 @@ $(document).ready(() => {
         $('#ap-wrapper').toggle();
         $('#streamers-wrapper').hide();
         $('#events-wrapper').hide();
+
+        $('#streamers-toggle').removeClass('toggle-item-active');
+        $('#events-toggle').removeClass('toggle-item-active');
+        if($('#ap-wrapper').is(':visible'))
+        {
+            $('#ap-toggle').addClass('toggle-item-active');  
+        }
+        else
+        {
+            $('#ap-toggle').removeClass('toggle-item-active');
+        }
     })
     $('#streamers-toggle').on('click', () => {
         $('#streamers-wrapper').toggle();
         $('#ap-wrapper').hide();
         $('#events-wrapper').hide();
+        
+        if($('#streamers-wrapper').is(':visible'))
+        {
+            $('#streamers-toggle').addClass('toggle-item-active');  
+        }
+        else
+        {
+            $('#streamers-toggle').removeClass('toggle-item-active');
+        }
+        $('#events-toggle').removeClass('toggle-item-active');
+        $('#ap-toggle').removeClass('toggle-item-active');
     })
     $('#events-toggle').on('click', () => {
         $('#events-wrapper').toggle();
         $('#ap-wrapper').hide();
         $('#streamers-wrapper').hide();
+
+        $('#events--toggle').removeClass('toggle-item-active');
+        if($('#events-wrapper').is(':visible'))
+        {
+            $('#events-toggle').addClass('toggle-item-active');  
+        }
+        else
+        {
+            $('#events-toggle').removeClass('toggle-item-active');
+        }
+        $('#events-toggle').addClass('toggle-item-active');
+        $('#ap-toggle').removeClass('toggle-item-active');
     })
 })
 
@@ -26,7 +60,7 @@ async function initializeInfobar()
 async function updateInfobar()
 {
     // Get VATSIM data for streamers
-    let response = await fetch(dataserver + 'api/livedata/vatsimdata.json');
+    let response = await fetchRetry(dataserver + 'api/livedata/vatsimdata.json');
     let infobardata = await response.json();
 
     // Horrible spaghetti code to get the most popular airports
