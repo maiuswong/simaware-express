@@ -15,7 +15,6 @@ const PORT = process.env.PORT || 5000;
 // app.use(minify());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 /* Index Page */
 app.get('/', (req, res) => {
     res.render('index');
