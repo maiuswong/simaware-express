@@ -5,8 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app",
-    "dev": "nodemon app",
-    "build": "uglifyjs src/js/simaware_app/simaware-airport.js src/js/simaware_app/simaware-atis.js src/js/simaware_app/simaware-event.js src/js/simaware_app/simaware-infobar.js src/js/simaware_app/simaware-map.js src/js/simaware_app/simaware-math.js src/js/simaware_app/simaware-search.js src/js/simaware_app/simaware-user.js -c -m -o public/js/simaware_app/app.js"
+    "dev": "nodemon app"
   },
   "author": "",
   "license": "MPL-2.0",
