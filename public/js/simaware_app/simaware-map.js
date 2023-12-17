@@ -2848,6 +2848,7 @@ function fetchRetry(url, delay = 1000, tries = 3, fetchOptions = {}) {
         if(!triesLeft){
             throw err;
         }
+        console.log('Error Occurred but retrying');
         return wait(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
     }
     return fetch(url,fetchOptions).catch(onError);
