@@ -1,4 +1,4 @@
-apiserver = 'https://api.simaware.ca/';
+r2server = 'https://r2.simaware.ca/';
 dataserver = 'https://data.simaware.ca/';
 
 const warnings = {
@@ -375,7 +375,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
 {
     try
     {
-        response = await fetchRetry(dataserver + 'api/livedata/live.json', { credentials: 'omit' });
+        response = await fetchRetry(r2server + 'api/livedata/live.json', { credentials: 'omit' });
         flights = await response.json();
     }
     catch(e)
