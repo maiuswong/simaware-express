@@ -526,7 +526,7 @@ function createPlaneMarker(obj)
 
 function getDatablock(obj)
 {
-    return '<span class="datablock">'+obj.callsign+' '+obj.aircraft+'<br>'+Math.round(Number(obj.alt)/100)*100+' '+obj.gndspd+'<br>'+obj.dep+' '+obj.arr+'</span>';
+    return '<div class="datablock">'+obj.callsign+' '+obj.aircraft+'<br>'+Math.round(Number(obj.alt)/100)*100+' '+obj.gndspd+'<br>'+obj.dep+' '+obj.arr+'</div>';
 }
 
 function updateLocation(obj)
@@ -1512,7 +1512,7 @@ function getLocalBlock(icao)
     ct = 0;
     tt = '';
 
-    var list = '<table style="width: 100%; color: #eee; font-size: 0.9rem"><tr><td colspan="6" class="pb-1" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</small></td></tr>';
+    var list = '<table style="color: #eee; font-size: 0.9rem"><tr><td colspan="6" class="pb-1" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</small></td></tr>';
     if(obj.DEL)
     {
         $.each(obj.DEL, (idx, item) => {
@@ -1534,17 +1534,17 @@ function getLocalBlock(icao)
     if(obj.ATIS)
     {
         $.each(obj.ATIS, (idx, item) => {
-            list += '<tr><td rowspan="2" style="vertical-align:top"><div style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+yellow+'; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div><div class="badge" style="background-color: #181818; border-top-left-radius: 0; border-top-right-radius: 0; font-size: 1.6rem; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;"">'+getAtisCode(item.atis, icao)+'</div></div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(item)+'</td></tr><tr><td colspan="4" style="color: #ccc; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem">'+item.atis+'</td></tr>';
+            list += '<tr><td rowspan="2" style="vertical-align:top"><div style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+yellow+'; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">ATIS</div><div class="badge" style="background-color: #181818; border-top-left-radius: 0; border-top-right-radius: 0; font-size: 1.6rem; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;"">'+getAtisCode(item.atis, icao)+'</div></div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="px-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="text-primary" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem; white-space: normal;">'+getTimeOnline(item)+'</td></tr><tr><td colspan="4" style="white-space: normal; color: #ccc; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem">'+item.atis+'</td></tr>';
         })
     }
 
     eventslist = '';
     if(eventsByAirport[icao])
     {
-        eventslist = '<tr><td colspan="2" style="position: relative"><div style="position: absolute; top: 50%; left: 0; right: 0; height: 1; background-color: #999; z-index: 0"></div><small class="px-1" style="position: absolute; top: 0; left: 20; z-index: 1; background-color: #282828; color: #999">Upcoming Events</small><small>&nbsp;</small></td></tr>';
+        eventslist = '<tr><td colspan="2" style="position: relative"><div style="position: absolute; top: 50%; left: 0px; right: 0px; height: 2px; background-color: #999; z-index: 1"></div><span style="position: relative; color: #999; background-color: #282828; z-index: 2" class="ms-3 px-1">Upcoming Events</span></td></tr>';
         for(id in eventsByAirport[icao])
         {
-            eventslist += '<tr><td class="pe-3 pt-1" width="15%"><table class="rounded-2" style="overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; background-color: #eee"><tr><td style="color: rgb(169,56,72); text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 1rem; color: #222">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; white-space: nowrap">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).format('HHmm') +'Z</small></td></tr>';
+            eventslist += '<tr><td class="pe-3 pt-1" width="15%"><table class="rounded-2" style="overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; background-color: #eee"><tr><td style="color: rgb(169,56,72); text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 1rem; color: #222">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; color: #aaa; white-space: nowrap; line-height: normal">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).utc().format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).utc().format('HHmm') +'Z</small></td></tr>';
         }
     }
     
