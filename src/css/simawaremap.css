@@ -552,6 +552,7 @@ a
 .footer-infobar-item:hover
 {
   background-color: rgba(255,255,255,0.1);
+  cursor: pointer;
 }
 .footer-infobar-item:active
 {
