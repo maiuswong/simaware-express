@@ -59,9 +59,6 @@ async function initializeInfobar()
 
 async function updateInfobar()
 {
-    // Get VATSIM data for streamers
-    let response = await fetchRetry(dataserver + 'api/livedata/vatsimdata.json');
-    let infobardata = await response.json();
 
     // Horrible spaghetti code to get the most popular airports
     al = {}

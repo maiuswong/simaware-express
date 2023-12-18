@@ -45,8 +45,8 @@ $(document).ready(function() {
 
             if(new Date().getSeconds() % 15 == 1)
             {
-                await refreshATC();
                 flights = await refreshFlights(filterName, filterCriteria);
+                await refreshATC();
                 updateInfobar();
                 updateSigmet();
                 setLayerOrder();

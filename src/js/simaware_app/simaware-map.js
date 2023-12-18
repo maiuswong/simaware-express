@@ -375,13 +375,18 @@ async function refreshFlights(filterName = null, filterCriteria = null)
 {
     try
     {
-        response = await fetchRetry(r2server + 'api/livedata/live.json', { credentials: 'omit' });
-        flights = await response.json();
+        response = await fetchRetry(r2server + 'api/livedata/data.json', { credentials: 'omit' });
+        livedata = await response.json();
     }
     catch(e)
     {
         return;
     }
+
+    flights = livedata.pilots;
+    sectors = livedata.onlinefirs;
+    tracons = livedata.appdep;
+    localsraw = livedata.locals;
     
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
@@ -911,16 +916,6 @@ async function refreshATC()
     active_firs = getActiveFIRs();
     newdata = {};
     var atccount = 0;
-    try
-    {
-        response = await fetchRetry(dataserver + 'api/livedata/onlinefirs.json');
-        sectors = await response.json();
-        atccount += sectors.length;
-    }
-    catch(e)
-    {
-        return;
-    }
     
     // $.each(data, (idx, fir) => {
     //     index = getFirIndex(fir);
@@ -983,6 +978,7 @@ async function refreshATC()
             })
         }
     })
+
     // Breaking it up into two since oceanics tend to overlap smaller facilities, rendering them un-hoverable
     $.each(newdata, (index, fir) => {
         if(fir.firname.search('Oceanic') > 1)
@@ -1010,18 +1006,6 @@ async function refreshATC()
         firObj = firs_array[fir];
         turnOffFIR(firObj, fir);
     })
-
-    try
-    {
-        var response = await fetchRetry(dataserver + 'api/livedata/appdep.json');
-        tracons = await response.json();
-        atccount += tracons.length;
-    }
-    catch(e)
-    {
-        return;
-    }
-    
 
     if(typeof(tracons_circles_featuregroup) != 'undefined' && tracons_featuregroup.hasLayer(tracons_circles_featuregroup))
     {
@@ -1104,15 +1088,6 @@ async function refreshATC()
     // active_tracons = newactive_tracons;
     // tracons_featuregroup.addLayer(tracons_circles_featuregroup);
 
-
-    try {
-        response = await fetchRetry(dataserver + 'api/livedata/locals.json');
-        localsraw = await response.json();
-    }
-    catch(e){
-        return;
-    }
-
     $.each(localsraw, function(idx, obj) {
         if(!obj.callsign.includes('_ATIS'))
         {
@@ -1120,7 +1095,6 @@ async function refreshATC()
         }
     });
     
-
     locals = [];
 
     $.each(localsraw, (idx, local) => {
