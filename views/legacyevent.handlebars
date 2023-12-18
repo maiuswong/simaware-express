@@ -31,7 +31,6 @@ $(document).ready(function() {
             await refreshATC();
             flights = await refreshFlights(filterName, filterCriteria);
             updateInfobar();
-            updateSigmet();
             setLayerOrder();
             
         }, 60 * 1000);
@@ -54,7 +53,6 @@ async function initialize()
     await initializeAirports();
     await refreshATC();
     await initializeInfobar();
-    await updateSigmet();
     loadLegacyEvent(eventid);
 }
 </script>
