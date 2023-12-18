@@ -131,7 +131,6 @@ async function updateInfobar()
     infostreamers['controllers'] = [];
     html = '<table style="font-size: 0.9rem"><h5 class="mb-3">Active Streamers</h5>';
     $.each(flights, (idx, obj) => {
-        
         if(patrons[obj.cid] && (patrons[obj.cid].tier >= 2 || !patrons[obj.cid].tier) && streamers[patrons[obj.cid].twitch])
         {
             let s = {};
@@ -141,11 +140,12 @@ async function updateInfobar()
             if(!s.dep) { s.dep = 'NONE' }
             if(!s.arr) { s.arr = 'NONE' }
             s.streamername = patrons[obj.cid].twitch;
+            s.url = (true) ? 'https://twitch.tv/' + s.streamername : 'https://youtube.com/c/' + s.streamername + '/live';
             s.callsign = obj.callsign;
             infostreamers.pilots.push(s);
             let infoflight = plane_array[s.uid].flight;
             let flight_status = getStatus(infoflight);
-            html += '<tr><td class="py-2"><a class="footer-infobar-item text-white"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td class="ps-3">'+s.callsign+'</td><td class="ps-3">'+s.dep+'</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div class="toggle-flights-progressbar-elapsed" id="'+s.uid+'" style="background-color: '+flight_status.color+'; width: '+getInfoElapsedWidth(infoflight)+'%"></div><i class="toggle-flights-progressbar-plane fas fa-plane" id="'+s.uid+'" style="color: '+flight_status.color+'"></i><div class="toggle-flights-progressbar-remaining" id="'+s.uid+'"></div></td><td class="ps-2" style="text-align: right">'+s.arr+'</td></tr>';
+            html += '<tr><td class="py-2"><a class="footer-infobar-item text-white" href="' + s.url + '"><i class="fab fa-twitch"></i> ' + s.streamername + '</a></td><td class="ps-3">' + s.callsign + '</td><td class="ps-3">' + s.dep + '</td><td class="ps-2"><div class="d-flex flex-row align-items-center" style="width: 140px"><div id="infobar-flights-progressbar" class="d-flex flex-row align-items-center" style="flex-grow: 1"><div class="toggle-flights-progressbar-elapsed" id="' + s.uid + '" style="background-color: ' + flight_status.color + '; width: ' + getInfoElapsedWidth(infoflight) + '%"></div><i class="toggle-flights-progressbar-plane fas fa-plane" id="' + s.uid + '" style="color: ' + flight_status.color + '"></i><div class="toggle-flights-progressbar-remaining" id="' + s.uid + '"></div></td><td class="ps-2" style="text-align: right">' + s.arr + '</td></tr>';
         }
     })
 
