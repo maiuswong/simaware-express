@@ -62,8 +62,7 @@ async function initialize()
 {
     initializeMap();
 
-    response = await fetchRetry('/livedata/airports.json');
-    airports = await response.json();
+    await initializeAirports();
     flights = await refreshFlights(filterName, filterCriteria);
     eventsByAirport = await loadUpcomingEvents();
     airlines = await loadAirlines();
@@ -72,7 +71,6 @@ async function initialize()
     await initializeNexrad();
     await initializeNat();
     await initializeATC();
-    await initializeAirports();
     await refreshATC();
     await initializeInfobar();
     await updateSigmet();

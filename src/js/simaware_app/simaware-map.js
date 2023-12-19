@@ -220,19 +220,20 @@ function getBadge(rating)
     }
 }
 // Initialize airports
-function initializeAirports()
+async function initializeAirports()
 {
     airportsByIata = [];
     airportsByPrefix = [];
-    $.getJSON(dataserver + 'api/livedata/airports.json', function(data){ 
-        airports = data;
-        $.each(airports, (idx, obj) => {
-            airportsByIata[obj.iata] = obj;
-            if(obj.prefix)
-            {
-                airportsByPrefix[obj.prefix] = obj;
-            }
-        })
+
+    let response = await fetchRetry('/livedata/airports.json');
+    airports = await response.json();
+
+    $.each(airports, (idx, obj) => {
+        airportsByIata[obj.iata] = obj;
+        if(obj.prefix)
+        {
+            airportsByPrefix[obj.prefix] = obj;
+        }
     })
 }
 
