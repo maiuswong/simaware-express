@@ -43,7 +43,7 @@ $(document).ready(function() {
     setInterval(
         async () => { 
 
-            if(false)
+            if(new Date().getSeconds() % 30 == 1)
             {
                 flights = await refreshFlights(filterName, filterCriteria);
                 await refreshATC();
