@@ -122,6 +122,7 @@ async function initialize()
     airlines = await loadAirlines();
     aircraft = await loadAircraft();
 
+    await initializeFirData();
     initializeNexrad();
     initializeATC();
     initializeAirports();
