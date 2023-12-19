@@ -2781,7 +2781,7 @@ function getMarker(str)
 	case 'B190':
         return [27, 28, 'B190'];
 	case 'C182':
-        return [26, 200, 'C182'];
+        return [26, 20, 'C182'];
 	case 'DHC2':
         return [35, 22, 'DHC2'];
 	case 'DR40':
