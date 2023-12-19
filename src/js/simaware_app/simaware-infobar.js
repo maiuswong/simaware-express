@@ -156,9 +156,10 @@ async function updateInfobar()
             s.cid = obj.cid;
             s.name = obj.name;
             s.streamername = patrons[obj.cid].twitch;
+            s.url = (true) ? 'https://twitch.tv/' + s.streamername : 'https://youtube.com/c/' + s.streamername + '/live';
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
-            html += '<tr><td class="py-2"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
+            html += '<tr><td class="py-2"><a class="footer-infobar-item text-white px-3 py-2" href="' + s.url + '"><i class="fab fa-twitch"></i> ' + s.streamername + '</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
         }
     })
     $.each(sectors, (idx, obj) => {
@@ -168,9 +169,10 @@ async function updateInfobar()
             s.cid = obj.cid;
             s.name = obj.name;
             s.streamername = patrons[obj.cid].twitch;
+            s.url = (true) ? 'https://twitch.tv/' + s.streamername : 'https://youtube.com/c/' + s.streamername + '/live';
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
-            html += '<tr><td class="py-2"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
+            html += '<tr><td class="py-2"><a class="footer-infobar-item text-white px-3 py-2" href="' + s.url + '"><i class="fab fa-twitch"></i> ' + s.streamername + '</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
         }
     })
     $.each(localsraw, (idx, obj) => {
@@ -180,9 +182,10 @@ async function updateInfobar()
             s.cid = obj.cid;
             s.name = obj.name;
             s.streamername = patrons[obj.cid].twitch;
+            s.url = (true) ? 'https://twitch.tv/' + s.streamername : 'https://youtube.com/c/' + s.streamername + '/live';
             s.position = obj.callsign;
             infostreamers.controllers.push(s);
-            html += '<tr><td class="py-2"><i class="fab fa-twitch"></i> '+s.streamername+'</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
+            html += '<tr><td class="py-2"><a class="footer-infobar-item text-white px-3 py-2" href="' + s.url + '"><i class="fab fa-twitch"></i> ' + s.streamername + '</a></td><td colspan="4" class="ps-3">'+s.position+'</td></tr>';
         }
     })
 
