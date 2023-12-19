@@ -1614,7 +1614,14 @@ async function loadAirlines()
     airlines = await response.json();
     airlinesByIcao = {};
     $.each(airlines, (idx, airline) => {
-        airlinesByIcao[airline.icao] = airline;
+        if(typeof airlinesByIcao[airline.icao] === 'undefined')
+        {
+            airlinesByIcao[airline.icao] = [airline];
+        }
+        else
+        {
+            airlinesByIcao[airline.icao].push(airline);
+        }
     })
     return airlinesByIcao;
 }
@@ -2201,7 +2208,21 @@ function updateAirlines(flight)
     if(flight.callsign.length > 3 && $.isNumeric(flight.callsign[3]) && airlinesByIcao && airlinesByIcao[flight.callsign.substring(0,3)])
     {
         let airline = airlinesByIcao[flight.callsign.substring(0,3)];
-        $('#flights-airline').html(airline.name);
+        var html = [];
+        $.each(airline, (idx, al) => {
+            var st = al.name;
+            if(al.va)
+            {
+                st += ' <span class="strong small text-muted">VA</span>';
+            }
+            html.push(st);
+        })
+        var ret = html.join('<br>');
+        if(html.length > 1)
+        {
+            ret = '<small class="strong" style="color: #FFA500; font-size: 0.7rem"><i class="fas fa-info-circle"></i> Multiple Airlines</small><br>' + ret;
+        }
+        $('#flights-airline').html(ret);
     }
     else
     {
