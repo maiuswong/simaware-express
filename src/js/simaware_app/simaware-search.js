@@ -27,11 +27,19 @@ function runSearch(str, selector = null)
                 interrogation = obj.callsign.toLowerCase();
             }
         }
+        else if(selector == 'dep')
+        {
+            var interrogation = (obj.dep).toLowerCase();
+        }
+        else if(selector == 'arr')
+        {
+            var interrogation = (obj.arr).toLowerCase();
+        }
         else
         {
             var interrogation = (obj.aircraft + '|' + obj.arr + '|' + obj.callsign + '|' + obj.dep + '|' + obj.cid + '|' + obj.route).toLowerCase();
         }
-        if(selector == 'al')
+        if(selector == 'al' || selector == 'dep' || selector == 'arr')
         {
             if(interrogation == str)
             {
@@ -78,6 +86,8 @@ function compileSearchResults(str)
             case 'flight':
             case 'al':
             case 'ac':
+            case 'dep':
+            case 'arr':
                 return flights_compiled;
             case 'ap':
                 return airports_compiled;
@@ -85,7 +95,7 @@ function compileSearchResults(str)
     }
     else
     {
-        return '<tr><td class="px-3 text-muted" colspan="2">Begin typing to search.<br><br><small style="color: #aaa">Helpers:</small></td></tr><tr><td class="px-3 small text-muted">ap:</td><td class="px-3 small text-muted">Airport search</td></tr><tr><td class="px-3 small text-muted">al:</td><td class="px-3 small text-muted">Airline search</td></tr><tr><td class="px-3 small text-muted">flight:</td><td class="px-3 small text-muted">Callsign search</td></tr>';
+        return '<tr><td class="px-3 text-muted" colspan="2">Begin typing to search.<br><br><small style="color: #aaa">Helpers:</small></td></tr><tr><td class="px-3 small text-muted">ap:</td><td class="px-3 small text-muted">Airport search</td></tr><tr><td class="px-3 small text-muted">al:</td><td class="px-3 small text-muted">Airline search</td></tr><tr><td class="px-3 small text-muted">flight:</td><td class="px-3 small text-muted">Callsign search</td></tr><tr><td class="px-3 small text-muted">dep:</td><td class="px-3 small text-muted">Search by departure airport</td></tr><tr><td class="px-3 small text-muted">arr:</td><td class="px-3 small text-muted">Search by arrival airport</td></tr>';
     }
 }
 
