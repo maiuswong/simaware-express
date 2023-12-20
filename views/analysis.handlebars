@@ -131,7 +131,7 @@
 	async function initialize()
 	{
 	    id = {{ id }};
-	    response = await fetchRetry('http://localhost:5000/legacyevents/analysis'+id+'.json');
+	    response = await fetchRetry('/legacyevents/analysis'+id+'.json');
 	    analysis = await response.json();
 
         response = await fetchRetry('/livedata/airports.json');
