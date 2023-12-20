@@ -334,7 +334,7 @@ function getEventOffset(flight, ap, eventdata, start)
 
 async function loadLegacyEvent(id)
 {
-    response = await fetch(apiserver + 'api/event/'+id);
+    response = await fetch('/legacyevents/eventsummary' + id + '.json');
     eventdata = await response.json();
 
     $('#event-name').html(eventdata.name);
@@ -375,7 +375,7 @@ async function loadLegacyEvent(id)
         map.setZoom(8);
     }
     
-    response = await fetch(apiserver + 'api/eventpaths/' + id);
+    response = await fetch('/legacyevents/event' + id + '.json');
     eventpaths = await response.json();
 
     polyline_array = [];

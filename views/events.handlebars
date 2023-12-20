@@ -32,6 +32,9 @@ async function initialize()
     response = await fetchRetry(dataserver + 'api/livedata/events.json');
     data = await response.json();
 
+    response = await fetchRetry('/legacyevents/events.json');
+    ldata = await response.json();
+
     html = '';
     $.each(data.past, (idx, event) => {
         var id = '<td class="text-center">'+event.id+'</td>';
@@ -58,7 +61,31 @@ async function initialize()
         html += '<tr>' + id + name + date + apts + va + '</tr>';
     })
 
-    console.log(data);
+    $.each(ldata, (idx, event) => {
+        var id = '<td class="text-center">'+event.id+'</td>';
+        var name = '<td>'+event.name+'</td>';
+        var date = '<td class="text-center">'+moment(event.start).format('YYYY-MM-DD')+'</td>';
+        var apts = '<td>';
+        $.each(event.airports.split(','), (idx, icao) => {
+            apts += '<span class="badge bg-secondary">'+icao+'</span> ';
+        })
+        apts += '</td>';
+        if(event.approved == 0)
+        {
+            var va = '<td class="text-center text-muted" colspan="2">Pending</td>';
+        }
+        else if(event.processed == 0)
+        {
+            var va = '<td class="text-center text-warning" colspan="2">Processing</td>';
+        }
+        else
+        {
+            var va = '<td class="text-center"><a href="/event/'+event.id+'">View</a> / <a href="/analysis/'+event.id+'">Analysis</a>';
+        }
+
+        html += '<tr>' + id + name + date + apts + va + '</tr>';
+    })
+
     $('#eventspane').html(html);
 }
 </script>
