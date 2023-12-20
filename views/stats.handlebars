@@ -215,7 +215,7 @@ async function refreshStats()
     html = '';
     var airlineCount = {};
     $.each(airlines, (idx, airline) => {
-        airlineCount[airline.icao] = 0;
+        airlineCount[airline[0].icao] = 0;
     })
     var airlineKeys = Object.keys(airlines);
     $.each(flights, (idx, flight) => {

@@ -2239,7 +2239,9 @@ function getPatron(cid)
             case 1:
                 return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Supporter</span>';
             case 2:
-              return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
+                return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #FF424D; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="fab fa-patreon"></i> Streamer</span>';
+            case 3:
+                return '<span style="font-size: 0.8rem; font-weight: normal; background-color: #5C859E; color: #fff; border-radius: 1rem;" class="px-2 badge badge-sm"><i class="far fa-gem"></i> Diamond</span>';
             default:
                 return '';
         }
