@@ -2189,9 +2189,16 @@ function updateFlightsBox(flight)
     // Name
     $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+' '+ getPatron(flight.cid));
 
-    // Name
-    $('#flights-squawk').html(flight.xpdr + ' / ' + flight.axpdr);
 
+    // Squawk
+    flight.xpdr = padToFourDigits(flight.xpdr);
+    flight.axpdr = padToFourDigits(flight.axpdr);
+
+    $('#flights-squawk').html(flight.xpdr + ' / ' + flight.axpdr);
+}
+
+function padToFourDigits(value) {
+    return value.toString().padStart(4, '0');
 }
 
 function updateAirlines(flight)
