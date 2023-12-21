@@ -2189,7 +2189,6 @@ function updateFlightsBox(flight)
     // Name
     $('#flights-name').html('<span class="me-2">'+flight.name+'</span>'+getBadge(flight.rating)+' '+ getPatron(flight.cid));
 
-
     // Squawk
     flight.xpdr = padToFourDigits(flight.xpdr);
     flight.axpdr = padToFourDigits(flight.axpdr);
