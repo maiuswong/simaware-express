@@ -243,7 +243,37 @@ async function refreshStats()
             html += '</td><td style="text-align: center">';
             if(airline[1] == 0) { html += '<span class="text-muted">'+ airline[1] +'</span>'; }
             else { html += airline[1]; }
-            html += '</td><td style="text-align: center">'+airline[0]+'</td><td style="text-align: center">'+airlines[airline[0]].iata+'</td><td>' + airlines[airline[0]].name + '</td><td>'+ airlines[airline[0]].callsign + '</td><td>'+ airlines[airline[0]].country + '</td></tr>';
+            html += '</td><td style="text-align: center">'+airline[0]+'</td>'
+
+            html += '<td style="text-align: center">'
+            var s = []
+            for(var i in airlines[airline[0]])
+            {
+                s.push(airlines[airline[0]][i].iata);
+            }
+            html += s.join('<br>');
+
+            html += '</td><td>'
+            var s = []
+            for(var i in airlines[airline[0]])
+            {
+                s.push(airlines[airline[0]][i].name);
+            }
+            html += s.join('<br>');
+            html += '</td><td>'
+            var s = []
+            for(var i in airlines[airline[0]])
+            {
+                s.push(airlines[airline[0]][i].callsign);
+            }
+            html += s.join('<br>');
+            html += '</td><td>'
+            var s = []
+            for(var i in airlines[airline[0]])
+            {
+                s.push(airlines[airline[0]][i].country);
+            }
+            html += s.join('<br>') + '</td></tr>';
         }
     })
     $('#airlines').html(html);
