@@ -773,7 +773,7 @@ transform: rotate(-90deg);
 
 .badge
 {
-  border-radius: 0;
+  border-radius: 5px;
 }
 
 .bg-purple
