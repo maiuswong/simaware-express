@@ -68,6 +68,10 @@ function initializeMap(manual = 0, landscape = 0)
     active_firs = [];
     active_tracons = [];
     tracons_array = [];
+    vatglasses_array = [];
+    active_vg_pos = [];
+    active_vg_sectors = [];
+    vgmarkers_array = [];
     tracmarkers_array = [];
     icons_array = [];
     firs_array  = [];
@@ -92,7 +96,7 @@ function initializeMap(manual = 0, landscape = 0)
     // Create the map if it exists.  If not, then it's just a stats page that doesn't need it.
     if($('#map').length)
     {
-        map = L.map('map', { zoomControl: false, preferCanvas: true, zoomSnap: 0.15 }).setView([30, 0], 3).setActiveArea(activearea);
+        map = L.map('map', { zoomControl: false, preferCanvas: true}).setView([30, 0], 3).setActiveArea(activearea);
         map.doubleClickZoom.disable();
         basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
         map.attributionControl.setPosition('topright');
@@ -139,6 +143,7 @@ function initializeMap(manual = 0, landscape = 0)
     plane_featuregroup = new L.FeatureGroup();
     if(!manual) { map.addLayer(plane_featuregroup); }
     atc_featuregroup = new L.FeatureGroup();
+    atc_leg_featuregroup = new L.FeatureGroup();
     active_featuregroup = new L.FeatureGroup();
     tracons_featuregroup = new L.FeatureGroup();
     locals_featuregroup = new L.FeatureGroup();
@@ -146,6 +151,8 @@ function initializeMap(manual = 0, landscape = 0)
     events_featuregroup = new L.FeatureGroup();
     nats_featuregroup = new L.FeatureGroup();
     wf_featuregroup = new L.FeatureGroup();
+    vg_featuregroup = new L.FeatureGroup();
+    atc_featuregroup.addLayer(atc_leg_featuregroup);
 }
 
 // Tells Leaflet what icons are available
@@ -285,7 +292,7 @@ async function initializePatrons()
 }
 
 // Initialize the FIR Boundaries map
-function initializeATC()
+async function initializeATC()
 {
     // Load the GeoJSON file
     $.ajax({
@@ -313,7 +320,7 @@ function initializeATC()
                 firs_array[icao + is_fss].push(layer);
         })
 
-        atc_featuregroup.addLayer(firmap);
+        atc_leg_featuregroup.addLayer(firmap);
     }})
     
     $.ajax({
@@ -345,10 +352,35 @@ function initializeATC()
             })
         })
 
-        atc_featuregroup.addLayer(traconmap);
-        atc_featuregroup.addLayer(tracons_featuregroup);
+        atc_leg_featuregroup.addLayer(traconmap);
+        atc_leg_featuregroup.addLayer(tracons_featuregroup);
 
     }});
+
+    let response = await fetch('/livedata/glasses_positions.json');
+    vg_positions = await response.json();
+
+    $.ajax({
+        url: '/livedata/vatglasses.json',
+        xhrFields: {withCredentials: false},
+        success: function(data) {
+
+            glassesmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
+            
+            $.each(glassesmap._layers, function(index, obj) {
+                var layer = glassesmap.getLayer(index);
+                if(vatglasses_array[layer.feature.properties.country])
+                {
+                    vatglasses_array[layer.feature.properties.country].push(layer);
+                }
+                else
+                {
+                    vatglasses_array[layer.feature.properties.country] = [layer];
+                }
+            })
+                
+        }
+    })
 }
 
 // Updates the data based on the current version of live.json
@@ -628,9 +660,14 @@ function lightUpTracon(tracon, traconid)
         var latlng = getTraconMarkerLoc(tracon_handle);
         tracmarkers_array[traconid] = new L.marker(latlng, { icon: di });
         tracmarkers_array[traconid].bindTooltip(getTraconBlock(tracon, traconid.slice(-3) == 'DEP'), { opacity: 1, sticky: true });
-        atc_featuregroup.addLayer(tracmarkers_array[traconid]);
+        atc_leg_featuregroup.addLayer(tracmarkers_array[traconid]);
         tracon_handle.bringToFront();
     }
+}
+
+function lightUpGlass(glass, glassid)
+{
+    
 }
 
 function traconSearch(callsign)
@@ -911,6 +948,44 @@ async function refreshATC()
     //     firObj = firs_array[fir];
     //     turnOffFIR(firObj);
     // })
+
+    vg_pos = {};
+    $.each(sectors, (idx, atc) => {
+        
+        if(pos = findVgPosition(atc))
+        {
+            if(vg_pos[pos.sectorid.split('/')[0]])
+            {
+                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+            }
+            else
+            {
+                vg_pos[pos.sectorid.split('/')[0]] = {};
+                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+
+            }
+        }
+    })
+
+    $.each(tracons, (idx, atc) => {
+        
+        if(pos = findVgPosition(atc))
+        {
+            if(vg_pos[pos.sectorid.split('/')[0]])
+            {
+                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+            }
+            else
+            {
+                vg_pos[pos.sectorid.split('/')[0]] = {};
+                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+
+            }
+        }
+    })
+
+    vg_sectors = findVgSectors(vg_pos);
+
     $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
         if(fir && typeof fir.firs === 'undefined') // fir is null if we can't find anything.  Do UIRs after.
@@ -1107,9 +1182,9 @@ async function refreshATC()
         }
     })
 
-    if(atc_featuregroup.hasLayer(locals_featuregroup))
+    if(atc_leg_featuregroup.hasLayer(locals_featuregroup))
     {
-        atc_featuregroup.removeLayer(locals_featuregroup); locals_featuregroup = new L.FeatureGroup();
+        atc_leg_featuregroup.removeLayer(locals_featuregroup); locals_featuregroup = new L.FeatureGroup();
     }
     for(id in locals) {
 
@@ -1140,7 +1215,7 @@ async function refreshATC()
             locals_featuregroup.addLayer(oloc);
         }
     }
-    atc_featuregroup.addLayer(locals_featuregroup);
+    atc_leg_featuregroup.addLayer(locals_featuregroup);
     $('#navbar-atc').html(atccount);
 }
 
@@ -1226,7 +1301,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
             firmarkers_array[index] = firmarkers_array_temp;
             for(idx in firmarkers_array[index])
             {
-                atc_featuregroup.addLayer(firmarkers_array[index][idx]);
+                atc_leg_featuregroup.addLayer(firmarkers_array[index][idx]);
             }
         }
     }
@@ -1242,7 +1317,7 @@ function turnOffFIR(obj, index)
             fir.setStyle({color: '#333', weight: 1, fillOpacity: 0}).bringToBack();
             for(idx in firmarkers_array[index])
             {
-                atc_featuregroup.removeLayer(firmarkers_array[index][idx]);
+                atc_leg_featuregroup.removeLayer(firmarkers_array[index][idx]);
             }
             firmarkers_array[index] = undefined;
         });
@@ -1254,7 +1329,7 @@ function turnOffTracon(traconid)
 {
     var tracon_handle = tracons_array[traconid.split('|')[0]][traconid.split('|')[1]];
     tracon_handle.setStyle({weight: 0, color: '#000'});
-    atc_featuregroup.removeLayer(tracmarkers_array[traconid]);
+    atc_leg_featuregroup.removeLayer(tracmarkers_array[traconid]);
     tracmarkers_array[traconid] = undefined;
 }
 
@@ -2841,4 +2916,183 @@ function fetchRetry(url, delay = 1000, tries = 3, fetchOptions = {}) {
         return wait(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
     }
     return fetch(url,fetchOptions).catch(onError);
+}
+
+function findVgPosition(atc)
+{
+    var pfx = atc.callsign.split('_')[0];
+    if(vg_positions[pfx])
+    {
+        for(var i in vg_positions[pfx])
+        {
+            if(atc.freq == vg_positions[pfx][i].freq)
+            {
+                var s = vg_positions[pfx][i];
+                s.atc = atc;
+                return s;
+            }
+        }
+    }
+    return null;
+}
+
+function findVgSectors(vg_pos)
+{
+    var vg_sectors = {};
+    // eh
+    for(i in vg_pos)
+    {
+        var vgkeys = Object.keys(vg_pos[i]);
+        // 0 1 12
+        for(j in vatglasses_array[i])
+        {
+            var taken = false
+            for(k in vatglasses_array[i][j].feature.properties.owner)
+            {
+                if(vgkeys.includes(vatglasses_array[i][j].feature.properties.owner[k]) && !taken)
+                {
+                    if(vg_sectors[vatglasses_array[i][j].feature.properties.owner[k]])
+                    {
+                        vg_sectors[vatglasses_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
+                    }
+                    else
+                    {
+                        vg_sectors[vatglasses_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
+                    }
+                    taken = true;
+                }
+            }
+        }
+    }
+
+    return vg_sectors;
+}
+
+function returnDisplaySectors(vg_sectors, alt)
+{
+    var d = []
+    for(i in vg_sectors)
+    {
+        for(j in vg_sectors[i])
+        {
+            var l = vg_sectors[i][j].split('|');
+            var vgl = vatglasses_array[l[0]][l[1]];
+            if(((vgl.feature.properties.max && vgl.feature.properties.max > alt) || !vgl.feature.properties.max) &&
+               ((vgl.feature.properties.min && vgl.feature.properties.min < alt) || !vgl.feature.properties.min))
+                {
+                    d.push(vg_sectors[i][j]);
+                }
+        }
+    }
+    return d;
+}
+
+function showGlassesView(alt)
+{
+    new_active_vg_pos = [];
+    new_active_vg_sectors = [];
+    var ds = returnDisplaySectors(vg_sectors, alt);
+    for(i in vg_sectors)
+    {
+        ctr = [];
+        for(j in vg_sectors[i])
+        {
+            var secid = vg_sectors[i][j].split('|');
+            var pos = vg_pos[secid[0]][i];
+            if(ds.includes(secid[0] + '|' + secid[1]))
+            {
+                vg_featuregroup.addLayer(vatglasses_array[secid[0]][secid[1]]);
+                new_active_vg_sectors.push(secid[0] + '|' + secid[1]);
+
+                // Mark as no delete
+                if($.inArray(secid[0] + '|' + secid[1], active_vg_sectors) >= 0)
+                {
+                    active_vg_sectors.splice(active_vg_sectors.indexOf(secid[0] + '|' + secid[1]), 1);
+                }
+
+                if(pos.atc.callsign.includes('_CTR'))
+                {
+                    vatglasses_array[secid[0]][secid[1]].setStyle({fillColor: '#aaa', fillOpacity: 0, weight: 1, color: '#ddd'});
+                }
+                else
+                {
+                    vatglasses_array[secid[0]][secid[1]].setStyle({fillColor: '#40e0d0', fillOpacity: 0, weight: 1, color: '#40e0d0'});
+                }
+                ctr.push(vatglasses_array[secid[0]][secid[1]].feature.geometry.coordinates[0]);
+            }
+        }
+        if(ctr.length)
+        {
+            var pt = turf.pointOnFeature(turf.multiPolygon(ctr));
+            if($.inArray(i, active_vg_pos) >= 0)
+            {
+                active_vg_pos.splice(active_vg_pos.indexOf(i), 1);
+            }
+        
+            if(pos.atc.callsign.includes('_CTR'))
+            {
+                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold;background-color: #fff"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
+            }
+            else
+            {
+                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold; background-color: #40e0d0"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
+            }
+            var di = new L.divIcon({className: 'simaware-vg-tooltip', html: s, iconSize: 'auto'});
+            if(vgmarkers_array[i])
+            {
+                vgmarkers_array[i].setLatLng([pt.geometry.coordinates[1], pt.geometry.coordinates[0]]);
+            }
+            else
+            {
+                vgmarkers_array[i] = new L.marker([pt.geometry.coordinates[1], pt.geometry.coordinates[0]], { icon: di });
+            }
+            vgmarkers_array[i].bindTooltip(getVgControllerBlock(pos), { opacity: 1, sticky: true });
+            vg_featuregroup.addLayer(vgmarkers_array[i]);
+        }
+        new_active_vg_pos.push(i);
+    }
+
+    // Disable old stuff
+    for(i in active_vg_sectors)
+    {
+        var secid = active_vg_sectors[i].split('|');
+        vg_featuregroup.removeLayer(vatglasses_array[secid[0]][secid[1]]);
+    }
+
+    // Disable old stuff
+    for(i in active_vg_pos)
+    {
+        vg_featuregroup.removeLayer(vgmarkers_array[active_vg_pos[i]]);
+    }
+
+    active_vg_pos = new_active_vg_pos;
+    active_vg_sectors = new_active_vg_sectors;
+}
+
+function highlightVgObject(index)
+{
+    var split = vg_sectors[index];
+    for(idx in split)
+    {
+        var sl = split[idx].split('|');
+        vatglasses_array[sl[0]][sl[1]].setStyle({fillOpacity: 0.4});
+    }
+}
+function dehighlightVgObject(index)
+{
+    var split = vg_sectors[index];
+    for(idx in split)
+    {
+        var sl = split[idx].split('|');
+        vatglasses_array[sl[0]][sl[1]].setStyle({fillOpacity: 0});
+    }
+}
+
+function getVgControllerBlock(obj)
+{
+    tracon_name = obj.name;
+    list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+obj.callsign+'</td></tr>';
+    list += '<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+obj.atc.callsign+'</td><td class="ps-3" style="text-align: right; white-space: nowrap;">'+obj.atc.name+'</td><td class="ps-3">'+getControllerRating(obj.atc.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+obj.atc.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(obj.atc)+'</td></tr>';
+    list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
+    return list;
 }
