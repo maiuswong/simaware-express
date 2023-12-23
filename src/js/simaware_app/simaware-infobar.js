@@ -91,39 +91,42 @@ async function updateInfobar()
     prevdate = null;
     let i = 0;
     let ij = 0;
-    while(ij < 10)
-    {
-        if(events.future[i].end > moment.now())
-        {
-            html += '<tr><td class="py-1 pe-2"><div>';
-            if(prevdate != moment.utc(events.future[i].start).format('MMMD'))
-            {
-                html += '<table style="flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="text-transform: uppercase; padding: 0 0.4rem; color: #c2737e; margin: 0.2rem">'+moment.utc(events.future[i].start).format('MMM')+'</td></tr><tr><td style="font-size: 0.9rem; color: #eee; text-align: center">'+moment.utc(events.future[i].start).format('D')+'</td></tr></table>';
+    while (ij < 10) {
+        if (events.future[i].end > moment.now()) {
+            html += '<tr><td class="py-1 event-date"><div>';
+            if (prevdate != moment.utc(events.future[i].start).format('MMMD')) {
+                html += '<table style="flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td style="text-transform: uppercase; padding: 0 0.4rem; color: #c2737e; margin: 0.2rem">' + moment.utc(events.future[i].start).format('MMM') + '</td></tr><tr><td style="font-size: 0.9rem; color: #eee; text-align: center">' + moment.utc(events.future[i].start).format('D') + '</td></tr></table>';
             }
 
             html += '</div></td>';
-            if(moment.now() > events.future[i].start && moment.now() < events.future[i].end)
-            {
-                html += '<td class="ps-2 py-1 border-success" style="border-left: 2px solid;">';
-            }
-            else
-            {
-                html += '<td class="ps-2 py-1">';
+            html += '<td class="ps-3 py-1">';
+            html += '<div style="display: flex; align-items: center;">';
+            html += '<span style="margin-right: 5px;">' + events.future[i].name + '</span>';
+
+            if (moment.now() > events.future[i].start && moment.now() < events.future[i].end) {
+                html += '<span style="padding: 5px; background-color: #da292e; text-transform: uppercase; border-radius: 5px; color: white; font-weight: bold; font-size: x-small;">Live</span>';
             }
 
-            html += events.future[i].name + '<br><span style="color: rgba(255,255,255,0.8); font-size: 0.7rem; font-family: \'JetBrains Mono\', monospace">' + moment.utc(events.future[i].start).format('HHmm') + '-'+ moment.utc(events.future[i].end).format('HHmm') +'Z ';
-            for(var j in events.future[i].airports)
-            {
-                html += '<span class="text-muted">'+events.future[i].airports[j].icao + '</span> '
+            html += '</div>';
+            html += '<span style="color: rgba(255,255,255,0.8); font-size: 0.7rem; font-family: \'JetBrains Mono\', monospace">' + moment.utc(events.future[i].start).format('HHmm') + '-' + moment.utc(events.future[i].end).format('HHmm') + 'Z ';
+            for (var j in events.future[i].airports) {
+                html += '<span class="text-muted hover" style="cursor: pointer;" onclick="zoomToAirport(\'' + events.future[i].airports[j].icao + '\')">' + events.future[i].airports[j].icao + '</span> ';
             }
+
             html += '</span></td></tr>';
+
             prevdate = moment.utc(events.future[i].start).format('MMMD');
             ij++;
         }
         i++;
     }
+
     html += '</table>';
     $('#events-wrapper').html(html);
+    $('#events-wrapper .event-date:first').css({
+        'background-color': 'rgba(255, 255, 255, 0.1)',
+        'border-radius': '5px' 
+    });
 
     // Now some horrible spaghetti code for patrons
     infostreamers = {};
