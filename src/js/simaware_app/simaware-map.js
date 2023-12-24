@@ -1538,7 +1538,7 @@ function getLocalTooltip(icao)
     }
     if(tt != '')
     {
-        tt = '<table style="margin: 0.2rem; margin-top: 0rem; flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold; border-radius: 5px;"><tr>'+tt+'</tr></table>';
+        tt = '<table style="margin: 0.2rem; margin-top: 0rem; flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold; border-radius: 3px;"><tr>'+tt+'</tr></table>';
         icao_text_style = 'text-light'; // ATC online
         icao_background_color = 'rgba(255,255,255,0.1)'
     }    
