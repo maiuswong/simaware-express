@@ -52,3 +52,31 @@ function convertToLetter(str)
     return '-';
   }
 }
+
+function getAtisRwy(atis)
+{
+  var keys = ['RWY IN USE', 'RWYS IN USE', 'RUNWAY IN USE', 'RUNWAYS IN USE', 'RUNWAY', 'RWY', 'ILS', 'VISUAL', 'APCHS', 'APCH'];
+  var rwys = [];
+  for(var i in keys)
+  {
+    var key = keys[i];
+    if(atis.includes(key))
+    {
+      var [first, ...spl] = atis.replace(/(?<=\d) +(?=\d)/g, '').split(key);
+      var intr = spl.join(' ').replace(',', '').replace('.', '').split(' ');
+      for(j in intr)
+      {
+        if(j > 10)
+        {
+          break;
+        }
+        if(intr[j].match(/^(0?[1-9]|[1-2]\d|3[0-6])[LCR]?$/))
+        {
+          rwys.push(intr[j]);
+        }
+      }
+      break;
+    }
+  }
+  return rwys;
+}

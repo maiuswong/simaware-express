@@ -298,6 +298,7 @@ async function initializeATC()
 
     let response = await fetch('/livedata/glasses_positions.json');
     vg_positions = await response.json();
+    atisdata = {};
 
     $.ajax({
         url: '/livedata/vatglasses.json',
@@ -402,7 +403,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     sectors = livedata.onlinefirs;
     tracons = livedata.appdep;
     localsraw = livedata.locals;
-    
+
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
     newactive_uids = [];
@@ -1161,6 +1162,11 @@ async function refreshATC()
         let suffix = callsign[callsign.length - 1];
         let airport = airportSearch(prefix);
 
+        if(local.callsign.includes('_A_ATIS') || (local.callsign.includes('_ATIS') && !local.callsign.includes('_D_ATIS')))
+        {
+            var rwy = getAtisRwy(local.atis);
+        }
+
         if(typeof airport != 'undefined')
         {
             if(typeof locals[airport.icao] == 'undefined')
@@ -1168,6 +1174,10 @@ async function refreshATC()
                 obj = {};
                 obj.loc = airport;
                 obj[suffix] = [local];
+                if(rwy)
+                {
+                    obj.rwy = rwy;
+                }
                 locals[airport.icao] = obj;
             }
             else
@@ -1180,8 +1190,13 @@ async function refreshATC()
                 {
                     locals[airport.icao][suffix] = [local];
                 }
+                if(rwy)
+                {
+                    locals[airport.icao].rwy = rwy;
+                }
             }
         }
+
     })
 
     if(atc_featuregroup.hasLayer(locals_featuregroup))
@@ -3028,7 +3043,34 @@ function returnDisplaySectors(vg_sectors, alt)
             if(((vgl.feature.properties.max && vgl.feature.properties.max >= alt) || !vgl.feature.properties.max) &&
                ((vgl.feature.properties.min && vgl.feature.properties.min <= alt) || !vgl.feature.properties.min))
                 {
-                    d.push(vg_sectors[i][j]);
+                    if(vgl.feature.properties.rwy)
+                    {
+                        var flag = 0;
+                        for(var m in vgl.feature.properties.rwy)
+                        {
+                            let icao = vgl.feature.properties.rwy[m].icao;
+                            let rwys = vgl.feature.properties.rwy[m].runway;
+                            if(locals[icao] && locals[icao].rwy)
+                            {
+                                let atisrwys = locals[icao].rwy.join('|');
+                                for(var n in rwys)
+                                {
+                                    if(atisrwys.includes(rwys[n]))
+                                    {
+                                        var flag = 1;
+                                    }
+                                }
+                            }
+                        }
+                        if(flag)
+                        {
+                            d.push(vg_sectors[i][j]);
+                        }
+                    }
+                    else
+                    {
+                        d.push(vg_sectors[i][j]);
+                    }
                 }
         }
     }
