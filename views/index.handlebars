@@ -1,4 +1,7 @@
 <div id="map" class="d-flex" style="min-height: 0; flex-grow: 1">
+    <div id="vgstatus" style="display: none; position: absolute; top: 10px; left: 10px; z-index: 20000; font-family: 'JetBrains Mono', sans-serif; font-size: 0.9rem; color: #fff">
+        Showing sectors at <span id="vg-alt"></span> ft<br><small class="text-muted">Use [ and ] keys to change altitude</small>
+    </div>
     <div class="d-flex" style="justify-content: center; flex-direction: row; position: absolute; left: 0; right: 0; bottom: 70px; z-index: 1199;">
         <div id="controls" class="d-flex" style="border-radius: 5rem; border: 1px solid rgba(255,255,255,0.08); -webkit-backdrop-filter: blur(25px); backdrop-filter: blur(25px); font-size: 1rem; color: #888; overflow: hidden">
             <div class="loading py-1" style="z-index: 1199">Loading...</div>
@@ -6,6 +9,7 @@
             <div class="map-button py-1 d-none" onclick="toggleLabels()" style="" id="labels"><i class="fas fa-tags"></i></div>
             <div class="map-button py-1 d-none" onclick="toggleNexrad()" id="wx"><i class="fas fa-cloud-sun-rain"></i></div>
             <div class="map-button py-1 d-none" onclick="toggleATC()" id="atc">ATC</div>
+            <div class="map-button py-1 d-none" onclick="toggleGlasses()" id="glasses"><i class="fas fa-glasses"></i></div>
             <div class="map-button py-1 d-none" onclick="toggleSigmet()" id="sigmet">SIGMET</div>
             {{!-- <div class="map-button py-1 d-none" onclick="toggleNat()" id="nat">NAT</div> --}}
             {{!-- <div class="map-button py-1 d-none" onclick="toggleWorldflight()" id="wf">WORLDFLIGHT</div> --}}
@@ -38,6 +42,20 @@ $(document).ready(function() {
     // Airports show everything
     filterName = null;
     filterCriteria = null;
+
+    $(document).keydown(function(e) {
+        console.log(e.keyCode)
+        if(e.keyCode == 221 && vg_alt <= 595)
+        {
+            vg_alt += 5;
+            showGlassesView(vg_alt);
+        }
+        if(e.keyCode == 219 && vg_alt >= 5)
+        {
+            vg_alt -= 5;
+            showGlassesView(vg_alt);
+        }
+    })
 
     initialize();
     setInterval(

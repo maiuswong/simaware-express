@@ -78,7 +78,8 @@ function initializeMap(manual = 0, landscape = 0)
     firmarkers_array = [];
     sigmets_array = [];
     sigmarkers_array = [];
-    active_flight = null; 
+    active_flight = null;
+    vg_alt = 50;
 
     // Initialize the icons that will be used
     initializeIcons();
@@ -294,6 +295,32 @@ async function initializePatrons()
 // Initialize the FIR Boundaries map
 async function initializeATC()
 {
+
+    let response = await fetch('/livedata/glasses_positions.json');
+    vg_positions = await response.json();
+
+    $.ajax({
+        url: '/livedata/vatglasses.json',
+        xhrFields: {withCredentials: false},
+        success: function(data) {
+
+            glassesmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
+            
+            $.each(glassesmap._layers, function(index, obj) {
+                var layer = glassesmap.getLayer(index);
+                if(vatglasses_array[layer.feature.properties.country])
+                {
+                    vatglasses_array[layer.feature.properties.country].push(layer);
+                }
+                else
+                {
+                    vatglasses_array[layer.feature.properties.country] = [layer];
+                }
+            })
+                
+        }
+    })
+    
     // Load the GeoJSON file
     $.ajax({
         url: '/livedata/firboundaries.json',
@@ -356,31 +383,6 @@ async function initializeATC()
         atc_leg_featuregroup.addLayer(tracons_featuregroup);
 
     }});
-
-    let response = await fetch('/livedata/glasses_positions.json');
-    vg_positions = await response.json();
-
-    $.ajax({
-        url: '/livedata/vatglasses.json',
-        xhrFields: {withCredentials: false},
-        success: function(data) {
-
-            glassesmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
-            
-            $.each(glassesmap._layers, function(index, obj) {
-                var layer = glassesmap.getLayer(index);
-                if(vatglasses_array[layer.feature.properties.country])
-                {
-                    vatglasses_array[layer.feature.properties.country].push(layer);
-                }
-                else
-                {
-                    vatglasses_array[layer.feature.properties.country] = [layer];
-                }
-            })
-                
-        }
-    })
 }
 
 // Updates the data based on the current version of live.json
@@ -1182,9 +1184,9 @@ async function refreshATC()
         }
     })
 
-    if(atc_leg_featuregroup.hasLayer(locals_featuregroup))
+    if(atc_featuregroup.hasLayer(locals_featuregroup))
     {
-        atc_leg_featuregroup.removeLayer(locals_featuregroup); locals_featuregroup = new L.FeatureGroup();
+        atc_featuregroup.removeLayer(locals_featuregroup); locals_featuregroup = new L.FeatureGroup();
     }
     for(id in locals) {
 
@@ -1215,8 +1217,9 @@ async function refreshATC()
             locals_featuregroup.addLayer(oloc);
         }
     }
-    atc_leg_featuregroup.addLayer(locals_featuregroup);
+    atc_featuregroup.addLayer(locals_featuregroup);
     $('#navbar-atc').html(atccount);
+    showGlassesView(vg_alt);
 }
 
 // Update Convective Sigmets
@@ -2411,20 +2414,65 @@ function adjustLogsForAntimeridian(flight, dep, arr, logs)
 
 async function toggleATC()
 {
-    if(!map.hasLayer(atc_featuregroup))
+    if(map.hasLayer(atc_featuregroup) && atc_featuregroup.hasLayer(atc_leg_featuregroup))
     {
-        map.addLayer(atc_featuregroup);
-        await refreshATC();
-        setLayerOrder();
-        $('.map-button#atc').addClass('map-button-active');
-        $.cookie('atc', 'true', {expires: 180});
+        map.removeLayer(atc_featuregroup);
+        $('.map-button#glasses').removeClass('map-button-active');
+        $.cookie('glasses', 'false', {expires: 180});
     }
     else
     {
-        map.removeLayer(atc_featuregroup);
-        $('.map-button#atc').removeClass('map-button-active');
-        $.cookie('atc', 'false', {expires: 180});
+        if(!map.hasLayer(atc_featuregroup))
+        {
+            map.addLayer(atc_featuregroup);
+        }
+        if(atc_featuregroup.hasLayer(vg_featuregroup))
+        {
+            atc_featuregroup.removeLayer(vg_featuregroup);
+        }
+        if(!atc_featuregroup.hasLayer(atc_leg_featuregroup))
+        {
+            atc_featuregroup.addLayer(atc_leg_featuregroup);
+        }
+        $('.map-button#atc').addClass('map-button-active');
+        $('.map-button#glasses').removeClass('map-button-active');
+        setLayerOrder();
+        refreshATC();
+        $.cookie('atc', 'true', {expires: 180});
+        $.cookie('glasses', 'false', {expires: 180});
     }
+}
+
+async function toggleGlasses()
+{
+    if(map.hasLayer(atc_featuregroup) && atc_featuregroup.hasLayer(vg_featuregroup))
+    {
+        map.removeLayer(atc_featuregroup);
+        $('.map-button#glasses').removeClass('map-button-active');
+        $.cookie('glasses', 'false', {expires: 180});
+        $('#vgstatus').hide();
+    }
+    else
+    {
+        if(!map.hasLayer(atc_featuregroup))
+        {
+            map.addLayer(atc_featuregroup);
+        }
+        if(atc_featuregroup.hasLayer(atc_leg_featuregroup))
+        {
+            atc_featuregroup.removeLayer(atc_leg_featuregroup);
+        }
+        if(!atc_featuregroup.hasLayer(vg_featuregroup))
+        {
+            atc_featuregroup.addLayer(vg_featuregroup);
+        }
+        $('.map-button#glasses').addClass('map-button-active');
+        $('.map-button#atc').removeClass('map-button-active');
+        setLayerOrder();
+        $('#vgstatus').show();
+        $.cookie('glasses', 'true', {expires: 180});
+    }
+
 }
 
 function setBasemapOrder()
@@ -2977,8 +3025,8 @@ function returnDisplaySectors(vg_sectors, alt)
         {
             var l = vg_sectors[i][j].split('|');
             var vgl = vatglasses_array[l[0]][l[1]];
-            if(((vgl.feature.properties.max && vgl.feature.properties.max > alt) || !vgl.feature.properties.max) &&
-               ((vgl.feature.properties.min && vgl.feature.properties.min < alt) || !vgl.feature.properties.min))
+            if(((vgl.feature.properties.max && vgl.feature.properties.max >= alt) || !vgl.feature.properties.max) &&
+               ((vgl.feature.properties.min && vgl.feature.properties.min <= alt) || !vgl.feature.properties.min))
                 {
                     d.push(vg_sectors[i][j]);
                 }
@@ -3067,6 +3115,7 @@ function showGlassesView(alt)
 
     active_vg_pos = new_active_vg_pos;
     active_vg_sectors = new_active_vg_sectors;
+    $('#vg-alt').html(vg_alt * 100);
 }
 
 function highlightVgObject(index)
