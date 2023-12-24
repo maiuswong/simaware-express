@@ -3055,9 +3055,12 @@ function returnDisplaySectors(vg_sectors, alt)
                                 let atisrwys = locals[icao].rwy.join('|');
                                 for(var n in rwys)
                                 {
-                                    if(atisrwys.includes(rwys[n]))
+                                    for(var m in rwys[n].split('/'))
                                     {
-                                        var flag = 1;
+                                        if(atisrwys.includes(rwys[n].split('/')[m]))
+                                        {
+                                            var flag = 1;
+                                        }
                                     }
                                 }
                             }

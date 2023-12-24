@@ -62,11 +62,11 @@ function getAtisRwy(atis)
     var key = keys[i];
     if(atis.includes(key))
     {
-      var [first, ...spl] = atis.replace(/(?<=\d) +(?=\d)/g, '').split(key);
-      var intr = spl.join(' ').replace(',', '').replace('.', '').split(' ');
+      var [first, ...spl] = atis.replace('RIGHT', 'R').replace('LEFT', 'L').replace(/(?<=\d) +(?=[LR])/g, '').replace(/(?<=\d) +(?=\d)/g, '').split(key);
+      var intr = spl.join(' ').replace(',', '').replace(/\./g, '').split(' ');
       for(j in intr)
       {
-        if(j > 10)
+        if(j > 15)
         {
           break;
         }
