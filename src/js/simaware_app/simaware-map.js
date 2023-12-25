@@ -299,6 +299,7 @@ async function initializeATC()
     let response = await fetch('/livedata/glasses_positions.json');
     vg_positions = await response.json();
     atisdata = {};
+    vgs = {};
 
     $.ajax({
         url: '/livedata/vatglasses.json',
@@ -318,6 +319,24 @@ async function initializeATC()
                     vatglasses_array[layer.feature.properties.country] = [layer];
                 }
             })
+
+            for(var i in vatglasses_array)
+            {
+                for(var j in vatglasses_array[i])
+                {
+                    for(var k in vatglasses_array[i][j].feature.properties.owner)
+                    {
+                        if(vgs[vatglasses_array[i][j].feature.properties.owner[k]])
+                        {
+                            vgs[vatglasses_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
+                        }
+                        else
+                        {
+                            vgs[vatglasses_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
+                        }
+                    }
+                }
+            }
                 
         }
     })
@@ -378,6 +397,7 @@ async function initializeATC()
                 }
                 
             })
+
         })
 
         atc_leg_featuregroup.addLayer(traconmap);
@@ -403,6 +423,8 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     sectors = livedata.onlinefirs;
     tracons = livedata.appdep;
     localsraw = livedata.locals;
+
+    sectors.push({callsign: "EUC-WN_CTR", cid: 968516, created_at_timestamp: 1703511682, freq: "135.125", name : "Maius Wong", rating: 4, time_online: "1:08"})
 
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
@@ -2295,7 +2317,7 @@ function padToFourDigits(value) {
 
 function updateAirlines(flight)
 {
-    for(i in regprefixes)
+    for(var i in regprefixes)
     {
         if(flight.callsign.match(regprefixes[i].regex))
         {
@@ -3002,8 +3024,9 @@ function findVgPosition(atc)
 function findVgSectors(vg_pos)
 {
     var vg_sectors = {};
+    var vg_taken = [];
     // eh
-    for(i in vg_pos)
+    for(var i in vg_pos)
     {
         var vgkeys = Object.keys(vg_pos[i]);
         // 0 1 12
@@ -3023,6 +3046,29 @@ function findVgSectors(vg_pos)
                         vg_sectors[vatglasses_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
                     }
                     taken = true;
+                    vg_taken.push(i + '|' + j);
+                }
+            }
+        }
+    }
+
+    for(var r in vg_pos)
+    {
+        for(var s in vg_pos[r])
+        {
+            for(var j in vgs[s])
+            {
+                if(!vg_taken.includes(vgs[s][j]))
+                {
+                    if(vg_sectors[s])
+                    {
+                        vg_sectors[s].push(vgs[s][j]);
+                    }
+                    else
+                    {
+                        vg_sectors[s] = [vgs[s][j]];
+                    }
+                    vg_taken.push(vgs[s][j]);
                 }
             }
         }
@@ -3034,7 +3080,7 @@ function findVgSectors(vg_pos)
 function returnDisplaySectors(vg_sectors, alt)
 {
     var d = []
-    for(i in vg_sectors)
+    for(var i in vg_sectors)
     {
         for(j in vg_sectors[i])
         {
@@ -3085,13 +3131,14 @@ function showGlassesView(alt)
     new_active_vg_pos = [];
     new_active_vg_sectors = [];
     var ds = returnDisplaySectors(vg_sectors, alt);
-    for(i in vg_sectors)
+    for(var i in vg_sectors)
     {
         ctr = [];
-        for(j in vg_sectors[i])
+        for(var j in vg_sectors[i])
         {
+            var sid = i.split('/');
+            var pos = vg_pos[sid[0]][i];
             var secid = vg_sectors[i][j].split('|');
-            var pos = vg_pos[secid[0]][i];
             if(ds.includes(secid[0] + '|' + secid[1]))
             {
                 vg_featuregroup.addLayer(vatglasses_array[secid[0]][secid[1]]);
@@ -3146,14 +3193,14 @@ function showGlassesView(alt)
     }
 
     // Disable old stuff
-    for(i in active_vg_sectors)
+    for(var i in active_vg_sectors)
     {
         var secid = active_vg_sectors[i].split('|');
         vg_featuregroup.removeLayer(vatglasses_array[secid[0]][secid[1]]);
     }
 
     // Disable old stuff
-    for(i in active_vg_pos)
+    for(var i in active_vg_pos)
     {
         vg_featuregroup.removeLayer(vgmarkers_array[active_vg_pos[i]]);
     }

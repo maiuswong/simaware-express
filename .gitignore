@@ -8,4 +8,4 @@ node_modules
 .idea
 public/livedata/vatglasses.json
 public/livedata/glasses_positions.json
-.DS_Store
+public/.DS_Store
