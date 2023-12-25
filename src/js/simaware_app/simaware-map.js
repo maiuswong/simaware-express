@@ -676,7 +676,7 @@ function getActiveFIRs()
 function lightUpTracon(tracon, traconid)
 {
     var tracon_handle = tracons_array[traconid.split('|')[0]][traconid.split('|')[1]];
-    tracon_handle.setStyle({weight: 1.5, color: '#40e0d0'});
+    tracon_handle.setStyle({weight: 1, color: '#40e0d0'});
     if(tracmarkers_array[traconid] === undefined)
     {
         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getTracTooltip(tracon_handle.feature.properties.id, traconid), iconSize: 'auto'});
@@ -1312,7 +1312,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
         var firmarkers_array_temp = [];
         for(idx in obj)
         {
-            obj[idx].setStyle({color: '#fff', weight: 1.5, fillColor: '#fff', fillOpacity: 0.1});
+            obj[idx].setStyle({color: '#fff', weight: 1, fillColor: '#fff', fillOpacity: 0.1});
 
             // Add a marker and tooltip
             latlng = [Number(obj[idx].feature.properties.label_lat), Number(obj[idx].feature.properties.label_lon)];
@@ -1449,7 +1449,7 @@ function getFirTooltip(icao, index, firMembers)
         }
     })
 
-    var tt = '<div style="position: relative"><div class="firlabel" onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.75rem; overflow: hidden; font-weight: bold"><tr><td class="text-light" style="padding: 0px 5px; white-space: nowrap; text-align: center">'+icao;
+    var tt = '<div style="position: relative"><div class="firlabel" onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.75rem; overflow: hidden; font-weight: bold"><tr><td class="bg-white text-black" style="padding: 0px 5px; white-space: nowrap; text-align: center">'+icao;
     if(is_fss)
     {
         tt += '<br><span class="rounded px-1" style="background-color: #9370db">'+fssicao+'</span>';
@@ -1460,7 +1460,7 @@ function getFirTooltip(icao, index, firMembers)
 
 function getTracTooltip(index, traconid)
 {
-    var tt = '<div style="position: relative"><div class="traclabel" onmouseenter="highlightTracon(\''+traconid+'\')" onmouseleave="dehighlightTracon(\''+traconid+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td style="color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
+    var tt = '<div style="position: relative"><div class="traclabel" onmouseenter="highlightTracon(\''+traconid+'\')" onmouseleave="dehighlightTracon(\''+traconid+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td style="color: #000; background-color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
     return tt;
 }
 
