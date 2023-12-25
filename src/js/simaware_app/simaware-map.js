@@ -296,50 +296,50 @@ async function initializePatrons()
 async function initializeATC()
 {
 
-    let response = await fetch('/livedata/glasses_positions.json');
-    vg_positions = await response.json();
+    // let response = await fetch('/livedata/glasses_positions.json');
+    // vg_positions = await response.json();
     atisdata = {};
     vgs = {};
 
-    $.ajax({
-        url: '/livedata/vatglasses.json',
-        xhrFields: {withCredentials: false},
-        success: function(data) {
+    // $.ajax({
+    //     url: '/livedata/vatglasses.json',
+    //     xhrFields: {withCredentials: false},
+    //     success: function(data) {
 
-            glassesmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
+    //         glassesmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
             
-            $.each(glassesmap._layers, function(index, obj) {
-                var layer = glassesmap.getLayer(index);
-                if(vatglasses_array[layer.feature.properties.country])
-                {
-                    vatglasses_array[layer.feature.properties.country].push(layer);
-                }
-                else
-                {
-                    vatglasses_array[layer.feature.properties.country] = [layer];
-                }
-            })
+    //         $.each(glassesmap._layers, function(index, obj) {
+    //             var layer = glassesmap.getLayer(index);
+    //             if(vatglasses_array[layer.feature.properties.country])
+    //             {
+    //                 vatglasses_array[layer.feature.properties.country].push(layer);
+    //             }
+    //             else
+    //             {
+    //                 vatglasses_array[layer.feature.properties.country] = [layer];
+    //             }
+    //         })
 
-            for(var i in vatglasses_array)
-            {
-                for(var j in vatglasses_array[i])
-                {
-                    for(var k in vatglasses_array[i][j].feature.properties.owner)
-                    {
-                        if(vgs[vatglasses_array[i][j].feature.properties.owner[k]])
-                        {
-                            vgs[vatglasses_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
-                        }
-                        else
-                        {
-                            vgs[vatglasses_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
-                        }
-                    }
-                }
-            }
+    //         for(var i in vatglasses_array)
+    //         {
+    //             for(var j in vatglasses_array[i])
+    //             {
+    //                 for(var k in vatglasses_array[i][j].feature.properties.owner)
+    //                 {
+    //                     if(vgs[vatglasses_array[i][j].feature.properties.owner[k]])
+    //                     {
+    //                         vgs[vatglasses_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
+    //                     }
+    //                     else
+    //                     {
+    //                         vgs[vatglasses_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
+    //                     }
+    //                 }
+    //             }
+    //         }
                 
-        }
-    })
+    //     }
+    // })
     
     // Load the GeoJSON file
     $.ajax({
@@ -972,42 +972,42 @@ async function refreshATC()
     //     turnOffFIR(firObj);
     // })
 
-    vg_pos = {};
-    $.each(sectors, (idx, atc) => {
+    // vg_pos = {};
+    // $.each(sectors, (idx, atc) => {
         
-        if(pos = findVgPosition(atc))
-        {
-            if(vg_pos[pos.sectorid.split('/')[0]])
-            {
-                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
-            }
-            else
-            {
-                vg_pos[pos.sectorid.split('/')[0]] = {};
-                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+    //     if(pos = findVgPosition(atc))
+    //     {
+    //         if(vg_pos[pos.sectorid.split('/')[0]])
+    //         {
+    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+    //         }
+    //         else
+    //         {
+    //             vg_pos[pos.sectorid.split('/')[0]] = {};
+    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
 
-            }
-        }
-    })
+    //         }
+    //     }
+    // })
 
-    $.each(tracons, (idx, atc) => {
+    // $.each(tracons, (idx, atc) => {
         
-        if(pos = findVgPosition(atc))
-        {
-            if(vg_pos[pos.sectorid.split('/')[0]])
-            {
-                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
-            }
-            else
-            {
-                vg_pos[pos.sectorid.split('/')[0]] = {};
-                vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+    //     if(pos = findVgPosition(atc))
+    //     {
+    //         if(vg_pos[pos.sectorid.split('/')[0]])
+    //         {
+    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+    //         }
+    //         else
+    //         {
+    //             vg_pos[pos.sectorid.split('/')[0]] = {};
+    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
 
-            }
-        }
-    })
+    //         }
+    //     }
+    // })
 
-    vg_sectors = findVgSectors(vg_pos);
+    // vg_sectors = findVgSectors(vg_pos);
 
     $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
@@ -1254,7 +1254,7 @@ async function refreshATC()
     }
     atc_featuregroup.addLayer(locals_featuregroup);
     $('#navbar-atc').html(atccount);
-    showGlassesView(vg_alt);
+    // showGlassesView(vg_alt);
 }
 
 // Update Convective Sigmets
