@@ -55,15 +55,31 @@ function convertToLetter(str)
 
 function getAtisRwy(atis)
 {
-  var keys = ['RWY IN USE', 'RWYS IN USE', 'RUNWAY IN USE', 'RUNWAYS IN USE', 'RUNWAY', 'RWY', 'ILS', 'VISUAL', 'APCHS', 'APCH'];
+  var keys = ['RWY IN USE', 'RWYS IN USE', 'RUNWAY IN USE', 'RUNWAYS IN USE', 'RUNWAY', 'RWY', 'ILS', 'VISUAL', 'APCHS', 'APCH', 'APPR', 'LANDING'];
   var rwys = [];
+  var numbers = {'ZERO': '0', 'ONE': '1', 'TWO': '2', 'THREE': '3', 'FOUR': '4', 'FIVE': '5', 'SIX': '6', 'SEVEN': '7', 'EIGHT': '8', 'NINE': '9'};
   for(var i in keys)
   {
     var key = keys[i];
     if(atis.includes(key))
     {
-      var [first, ...spl] = atis.replace('RIGHT', 'R').replace('LEFT', 'L').replace(/(?<=\d) +(?=[LR])/g, '').replace(/(?<=\d) +(?=\d)/g, '').split(key);
-      var intr = spl.join(' ').replace(',', '').replace(/\./g, '').split(' ');
+      const DIGIT_WORDS = {
+        zero: '0',
+        one: '1',
+        two: '2',
+        three: '3',
+        four: '4',
+        five: '5',
+        six: '6',
+        seven: '7',
+        eight: '8',
+        niner: '9',
+      };
+    
+      const regex = new RegExp('\\b(' + Object.keys(DIGIT_WORDS).join('|') + ')\\b', 'ig');
+      atis = atis.replace(regex, match => DIGIT_WORDS[match.toLowerCase()]).replace(/[,.]/g, "").replace(/RIGHT/gi, 'R').replace(/LEFT/gi, 'L').replace(/\b(\d)\s+(\d)\s+([RL])\b/gi, '$1$2$3').replace(/\b(\d)\s+([RL])\b/gi, '$1$2');
+      var [first, ...spl] = atis.split(key);
+      var intr = spl.join(' ').split(' ');
       for(j in intr)
       {
         if(j > 15)
