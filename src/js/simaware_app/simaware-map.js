@@ -442,9 +442,6 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     tracons = livedata.appdep;
     localsraw = livedata.locals;
 
-    sectors.push({callsign: 'MSP_11_CTR', cid: 968516, name: 'Maius Wong', created_at_timestamp: 1703667865, time_online: '1:52', freq: '133.400', rating: 7})
-    sectors.push({callsign: 'MSP_111_CTR', cid: 878508, name: 'Dhruv Kalra', created_at_timestamp: 1703667865, time_online: '1:52', freq: '133.400', rating: 8})
-
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
     newactive_uids = [];
