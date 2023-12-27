@@ -99,7 +99,7 @@ function initializeMap(manual = 0, landscape = 0)
     {
         map = L.map('map', { zoomControl: false, preferCanvas: true, keyboard: false}).setView([30, 0], 3).setActiveArea(activearea);
         map.doubleClickZoom.disable();
-        basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
+        basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <a href="https://github.com/lennycolton/vatglasses-data"><i class="fab fa-github"></i> VATGlasses Data on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
         map.attributionControl.setPosition('topright');
 
         if ($.cookie('mapView')) {
@@ -297,7 +297,25 @@ async function initializeATC()
 {
 
     let response = await fetch('/livedata/layers_positions.json');
-    layers_positions = await response.json();
+    let lp = await response.json();
+
+    layers_positions = {};
+    for(i in lp)
+    {
+        var l = lp[i];
+        for(j in l['prefix'])
+        {
+            var pfx = l['prefix'][j];
+            if(!layers_positions[pfx])
+            {
+                layers_positions[pfx] = [l];
+            }
+            else
+            {
+                layers_positions[pfx].push(l);
+            }
+        }
+    }
     atisdata = {};
     layers_s = {};
 
@@ -310,13 +328,13 @@ async function initializeATC()
             
             $.each(layers_map._layers, function(index, obj) {
                 var layer = layers_map.getLayer(index);
-                if(layers_array[layer.feature.properties.country])
+                if(layers_array[layer.feature.properties.facility])
                 {
-                    layers_array[layer.feature.properties.country].push(layer);
+                    layers_array[layer.feature.properties.facility].push(layer);
                 }
                 else
                 {
-                    layers_array[layer.feature.properties.country] = [layer];
+                    layers_array[layer.feature.properties.facility] = [layer];
                 }
             })
 
@@ -423,6 +441,9 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     sectors = livedata.onlinefirs;
     tracons = livedata.appdep;
     localsraw = livedata.locals;
+
+    sectors.push({callsign: 'MSP_11_CTR', cid: 968516, name: 'Maius Wong', created_at_timestamp: 1703667865, time_online: '1:52', freq: '133.400', rating: 7})
+    sectors.push({callsign: 'MSP_111_CTR', cid: 878508, name: 'Dhruv Kalra', created_at_timestamp: 1703667865, time_online: '1:52', freq: '133.400', rating: 8})
 
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
@@ -970,39 +991,73 @@ async function refreshATC()
     layers_pos = {};
     $.each(sectors, (idx, atc) => {
         
-        if(pos = findVgPosition(atc))
+        if(pos = findLayersPosition(atc))
         {
-            if(layers_pos[pos.sectorid.split('/')[0]])
+            if(layers_pos[pos.id.split('/')[0]])
             {
-                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+                if(layers_pos[pos.id.split('/')[0]][pos.id])
+                {
+                    var s = {
+                        callsign: atc.callsign,
+                        cid: atc.cid,
+                        created_at_timestamp: atc.created_at_timestamp,
+                        freq: atc.freq,
+                        name: atc.name,
+                        rating: atc.rating,
+                        time_online: atc.time_online
+                    };
+                    layers_pos[pos.id.split('/')[0]][pos.id].atc.push(atc);
+                }
+                else
+                {
+                    layers_pos[pos.id.split('/')[0]][pos.id] = pos;
+                    layers_pos[pos.id.split('/')[0]][pos.id].atc = [atc];
+                }
             }
             else
             {
-                layers_pos[pos.sectorid.split('/')[0]] = {};
-                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
-
+                layers_pos[pos.id.split('/')[0]] = {};
+                layers_pos[pos.id.split('/')[0]][pos.id] = pos;
+                layers_pos[pos.id.split('/')[0]][pos.id].atc = [atc];
             }
         }
     })
 
     $.each(tracons, (idx, atc) => {
         
-        if(pos = findVgPosition(atc))
+        if(pos = findLayersPosition(atc))
         {
-            if(layers_pos[pos.sectorid.split('/')[0]])
+            if(layers_pos[pos.id.split('/')[0]])
             {
-                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+                if(layers_pos[pos.id.split('/')[0]][pos.id])
+                {
+                    var s = {
+                        callsign: atc.callsign,
+                        cid: atc.cid,
+                        created_at_timestamp: atc.created_at_timestamp,
+                        freq: atc.freq,
+                        name: atc.name,
+                        rating: atc.rating,
+                        time_online: atc.time_online
+                    };
+                    layers_pos[pos.id.split('/')[0]][pos.id].atc.push(atc);
+                }
+                else
+                {
+                    layers_pos[pos.id.split('/')[0]][pos.id] = pos;
+                    layers_pos[pos.id.split('/')[0]][pos.id].atc = [atc];
+                }
             }
             else
             {
-                layers_pos[pos.sectorid.split('/')[0]] = {};
-                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
-
+                layers_pos[pos.id.split('/')[0]] = {};
+                layers_pos[pos.id.split('/')[0]][pos.id] = pos;
+                layers_pos[pos.id.split('/')[0]][pos.id].atc = [atc];
             }
         }
     })
 
-    layers_sectors = findVgSectors(layers_pos);
+    layers_sectors = findLayersSectors(layers_pos);
 
     $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
@@ -1530,22 +1585,22 @@ function getLocalTooltip(icao)
     let icao_background_color = 'rgba(0,0,0,0)'
     if(obj.DEL)
     {
-        tt += '<td class="text-white" style="background-color: '+blue+'; text-align: center; padding: 0px 5px">D</td>';
+        tt += '<td class="text-white" style="background-color: '+blue+'; text-align: center; padding: 0px 3px">D</td>';
         ct += 1;
     }
     if(obj.GND)
     {
-        tt += '<td class="text-white" style="background-color: '+green+'; text-align: center; padding: 0px 5px">G</td>';
+        tt += '<td class="text-white" style="background-color: '+green+'; text-align: center; padding: 0px 3px">G</td>';
         ct += 1;
     }
     if(obj.TWR)
     {
-        tt += '<td class="text-white" style="background-color: '+red+'; text-align: center; padding: 0px 5px">T</td>';
+        tt += '<td class="text-white" style="background-color: '+red+'; text-align: center; padding: 0px 3px">T</td>';
         ct += 1;
     }
     if(obj.ATIS)
     {
-        tt += '<td class="text-white" style="background-color: '+yellow+'; text-align: center; padding: 0px 5px">A</td>';
+        tt += '<td class="text-white" style="background-color: '+yellow+'; text-align: center; padding: 0px 3px">A</td>';
         ct += 1;
     }
     if(tt != '')
@@ -1675,12 +1730,12 @@ function getControllerBlock(firObj, firMembers, firname, firicao, index)
     $.each(firMembers, function(idx, member) {
         if(member.fssname)
         {
-            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB; white-space: nowrap">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-caret-square-down"></i></td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap">'+member.name+'</td><td class="ps-3">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB; white-space: nowrap">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-caret-square-down"></i></td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap">'+member.name+'</td><td class="ps-3" style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
             list = list+'<tr><td colspan="4" class="small text-muted pt-0" style="line-height: 0.9rem;"><b style="color: #9370db">'+member.fssname+'</b> covers '+firicao+' above FL245</td></tr>';
         }
         else
         {
-            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+member.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="ps-3">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+member.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="ps-3"style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
         }
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
@@ -1692,7 +1747,7 @@ function getTraconBlock(obj, dep = false)
     tracon_name = obj.name;
     list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+tracon_name+'</td></tr>';
     $.each(obj.members, function(idx, subobj) {
-        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="ps-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="ps-3">'+getControllerRating(subobj.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj)+'</td></tr>';
+        list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="ps-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="ps-3" style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(subobj.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj)+'</td></tr>';
     })
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
@@ -2978,7 +3033,7 @@ function fetchRetry(url, delay = 1000, tries = 3, fetchOptions = {}) {
     return fetch(url,fetchOptions).catch(onError);
 }
 
-function findVgPosition(atc)
+function findLayersPosition(atc)
 {
     var pfx = atc.callsign.split('_')[0];
     if(layers_positions[pfx])
@@ -2988,7 +3043,6 @@ function findVgPosition(atc)
             if(atc.freq == layers_positions[pfx][i].freq)
             {
                 var s = layers_positions[pfx][i];
-                s.atc = atc;
                 return s;
             }
         }
@@ -2996,7 +3050,7 @@ function findVgPosition(atc)
     return null;
 }
 
-function findVgSectors(layers_pos)
+function findLayersSectors(layers_pos)
 {
     var layers_sectors = {};
     var layers_taken = [];
@@ -3114,6 +3168,7 @@ function showLayersView(alt)
             var sid = i.split('/');
             var pos = layers_pos[sid[0]][i];
             var secid = layers_sectors[i][j].split('|');
+            if(!pos.atc) { continue; }
             if(ds.includes(secid[0] + '|' + secid[1]))
             {
                 layers_featuregroup.addLayer(layers_array[secid[0]][secid[1]]);
@@ -3125,7 +3180,7 @@ function showLayersView(alt)
                     active_layers_sectors.splice(active_layers_sectors.indexOf(secid[0] + '|' + secid[1]), 1);
                 }
 
-                if(pos.atc.callsign.includes('_CTR'))
+                if(pos.atc[0].callsign.includes('_CTR'))
                 {
                     layers_array[secid[0]][secid[1]].setStyle({fillColor: '#aaa', fillOpacity: 0, weight: 1, color: '#ddd'});
                 }
@@ -3143,14 +3198,13 @@ function showLayersView(alt)
             {
                 active_layers_pos.splice(active_layers_pos.indexOf(i), 1);
             }
-        
-            if(pos.atc.callsign.includes('_CTR'))
+            if(pos.atc[0].callsign.includes('_CTR'))
             {
-                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold;background-color: #fff"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
+                var s = '<div style="position: relative"><div class="tracabel" onmouseenter="highlightLayersObject(\''+i+'\')" onmouseleave="dehighlightLayersObject(\''+i+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.65rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="padding: 0px 5px; white-space: nowrap; text-align: center"><div class="px-1" style="color: #000; background-color: #fff; border-radius: 0.1rem">'+pos.atc[0].callsign.split('_')[0]+ '/' + i.split('/')[1]+'</div>';
             }
             else
             {
-                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold; background-color: #40e0d0"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
+                var s = '<div style="position: relative"><div class="tracabel" onmouseenter="highlightLayersObject(\''+i+'\')" onmouseleave="dehighlightLayersObject(\''+i+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.65rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="padding: 0px 5px; white-space: nowrap; text-align: center"><div class="px-1" style="color: #000; background-color: #40e0d0; border-radius: 0.1rem">'+pos.atc[0].callsign.split('_')[0]+ '/' + i.split('/')[1]+'</div>';
             }
             var di = new L.divIcon({className: 'simaware-layers-tooltip', html: s, iconSize: 'auto'});
             if(layers_markers_array[i])
@@ -3161,7 +3215,7 @@ function showLayersView(alt)
             {
                 layers_markers_array[i] = new L.marker([pt.geometry.coordinates[1], pt.geometry.coordinates[0]], { icon: di });
             }
-            layers_markers_array[i].bindTooltip(getVgControllerBlock(pos), { opacity: 1, sticky: true });
+            layers_markers_array[i].bindTooltip(getLayersControllerBlock(pos), { opacity: 1, sticky: true });
             layers_featuregroup.addLayer(layers_markers_array[i]);
         }
         new_active_layers_pos.push(i);
@@ -3185,7 +3239,7 @@ function showLayersView(alt)
     $('#layers-alt').html(layers_alt * 100);
 }
 
-function highlightVgObject(index)
+function highlightLayersObject(index)
 {
     var split = layers_sectors[index];
     for(idx in split)
@@ -3194,7 +3248,7 @@ function highlightVgObject(index)
         layers_array[sl[0]][sl[1]].setStyle({fillOpacity: 0.4});
     }
 }
-function dehighlightVgObject(index)
+function dehighlightLayersObject(index)
 {
     var split = layers_sectors[index];
     for(idx in split)
@@ -3204,11 +3258,14 @@ function dehighlightVgObject(index)
     }
 }
 
-function getVgControllerBlock(obj)
+function getLayersControllerBlock(obj)
 {
     tracon_name = obj.name;
     list = '<table style="width: 100%; color: #333; font-size: 0.9rem"><tr><td colspan="3" style="font-size: 1rem; font-weight: 600">'+obj.callsign+'</td></tr>';
-    list += '<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+obj.atc.callsign+'</td><td class="ps-3" style="text-align: right; white-space: nowrap;">'+obj.atc.name+'</td><td class="ps-3">'+getControllerRating(obj.atc.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+obj.atc.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(obj.atc)+'</td></tr>';
+    for(var i in obj.atc)
+    {
+        list += '<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+obj.atc[i].callsign+'</td><td class="ps-3" style="text-align: right; white-space: nowrap;">'+obj.atc[i].name+'</td><td class="ps-3" style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(obj.atc[i].rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+obj.atc[i].freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(obj.atc[i])+'</td></tr>';
+    }
     list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
 }
