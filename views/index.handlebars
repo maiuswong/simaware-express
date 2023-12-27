@@ -45,15 +45,15 @@ $(document).ready(function() {
 
     $(document).keydown(function(e) {
         console.log(e.keyCode)
-        if(e.keyCode == 38 && vg_alt <= 595)
+        if(e.keyCode == 38 && layers_alt <= 595)
         {
-            vg_alt += 5;
-            showGlassesView(vg_alt);
+            layers_alt += 5;
+            showGlassesView(layers_alt);
         }
-        if(e.keyCode == 40 && vg_alt >= 5)
+        if(e.keyCode == 40 && layers_alt >= 5)
         {
-            vg_alt -= 5;
-            showGlassesView(vg_alt);
+            layers_alt -= 5;
+            showGlassesView(layers_alt);
         }
     })
 
