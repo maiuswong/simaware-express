@@ -68,10 +68,10 @@ function initializeMap(manual = 0, landscape = 0)
     active_firs = [];
     active_tracons = [];
     tracons_array = [];
-    vatglasses_array = [];
-    active_vg_pos = [];
-    active_vg_sectors = [];
-    vgmarkers_array = [];
+    layers_array = [];
+    active_layers_pos = [];
+    active_layers_sectors = [];
+    layers_markers_array = [];
     tracmarkers_array = [];
     icons_array = [];
     firs_array  = [];
@@ -79,7 +79,7 @@ function initializeMap(manual = 0, landscape = 0)
     sigmets_array = [];
     sigmarkers_array = [];
     active_flight = null;
-    vg_alt = 50;
+    layers_alt = 50;
 
     // Initialize the icons that will be used
     initializeIcons();
@@ -152,7 +152,7 @@ function initializeMap(manual = 0, landscape = 0)
     events_featuregroup = new L.FeatureGroup();
     nats_featuregroup = new L.FeatureGroup();
     wf_featuregroup = new L.FeatureGroup();
-    vg_featuregroup = new L.FeatureGroup();
+    layers_featuregroup = new L.FeatureGroup();
     atc_featuregroup.addLayer(atc_leg_featuregroup);
 }
 
@@ -296,50 +296,50 @@ async function initializePatrons()
 async function initializeATC()
 {
 
-    // let response = await fetch('/livedata/glasses_positions.json');
-    // vg_positions = await response.json();
+    let response = await fetch('/livedata/layers_positions.json');
+    layers_positions = await response.json();
     atisdata = {};
-    vgs = {};
+    layers_s = {};
 
-    // $.ajax({
-    //     url: '/livedata/vatglasses.json',
-    //     xhrFields: {withCredentials: false},
-    //     success: function(data) {
+    $.ajax({
+        url: '/livedata/layers.json',
+        xhrFields: {withCredentials: false},
+        success: function(data) {
 
-    //         glassesmap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
+            layers_map = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
             
-    //         $.each(glassesmap._layers, function(index, obj) {
-    //             var layer = glassesmap.getLayer(index);
-    //             if(vatglasses_array[layer.feature.properties.country])
-    //             {
-    //                 vatglasses_array[layer.feature.properties.country].push(layer);
-    //             }
-    //             else
-    //             {
-    //                 vatglasses_array[layer.feature.properties.country] = [layer];
-    //             }
-    //         })
+            $.each(layers_map._layers, function(index, obj) {
+                var layer = layers_map.getLayer(index);
+                if(layers_array[layer.feature.properties.country])
+                {
+                    layers_array[layer.feature.properties.country].push(layer);
+                }
+                else
+                {
+                    layers_array[layer.feature.properties.country] = [layer];
+                }
+            })
 
-    //         for(var i in vatglasses_array)
-    //         {
-    //             for(var j in vatglasses_array[i])
-    //             {
-    //                 for(var k in vatglasses_array[i][j].feature.properties.owner)
-    //                 {
-    //                     if(vgs[vatglasses_array[i][j].feature.properties.owner[k]])
-    //                     {
-    //                         vgs[vatglasses_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
-    //                     }
-    //                     else
-    //                     {
-    //                         vgs[vatglasses_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
-    //                     }
-    //                 }
-    //             }
-    //         }
+            for(var i in layers_array)
+            {
+                for(var j in layers_array[i])
+                {
+                    for(var k in layers_array[i][j].feature.properties.owner)
+                    {
+                        if(layers_s[layers_array[i][j].feature.properties.owner[k]])
+                        {
+                            layers_s[layers_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
+                        }
+                        else
+                        {
+                            layers_s[layers_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
+                        }
+                    }
+                }
+            }
                 
-    //     }
-    // })
+        }
+    })
     
     // Load the GeoJSON file
     $.ajax({
@@ -423,6 +423,9 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     sectors = livedata.onlinefirs;
     tracons = livedata.appdep;
     localsraw = livedata.locals;
+
+    sectors.push({'callsign': 'MSP_11_CTR', 'freq': '133.400', 'name': 'Maius Wong', cid: 968516})
+    sectors.push({'callsign': 'MSP_05_CTR', 'freq': '125.300', 'name': 'Maius Wong', cid: 968516})
 
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
@@ -686,11 +689,6 @@ function lightUpTracon(tracon, traconid)
         atc_leg_featuregroup.addLayer(tracmarkers_array[traconid]);
         tracon_handle.bringToFront();
     }
-}
-
-function lightUpGlass(glass, glassid)
-{
-    
 }
 
 function traconSearch(callsign)
@@ -967,47 +965,47 @@ async function refreshATC()
     //     markFIR(index);
     // })
 
-    // $.each(active_firs, (idx, fir) => {
-    //     firObj = firs_array[fir];
-    //     turnOffFIR(firObj);
-    // })
+    $.each(active_firs, (idx, fir) => {
+        firObj = firs_array[fir];
+        turnOffFIR(firObj);
+    })
 
-    // vg_pos = {};
-    // $.each(sectors, (idx, atc) => {
+    layers_pos = {};
+    $.each(sectors, (idx, atc) => {
         
-    //     if(pos = findVgPosition(atc))
-    //     {
-    //         if(vg_pos[pos.sectorid.split('/')[0]])
-    //         {
-    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
-    //         }
-    //         else
-    //         {
-    //             vg_pos[pos.sectorid.split('/')[0]] = {};
-    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+        if(pos = findVgPosition(atc))
+        {
+            if(layers_pos[pos.sectorid.split('/')[0]])
+            {
+                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+            }
+            else
+            {
+                layers_pos[pos.sectorid.split('/')[0]] = {};
+                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
 
-    //         }
-    //     }
-    // })
+            }
+        }
+    })
 
-    // $.each(tracons, (idx, atc) => {
+    $.each(tracons, (idx, atc) => {
         
-    //     if(pos = findVgPosition(atc))
-    //     {
-    //         if(vg_pos[pos.sectorid.split('/')[0]])
-    //         {
-    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
-    //         }
-    //         else
-    //         {
-    //             vg_pos[pos.sectorid.split('/')[0]] = {};
-    //             vg_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+        if(pos = findVgPosition(atc))
+        {
+            if(layers_pos[pos.sectorid.split('/')[0]])
+            {
+                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
+            }
+            else
+            {
+                layers_pos[pos.sectorid.split('/')[0]] = {};
+                layers_pos[pos.sectorid.split('/')[0]][pos.sectorid] = pos;
 
-    //         }
-    //     }
-    // })
+            }
+        }
+    })
 
-    // vg_sectors = findVgSectors(vg_pos);
+    layers_sectors = findVgSectors(layers_pos);
 
     $.each(sectors, (idx, atc) => {
         let fir = firSearch(atc.callsign)
@@ -1254,7 +1252,7 @@ async function refreshATC()
     }
     atc_featuregroup.addLayer(locals_featuregroup);
     $('#navbar-atc').html(atccount);
-    // showGlassesView(vg_alt);
+    showLayersView(layers_alt);
 }
 
 // Update Convective Sigmets
@@ -1449,10 +1447,18 @@ function getFirTooltip(icao, index, firMembers)
         }
     })
 
-    var tt = '<div style="position: relative"><div class="firlabel" onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.75rem; overflow: hidden; font-weight: bold"><tr><td class="bg-white text-black" style="padding: 0px 5px; white-space: nowrap; text-align: center">'+icao;
     if(is_fss)
     {
-        tt += '<br><span class="rounded px-1" style="background-color: #9370db">'+fssicao+'</span>';
+        var br = 'border-top-left-radius: 0.1rem; border-top-right-radius: 0.1rem';
+    }
+    else
+    {
+        var br = 'border-radius: 0.1rem';
+    }
+    var tt = '<div style="position: relative"><div class="firlabel" onmouseenter="highlightFIR(\''+index+'\')" onmouseleave="dehighlightFIR(\''+index+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.65rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="padding: 0px 5px; white-space: nowrap; text-align: center"><div class="px-1" style="color: #000; background-color: #fff; '+br+'">'+icao+'</div>';
+    if(is_fss)
+    {
+        tt += '<div class="px-1" style="color: #fff; background-color: #9370db; border-bottom-left-radius: 0.1rem; border-bottom-right-radius: 0.1rem">'+fssicao+'</div>';
     }
     tt += '</td></tr></table></div></div>';
     return tt;
@@ -1460,7 +1466,7 @@ function getFirTooltip(icao, index, firMembers)
 
 function getTracTooltip(index, traconid)
 {
-    var tt = '<div style="position: relative"><div class="traclabel" onmouseenter="highlightTracon(\''+traconid+'\')" onmouseleave="dehighlightTracon(\''+traconid+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold"><tr><td style="color: #000; background-color: #40e0d0; padding: 0px 5px; white-space: nowrap; text-align: center">'+index+'</td></tr></table></div></div>';
+    var tt = '<div style="position: relative"><div class="tracabel" onmouseenter="highlightTracon(\''+traconid+'\')" onmouseleave="dehighlightTracon(\''+traconid+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.65rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="padding: 0px 5px; white-space: nowrap; text-align: center"><div class="px-1" style="color: #000; background-color: #40e0d0; border-radius: 0.1rem">'+index+'</div>';
     return tt;
 }
 
@@ -1509,32 +1515,6 @@ function dehighlightSigmet(index)
     sigmets_array[index].setStyle({fillOpacity: 0.1});
 }
 
-// Get Local Tooltip
-// function getLocalTooltip(obj)
-// {
-//     var tt = '<table class="bg-white" style="font-family: \'Figtree\', sans-serif; font-size: 0.7rem; border-radius: 1rem; overflow: hidden;"><tr><td style="padding: 0px 5px;">'+obj.loc.icao+'</td>';
-//     if(obj.DEL)
-//     {
-//         tt += '<td class="text-white bg-primary" style="padding: 0px 5px">D</td>';
-//     }
-//     if(obj.GND)
-//     {
-//         tt += '<td class="text-white bg-success" style="padding: 0px 5px">G</td>';
-//     }
-//     if(obj.TWR)
-//     {
-//         tt += '<td class="text-white bg-danger" style="padding: 0px 5px">T</td>';
-//     }
-//     if(obj.ATIS)
-//     {
-//         tt += '<td class="text-white bg-warning" style="padding: 0px 5px">A</td>';
-//     }
-
-//     tt += '</tr></table>';
-
-//     return tt;
-// }
-
 function getLocalTooltip(icao)
 {
     if(locals[icao])
@@ -1573,7 +1553,7 @@ function getLocalTooltip(icao)
     }
     if(tt != '')
     {
-        tt = '<table style="margin: 0.2rem; margin-top: 0rem; flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold; border-radius: 3px;"><tr>'+tt+'</tr></table>';
+        tt = '<table style="margin: 0.1rem; margin-top: 0rem; flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold; border-radius: 3px;"><tr>'+tt+'</tr></table>';
         icao_text_style = 'text-light'; // ATC online
         icao_background_color = 'rgba(255,255,255,0.1)'
     }    
@@ -1602,7 +1582,7 @@ function getLocalTooltip(icao)
         }
         event = '<div style="position: absolute; top: -5px; left: -5px; border-radius: 5px; width: 10px; height: 10px; '+style+'"></div>';
     }
-    var tt = '<div ondblclick="zoomToAirport(\''+icao+'\', true)" style="position: relative; background-color: '+icao_background_color+'; display: flex; flex-direction: column; justify-content: center; border-radius: 5px;">'+event+'<table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="'+icao_text_style+'" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
+    var tt = '<div ondblclick="zoomToAirport(\''+icao+'\', true)" style="position: relative; background-color: '+icao_background_color+'; display: flex; flex-direction: column; justify-content: center; border-radius: 5px;">'+event+'<table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold"><tr><td colspan="'+ct+'" class="'+icao_text_style+'" style="padding: 0px 5px">'+obj.loc.icao+'</td></tr></table>'+tt+'</div>';
 
     return tt;
 }
@@ -1658,7 +1638,7 @@ function getLocalBlock(icao)
         eventslist = '<tr><td colspan="2" style="position: relative"><div style="position: absolute; top: 50%; left: 0px; right: 0px; height: 2px; background-color: #999; z-index: 1"></div><span style="position: relative; color: #999; background-color: #282828; z-index: 2" class="ms-3 px-1">Upcoming Events</span></td></tr>';
         for(id in eventsByAirport[icao])
         {
-            eventslist += '<tr><td class="pe-3 pt-1" width="15%"><table class="rounded-2" style="overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; background-color: #eee"><tr><td style="color: rgb(169,56,72); text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 1rem; color: #222">'+moment(eventsByAirport[icao][id].start).format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; color: #aaa; white-space: nowrap; line-height: normal">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).utc().format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).utc().format('HHmm') +'Z</small></td></tr>';
+            eventslist += '<tr><td class="pe-3 pt-1" width="15%"><table class="rounded-2" style="overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; background-color: #eee"><tr><td style="color: rgb(169,56,72); text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).utc().format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 1rem; color: #222">'+moment(eventsByAirport[icao][id].start).utc().format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; color: #aaa; white-space: nowrap; line-height: normal">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).utc().format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).utc().format('HHmm') +'Z</small></td></tr>';
         }
     }
     
@@ -2452,8 +2432,8 @@ async function toggleATC()
     if(map.hasLayer(atc_featuregroup) && atc_featuregroup.hasLayer(atc_leg_featuregroup))
     {
         map.removeLayer(atc_featuregroup);
-        $('.map-button#glasses').removeClass('map-button-active');
-        $.cookie('glasses', 'false', {expires: 180});
+        $('.map-button#layers').removeClass('map-button-active');
+        $.cookie('layers', 'false', {expires: 180});
     }
     else
     {
@@ -2461,31 +2441,31 @@ async function toggleATC()
         {
             map.addLayer(atc_featuregroup);
         }
-        if(atc_featuregroup.hasLayer(vg_featuregroup))
+        if(atc_featuregroup.hasLayer(layers_featuregroup))
         {
-            atc_featuregroup.removeLayer(vg_featuregroup);
+            atc_featuregroup.removeLayer(layers_featuregroup);
         }
         if(!atc_featuregroup.hasLayer(atc_leg_featuregroup))
         {
             atc_featuregroup.addLayer(atc_leg_featuregroup);
         }
         $('.map-button#atc').addClass('map-button-active');
-        $('.map-button#glasses').removeClass('map-button-active');
+        $('.map-button#layers').removeClass('map-button-active');
         setLayerOrder();
         refreshATC();
         $.cookie('atc', 'true', {expires: 180});
-        $.cookie('glasses', 'false', {expires: 180});
+        $.cookie('layers', 'false', {expires: 180});
     }
 }
 
-async function toggleGlasses()
+async function toggleLayers()
 {
-    if(map.hasLayer(atc_featuregroup) && atc_featuregroup.hasLayer(vg_featuregroup))
+    if(map.hasLayer(atc_featuregroup) && atc_featuregroup.hasLayer(layers_featuregroup))
     {
         map.removeLayer(atc_featuregroup);
-        $('.map-button#glasses').removeClass('map-button-active');
-        $.cookie('glasses', 'false', {expires: 180});
-        $('#vgstatus').hide();
+        $('.map-button#layers').removeClass('map-button-active');
+        $.cookie('layers', 'false', {expires: 180});
+        $('#layers-status').hide();
     }
     else
     {
@@ -2497,15 +2477,15 @@ async function toggleGlasses()
         {
             atc_featuregroup.removeLayer(atc_leg_featuregroup);
         }
-        if(!atc_featuregroup.hasLayer(vg_featuregroup))
+        if(!atc_featuregroup.hasLayer(layers_featuregroup))
         {
-            atc_featuregroup.addLayer(vg_featuregroup);
+            atc_featuregroup.addLayer(layers_featuregroup);
         }
-        $('.map-button#glasses').addClass('map-button-active');
+        $('.map-button#layers').addClass('map-button-active');
         $('.map-button#atc').removeClass('map-button-active');
         setLayerOrder();
-        $('#vgstatus').show();
-        $.cookie('glasses', 'true', {expires: 180});
+        $('#layers-status').show();
+        $.cookie('layers', 'true', {expires: 180});
     }
 
 }
@@ -3004,13 +2984,13 @@ function fetchRetry(url, delay = 1000, tries = 3, fetchOptions = {}) {
 function findVgPosition(atc)
 {
     var pfx = atc.callsign.split('_')[0];
-    if(vg_positions[pfx])
+    if(layers_positions[pfx])
     {
-        for(var i in vg_positions[pfx])
+        for(var i in layers_positions[pfx])
         {
-            if(atc.freq == vg_positions[pfx][i].freq)
+            if(atc.freq == layers_positions[pfx][i].freq)
             {
-                var s = vg_positions[pfx][i];
+                var s = layers_positions[pfx][i];
                 s.atc = atc;
                 return s;
             }
@@ -3019,81 +2999,81 @@ function findVgPosition(atc)
     return null;
 }
 
-function findVgSectors(vg_pos)
+function findVgSectors(layers_pos)
 {
-    var vg_sectors = {};
-    var vg_taken = [];
+    var layers_sectors = {};
+    var layers_taken = [];
     // eh
-    for(var i in vg_pos)
+    for(var i in layers_pos)
     {
-        var vgkeys = Object.keys(vg_pos[i]);
+        var layers_keys = Object.keys(layers_pos[i]);
         // 0 1 12
-        for(j in vatglasses_array[i])
+        for(j in layers_array[i])
         {
             var taken = false
-            for(k in vatglasses_array[i][j].feature.properties.owner)
+            for(k in layers_array[i][j].feature.properties.owner)
             {
-                if(vgkeys.includes(vatglasses_array[i][j].feature.properties.owner[k]) && !taken)
+                if(layers_keys.includes(layers_array[i][j].feature.properties.owner[k]) && !taken)
                 {
-                    if(vg_sectors[vatglasses_array[i][j].feature.properties.owner[k]])
+                    if(layers_sectors[layers_array[i][j].feature.properties.owner[k]])
                     {
-                        vg_sectors[vatglasses_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
+                        layers_sectors[layers_array[i][j].feature.properties.owner[k]].push(i + '|' + j);
                     }
                     else
                     {
-                        vg_sectors[vatglasses_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
+                        layers_sectors[layers_array[i][j].feature.properties.owner[k]] = [i + '|' + j];
                     }
                     taken = true;
-                    vg_taken.push(i + '|' + j);
+                    layers_taken.push(i + '|' + j);
                 }
             }
         }
     }
 
-    for(var r in vg_pos)
+    for(var r in layers_pos)
     {
-        for(var s in vg_pos[r])
+        for(var s in layers_pos[r])
         {
-            for(var j in vgs[s])
+            for(var j in layers_s[s])
             {
-                if(!vg_taken.includes(vgs[s][j]))
+                if(!layers_taken.includes(layers_s[s][j]))
                 {
-                    if(vg_sectors[s])
+                    if(layers_sectors[s])
                     {
-                        vg_sectors[s].push(vgs[s][j]);
+                        layers_sectors[s].push(layers_s[s][j]);
                     }
                     else
                     {
-                        vg_sectors[s] = [vgs[s][j]];
+                        layers_sectors[s] = [layers_s[s][j]];
                     }
-                    vg_taken.push(vgs[s][j]);
+                    layers_taken.push(layers_s[s][j]);
                 }
             }
         }
     }
 
-    return vg_sectors;
+    return layers_sectors;
 }
 
-function returnDisplaySectors(vg_sectors, alt)
+function returnDisplaySectors(layers_sectors, alt)
 {
     var d = []
-    for(var i in vg_sectors)
+    for(var i in layers_sectors)
     {
-        for(j in vg_sectors[i])
+        for(j in layers_sectors[i])
         {
-            var l = vg_sectors[i][j].split('|');
-            var vgl = vatglasses_array[l[0]][l[1]];
-            if(((vgl.feature.properties.max && vgl.feature.properties.max >= alt) || !vgl.feature.properties.max) &&
-               ((vgl.feature.properties.min && vgl.feature.properties.min <= alt) || !vgl.feature.properties.min))
+            var l = layers_sectors[i][j].split('|');
+            var layers_l = layers_array[l[0]][l[1]];
+            if(((layers_l.feature.properties.max && layers_l.feature.properties.max >= alt) || !layers_l.feature.properties.max) &&
+               ((layers_l.feature.properties.min && layers_l.feature.properties.min <= alt) || !layers_l.feature.properties.min))
                 {
-                    if(vgl.feature.properties.rwy)
+                    if(layers_l.feature.properties.rwy)
                     {
                         var flag = 0;
-                        for(var m in vgl.feature.properties.rwy)
+                        for(var m in layers_l.feature.properties.rwy)
                         {
-                            let icao = vgl.feature.properties.rwy[m].icao;
-                            let rwys = vgl.feature.properties.rwy[m].runway;
+                            let icao = layers_l.feature.properties.rwy[m].icao;
+                            let rwys = layers_l.feature.properties.rwy[m].runway;
                             if(locals[icao] && locals[icao].rwy)
                             {
                                 let atisrwys = locals[icao].rwy.join('|');
@@ -3111,12 +3091,12 @@ function returnDisplaySectors(vg_sectors, alt)
                         }
                         if(flag)
                         {
-                            d.push(vg_sectors[i][j]);
+                            d.push(layers_sectors[i][j]);
                         }
                     }
                     else
                     {
-                        d.push(vg_sectors[i][j]);
+                        d.push(layers_sectors[i][j]);
                     }
                 }
         }
@@ -3124,106 +3104,106 @@ function returnDisplaySectors(vg_sectors, alt)
     return d;
 }
 
-function showGlassesView(alt)
+function showLayersView(alt)
 {
-    new_active_vg_pos = [];
-    new_active_vg_sectors = [];
-    var ds = returnDisplaySectors(vg_sectors, alt);
-    for(var i in vg_sectors)
+    new_active_layers_pos = [];
+    new_active_layers_sectors = [];
+    var ds = returnDisplaySectors(layers_sectors, alt);
+    for(var i in layers_sectors)
     {
         ctr = [];
-        for(var j in vg_sectors[i])
+        for(var j in layers_sectors[i])
         {
             var sid = i.split('/');
-            var pos = vg_pos[sid[0]][i];
-            var secid = vg_sectors[i][j].split('|');
+            var pos = layers_pos[sid[0]][i];
+            var secid = layers_sectors[i][j].split('|');
             if(ds.includes(secid[0] + '|' + secid[1]))
             {
-                vg_featuregroup.addLayer(vatglasses_array[secid[0]][secid[1]]);
-                new_active_vg_sectors.push(secid[0] + '|' + secid[1]);
+                layers_featuregroup.addLayer(layers_array[secid[0]][secid[1]]);
+                new_active_layers_sectors.push(secid[0] + '|' + secid[1]);
 
                 // Mark as no delete
-                if($.inArray(secid[0] + '|' + secid[1], active_vg_sectors) >= 0)
+                if($.inArray(secid[0] + '|' + secid[1], active_layers_sectors) >= 0)
                 {
-                    active_vg_sectors.splice(active_vg_sectors.indexOf(secid[0] + '|' + secid[1]), 1);
+                    active_layers_sectors.splice(active_layers_sectors.indexOf(secid[0] + '|' + secid[1]), 1);
                 }
 
                 if(pos.atc.callsign.includes('_CTR'))
                 {
-                    vatglasses_array[secid[0]][secid[1]].setStyle({fillColor: '#aaa', fillOpacity: 0, weight: 1, color: '#ddd'});
+                    layers_array[secid[0]][secid[1]].setStyle({fillColor: '#aaa', fillOpacity: 0, weight: 1, color: '#ddd'});
                 }
                 else
                 {
-                    vatglasses_array[secid[0]][secid[1]].setStyle({fillColor: '#40e0d0', fillOpacity: 0, weight: 1, color: '#40e0d0'});
+                    layers_array[secid[0]][secid[1]].setStyle({fillColor: '#40e0d0', fillOpacity: 0, weight: 1, color: '#40e0d0'});
                 }
-                ctr.push(vatglasses_array[secid[0]][secid[1]].feature.geometry.coordinates[0]);
+                ctr.push(layers_array[secid[0]][secid[1]].feature.geometry.coordinates[0]);
             }
         }
         if(ctr.length)
         {
             var pt = turf.pointOnFeature(turf.multiPolygon(ctr));
-            if($.inArray(i, active_vg_pos) >= 0)
+            if($.inArray(i, active_layers_pos) >= 0)
             {
-                active_vg_pos.splice(active_vg_pos.indexOf(i), 1);
+                active_layers_pos.splice(active_layers_pos.indexOf(i), 1);
             }
         
             if(pos.atc.callsign.includes('_CTR'))
             {
-                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold;background-color: #fff"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
+                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold;background-color: #fff"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
             }
             else
             {
-                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.2rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold; background-color: #40e0d0"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
+                var s = '<div onmouseenter="highlightVgObject(\''+i+'\')" onmouseleave="dehighlightVgObject(\''+i+'\')" style="position: relative"><div class="traclabel" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.7rem; overflow: hidden; font-weight: bold; background-color: #40e0d0"><tr><td style="color: #000; padding: 0px 5px; white-space: nowrap; text-align: center">'+pos.atc.callsign.split('_')[0]+ '/' + i.split('/')[1] +'</td></tr></table></div></div>';
             }
-            var di = new L.divIcon({className: 'simaware-vg-tooltip', html: s, iconSize: 'auto'});
-            if(vgmarkers_array[i])
+            var di = new L.divIcon({className: 'simaware-layers-tooltip', html: s, iconSize: 'auto'});
+            if(layers_markers_array[i])
             {
-                vgmarkers_array[i].setLatLng([pt.geometry.coordinates[1], pt.geometry.coordinates[0]]);
+                layers_markers_array[i].setLatLng([pt.geometry.coordinates[1], pt.geometry.coordinates[0]]);
             }
             else
             {
-                vgmarkers_array[i] = new L.marker([pt.geometry.coordinates[1], pt.geometry.coordinates[0]], { icon: di });
+                layers_markers_array[i] = new L.marker([pt.geometry.coordinates[1], pt.geometry.coordinates[0]], { icon: di });
             }
-            vgmarkers_array[i].bindTooltip(getVgControllerBlock(pos), { opacity: 1, sticky: true });
-            vg_featuregroup.addLayer(vgmarkers_array[i]);
+            layers_markers_array[i].bindTooltip(getVgControllerBlock(pos), { opacity: 1, sticky: true });
+            layers_featuregroup.addLayer(layers_markers_array[i]);
         }
-        new_active_vg_pos.push(i);
+        new_active_layers_pos.push(i);
     }
 
     // Disable old stuff
-    for(var i in active_vg_sectors)
+    for(var i in active_layers_sectors)
     {
-        var secid = active_vg_sectors[i].split('|');
-        vg_featuregroup.removeLayer(vatglasses_array[secid[0]][secid[1]]);
+        var secid = active_layers_sectors[i].split('|');
+        layers_featuregroup.removeLayer(layers_array[secid[0]][secid[1]]);
     }
 
     // Disable old stuff
-    for(var i in active_vg_pos)
+    for(var i in active_layers_pos)
     {
-        vg_featuregroup.removeLayer(vgmarkers_array[active_vg_pos[i]]);
+        layers_featuregroup.removeLayer(layers_markers_array[active_layers_pos[i]]);
     }
 
-    active_vg_pos = new_active_vg_pos;
-    active_vg_sectors = new_active_vg_sectors;
-    $('#vg-alt').html(vg_alt * 100);
+    active_layers_pos = new_active_layers_pos;
+    active_layers_sectors = new_active_layers_sectors;
+    $('#layers-alt').html(layers_alt * 100);
 }
 
 function highlightVgObject(index)
 {
-    var split = vg_sectors[index];
+    var split = layers_sectors[index];
     for(idx in split)
     {
         var sl = split[idx].split('|');
-        vatglasses_array[sl[0]][sl[1]].setStyle({fillOpacity: 0.4});
+        layers_array[sl[0]][sl[1]].setStyle({fillOpacity: 0.4});
     }
 }
 function dehighlightVgObject(index)
 {
-    var split = vg_sectors[index];
+    var split = layers_sectors[index];
     for(idx in split)
     {
         var sl = split[idx].split('|');
-        vatglasses_array[sl[0]][sl[1]].setStyle({fillOpacity: 0});
+        layers_array[sl[0]][sl[1]].setStyle({fillOpacity: 0});
     }
 }
 

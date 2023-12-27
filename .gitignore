@@ -6,6 +6,6 @@ public/legacyevents
 .DS_Store
 node_modules
 .idea
-public/livedata/vatglasses.json
-public/livedata/glasses_positions.json
+public/livedata/layers.json
+public/livedata/layers_positions.json
 public/.DS_Store
