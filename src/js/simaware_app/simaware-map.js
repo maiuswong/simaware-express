@@ -1655,7 +1655,7 @@ function getLocalBlock(icao)
     ct = 0;
     tt = '';
 
-    var list = '<table style="color: #eee; font-size: 0.9rem"><tr><td colspan="6" class="pb-1" style="font-size: 1rem; font-weight: 400; white-space: nowrap"><p class="mb-0">'+obj.loc.name+'</p><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</small></td></tr>';
+    var list = '<table style="color: #eee; font-size: 0.9rem"><tr><td colspan="6" class="pb-3" style="line-height: 1.2rem; font-size: 1rem; font-weight: 400; white-space: nowrap">'+obj.loc.name+'<br><small class="text-muted mt-0" style="font-size: 0.8rem">'+city+'</small></td></tr>';
     if(obj.DEL)
     {
         $.each(obj.DEL, (idx, item) => {
