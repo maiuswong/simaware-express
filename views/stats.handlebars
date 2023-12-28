@@ -115,6 +115,8 @@ async function initialize()
     await initializePatrons();
     initializeMap(1);
 
+    layers_positions = {};
+
     response = await fetchRetry('/livedata/airports.json');
     airports = await response.json();
     flights = await refreshFlights(filterName, filterCriteria);
@@ -129,7 +131,6 @@ async function initialize()
     refreshATC();
     initializeInfobar();
 
-    {{!-- console.log('FLAG' + !$.trim($('#atc').html()).length) --}}
     if(!$.trim($('#atc').html()).length)
     {
         refreshStats();
@@ -138,7 +139,6 @@ async function initialize()
 
 async function refreshStats()
 {
-    await refreshATC();
     flights = await refreshFlights();
 
     let html = '';
@@ -153,9 +153,7 @@ async function refreshStats()
 
     html = '';
     $.each(sectors, (idx, sector) => {
-        {{!-- console.log(sector.callsign); --}}
         let index = getFirIndexByCallsign(sector.callsign);
-        console.log(sector);
         let fir = firSearch(sector.callsign);
         if(fir && index)
         {
@@ -165,12 +163,12 @@ async function refreshStats()
         {
             var firname = 'Unknown Sector';
         }
+        console.log(fir);
         html += '<tr class="atcrow"><td>'+sector.callsign+'</td><td>'+firname+'</td><td>'+sector.freq+'</td><td>'+sector.name+'</td></tr>';
     })
     $.each(tracons, (idx, tracon) => {
 
         var search = traconSearch(tracon.callsign);
-        console.log(tracon.callsign);
         if(search !== null)
         {
             if(search[1] == 'circles')
