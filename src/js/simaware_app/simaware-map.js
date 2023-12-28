@@ -3177,7 +3177,7 @@ function showLayersView(alt)
                     active_layers_sectors.splice(active_layers_sectors.indexOf(secid[0] + '|' + secid[1]), 1);
                 }
 
-                if(pos.atc[0].callsign.includes('_CTR'))
+                if(pos.atc[0].callsign.includes('_CTR') || pos.atc[0].callsign.includes('_FSS'))
                 {
                     layers_array[secid[0]][secid[1]].setStyle({fillColor: '#aaa', fillOpacity: 0, weight: 1, color: '#ddd'});
                 }
@@ -3195,7 +3195,7 @@ function showLayersView(alt)
             {
                 active_layers_pos.splice(active_layers_pos.indexOf(i), 1);
             }
-            if(pos.atc[0].callsign.includes('_CTR'))
+            if(pos.atc[0].callsign.includes('_CTR') || pos.atc[0].callsign.includes('_FSS'))
             {
                 var s = '<div style="position: relative"><div class="tracabel" onmouseenter="highlightLayersObject(\''+i+'\')" onmouseleave="dehighlightLayersObject(\''+i+'\')" style="position: relative; display: flex; flex-direction: column; justify-content: center;"><table style="margin: 0.1rem; align-self: center; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.65rem; overflow: hidden; font-weight: bold"><tr><td class="text-white" style="padding: 0px 5px; white-space: nowrap; text-align: center"><div class="px-1" style="color: #000; background-color: #fff; border-radius: 0.1rem">'+pos.atc[0].callsign.split('_')[0]+ '/' + i.split('/')[1]+'</div>';
             }

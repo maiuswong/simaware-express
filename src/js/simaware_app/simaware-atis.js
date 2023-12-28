@@ -82,7 +82,7 @@ function getAtisRwy(atis)
       var intr = spl.join(' ').split(' ');
       for(j in intr)
       {
-        if(j > 15)
+        if(j > 15 || ['TRANSITION', 'NOTAM', 'NOTICE'].includes(intr[j]))
         {
           break;
         }
