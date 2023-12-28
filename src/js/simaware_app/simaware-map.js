@@ -1735,7 +1735,7 @@ function getControllerBlock(firObj, firMembers, firname, firicao, index)
             list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+member.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="ps-3"style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
         }
     })
-    list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
+    list = '<div class="card" style="border-radius: 5px; overflow: hidden"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
 }
 
@@ -1746,7 +1746,7 @@ function getTraconBlock(obj, dep = false)
     $.each(obj.members, function(idx, subobj) {
         list = list+'<tr><td style="font-family: \'JetBrains Mono\', sans-serif">'+subobj.callsign+'</td><td class="ps-3" style="text-align: right; white-space: nowrap;">'+subobj.name+'</td><td class="ps-3" style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(subobj.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+subobj.freq+'</td><td class="text-muted" style="font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem"></td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(subobj)+'</td></tr>';
     })
-    list = '<div class="card"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
+    list = '<div class="card" style="border-radius: 5px; overflow: hidden;"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
     return list;
 }
 
