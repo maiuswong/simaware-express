@@ -3207,13 +3207,14 @@ function showLayersView(alt)
             if(layers_markers_array[i])
             {
                 layers_markers_array[i].setLatLng([pt.geometry.coordinates[1], pt.geometry.coordinates[0]]);
+                layers_markers_array[i].setTooltipContent(getLayersControllerBlock(pos));
             }
             else
             {
                 layers_markers_array[i] = new L.marker([pt.geometry.coordinates[1], pt.geometry.coordinates[0]], { icon: di });
+                layers_markers_array[i].bindTooltip(getLayersControllerBlock(pos), { opacity: 1, sticky: true });
+                layers_featuregroup.addLayer(layers_markers_array[i]);
             }
-            layers_markers_array[i].bindTooltip(getLayersControllerBlock(pos), { opacity: 1, sticky: true });
-            layers_featuregroup.addLayer(layers_markers_array[i]);
         }
         new_active_layers_pos.push(i);
     }
