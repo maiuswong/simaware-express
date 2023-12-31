@@ -127,7 +127,7 @@ function initializeMap(manual = 0, landscape = 0)
         });
         // Set onclick functions
         map.on('click', function() {
-            if(map.hasLayer(active_featuregroup))
+            if(flightpath && map.hasLayer(flightpath))
             {
                 returnToView();
             }
@@ -154,6 +154,7 @@ function initializeMap(manual = 0, landscape = 0)
     wf_featuregroup = new L.FeatureGroup();
     layers_featuregroup = new L.FeatureGroup();
     atc_featuregroup.addLayer(atc_leg_featuregroup);
+    flightpath = null;
 }
 
 // Tells Leaflet what icons are available
@@ -500,6 +501,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     if(active_flight)
     {
         updateFlightsBox(flights[active_flight]);
+        plane.bringToFront();
     }
     active_uids = newactive_uids;
 
@@ -619,11 +621,10 @@ function updateLocation(obj)
     plane_array[obj.uid].flight = obj;
 
     // If the flight is active, then update the flightpath
-    if(typeof flightpath != 'undefined' && active_featuregroup.hasLayer(flightpath) && plane.flight.uid == obj.uid)
+    if(typeof flightpath != 'undefined' && plane_featuregroup.hasLayer(flightpath) && plane.flight.uid == obj.uid)
     {
         flightpath.addLatLng([obj.lat, obj.lon]);
     }
-
     // Mark the UID as "handled", i.e. remove it from the active uids list
     markUID(obj);
 }
@@ -1845,36 +1846,21 @@ async function zoomToFlight(uid)
 
     historical = (typeof(plane_array[uid]) === 'undefined') ? 1 : 0;
 
-    if(typeof plane != 'undefined')
-    {
-        active_featuregroup.removeLayer(plane); delete plane;
-    }
     if(typeof dep_point != 'undefined')
     {
-        active_featuregroup.removeLayer(dep_point); delete dep_point;
+        plane_featuregroup.removeLayer(dep_point); delete dep_point;
     }
     if(typeof arr_point != 'undefined')
     {
-        active_featuregroup.removeLayer(arr_point); delete arr_point;
+        plane_featuregroup.removeLayer(arr_point); delete arr_point;
     }
     if(typeof flightpath != 'undefined')
     {
-        active_featuregroup.removeLayer(flightpath); delete flightpath;
+        plane_featuregroup.removeLayer(flightpath); delete flightpath;
     }
 
-    if(historical) 
-    {
-        response = await fetchRetry(apiserver + 'api/flight/' + uid);
-        planedata = await response.json();
-        bounds = [planedata.flight.lat, planedata.flight.lon];
-        plane = createPlaneMarker(planedata.flight);
-        plane.flight.historical = true;
-    } 
-    else 
-    { 
-        plane = plane_array[uid];
-        bounds = []; bounds.push(plane.getLatLng());
-    }
+    plane = plane_array[uid];
+    bounds = []; bounds.push(plane.getLatLng());
     active_flight = uid;
     
 
@@ -1909,39 +1895,35 @@ async function zoomToFlight(uid)
         [dep_point, arr_point] = processAirportForAntimeridian(plane.flight, airports[dep_airport], airports[arr_airport], dep_point, arr_point);
     }
 
-    if(dep_point && dep_point != null)
-    {
-        active_featuregroup.addLayer(dep_point); bounds.push(dep_point.getLatLng());
-    }
-    if(arr_point && arr_point != null)
-    {
-        active_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
-    }
-
-    //map.fitBounds(bounds);
-
-    // Swap the layers
-    map.addLayer(active_featuregroup);
-
-    // If it's the ap layer, hide that; else hide plane_featuregroup
     if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
     {
-        map.removeLayer(ap_featuregroup);
+        if(dep_point && dep_point != null)
+        {
+            ap_featuregroup.addLayer(dep_point); bounds.push(dep_point.getLatLng());
+        }
+        if(arr_point && arr_point != null)
+        {
+            ap_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
+        }
     }
     else
     {
-        map.removeLayer(plane_featuregroup);
+        if(dep_point && dep_point != null)
+        {
+            plane_featuregroup.addLayer(dep_point); bounds.push(dep_point.getLatLng());
+        }
+        if(arr_point && arr_point != null)
+        {
+            plane_featuregroup.addLayer(arr_point); bounds.push(arr_point.getLatLng());
+        }
     }
-    
+
+    //map.fitBounds(bounds);
 
     if(typeof polyline_featuregroup != 'undefined' && map.hasLayer(polyline_featuregroup))
     {
         map.removeLayer(polyline_featuregroup);
     }
-    
-    // Add the plane
-    active_featuregroup.addLayer(plane);
-    plane.bringToFront();
 
     // Make the tooltip permanent
     togglePlaneTooltip(plane, true);
@@ -1955,16 +1937,11 @@ async function zoomToFlight(uid)
     // Hide the sidebar
     $('#sidebar').hide();
 
-    if(historical)
-    {
-        flightpath = await new L.Polyline(adjustLogsForAntimeridian(planedata.flight, airports[dep_airport], airports[arr_airport], planedata.logs), {smoothFactor: 1, color: '#00D300', weight: 1, nowrap: true});
-        await active_featuregroup.addLayer(flightpath);
-    }
-    else
-    {
-        addedFlightPathPromise = addFlightPath(dataserver +'api/livedata/logs/' + uid + '.json', airports[dep_airport], airports[arr_airport], plane.flight);
-        await addedFlightPathPromise;
-    }
+    addedFlightPathPromise = addFlightPath(dataserver +'api/livedata/logs/' + uid + '.json', airports[dep_airport], airports[arr_airport], plane.flight);
+    await addedFlightPathPromise;
+
+    // Add the plane
+    plane.bringToFront();
 
     // Set the permalink for the URL
     window.history.pushState(uid, uid, '/?uid=' + uid);
@@ -1974,8 +1951,16 @@ async function addFlightPath(url, dep, arr, flight)
 {
     var response = await fetchRetry(url);
     var latlons = await response.json();
-    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#00D300', weight: 1.5, nowrap: true});
-    await active_featuregroup.addLayer(flightpath);
+    flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#acffd6', weight: 2, nowrap: true});
+    if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
+    {
+        await ap_featuregroup.addLayer(flightpath);
+    }
+    else
+    {
+        await plane_featuregroup.addLayer(flightpath);
+    }
+    
 }
 
 function toggleStreamers()
@@ -2177,26 +2162,27 @@ function getColor(num)
 async function returnToView()
 {
     // Wait for the map to finish loading
-    if(map.hasLayer(active_featuregroup))
+
+    if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
+    {
+        var s = ap_featuregroup;
+    }
+    else
+    {
+        var s = plane_featuregroup;
+    }
+
+    if(s.hasLayer(flightpath))
     {
         // Get the plane object ready to be placed back
         togglePlaneTooltip(plane, false);
-        if(!plane.flight.historical)
-        {
-            plane_featuregroup.addLayer(plane);
-        }
 
         // Switch the layers
-        map.removeLayer(active_featuregroup);
         if(!manual) {
             if(typeof ap_featuregroup !== 'undefined')
             {
                 map.addLayer(ap_featuregroup);
                 $('#airport-sidebar').show();
-            }
-            else
-            {
-                map.addLayer(plane_featuregroup); 
             }
             if(typeof(user_sidebar) != 'undefined' && user_sidebar)
             {
@@ -2205,8 +2191,9 @@ async function returnToView()
         }
 
         // Delete the active featuregroup
-        delete active_featuregroup;
-        active_featuregroup = new L.FeatureGroup();
+        s.removeLayer(dep_point); delete dep_point;
+        s.removeLayer(arr_point); delete arr_point;
+        s.removeLayer(flightpath); flightpath = null;
 
         // Hide the flight information box
         $('#flights-sidebar').hide().removeClass('d-flex');
@@ -2572,6 +2559,20 @@ function setLayerOrder()
         {
             active_featuregroup.bringToFront();
         }
+    }
+}
+
+function toggleFlights()
+{
+    if(!map.hasLayer(plane_featuregroup))
+    {
+        $('.map-button#flights').addClass('map-button-active');
+        map.addLayer(plane_featuregroup);
+    }
+    else
+    {
+        $('.map-button#flights').removeClass('map-button-active');
+        map.removeLayer(plane_featuregroup);
     }
 }
 
