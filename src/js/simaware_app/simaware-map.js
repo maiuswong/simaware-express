@@ -2468,6 +2468,7 @@ async function toggleATC()
     if(map.hasLayer(atc_featuregroup) && atc_featuregroup.hasLayer(atc_leg_featuregroup))
     {
         map.removeLayer(atc_featuregroup);
+        $('.map-button#atc').removeClass('map-button-active');
         $('.map-button#layers').removeClass('map-button-active');
         $.cookie('layers', 'false', {expires: 180});
     }
