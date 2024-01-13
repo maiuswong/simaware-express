@@ -152,6 +152,7 @@ function initializeMap(manual = 0, landscape = 0)
     events_featuregroup = new L.FeatureGroup();
     nats_featuregroup = new L.FeatureGroup();
     wf_featuregroup = new L.FeatureGroup();
+    fp_featuregroup = new L.FeatureGroup();
     layers_featuregroup = new L.FeatureGroup();
     atc_featuregroup.addLayer(atc_leg_featuregroup);
     flightpath = null;
@@ -621,7 +622,7 @@ function updateLocation(obj)
     plane_array[obj.uid].flight = obj;
 
     // If the flight is active, then update the flightpath
-    if(typeof flightpath != 'undefined' && plane_featuregroup.hasLayer(flightpath) && plane.flight.uid == obj.uid)
+    if(typeof flightpath != 'undefined' && map.hasLayer(fp_featuregroup) && plane.flight.uid == obj.uid)
     {
         flightpath.addLatLng([obj.lat, obj.lon]);
     }
@@ -1952,15 +1953,8 @@ async function addFlightPath(url, dep, arr, flight)
     var response = await fetchRetry(url);
     var latlons = await response.json();
     flightpath = await new L.Polyline(adjustLogsForAntimeridian(flight, dep, arr, latlons), {smoothFactor: 1, color: '#acffd6', weight: 2, nowrap: true});
-    if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
-    {
-        await ap_featuregroup.addLayer(flightpath);
-    }
-    else
-    {
-        await plane_featuregroup.addLayer(flightpath);
-    }
-    
+    fp_featuregroup.addLayer(flightpath);
+    map.addLayer(fp_featuregroup);
 }
 
 function toggleStreamers()
@@ -2161,18 +2155,7 @@ function getColor(num)
 
 async function returnToView()
 {
-    // Wait for the map to finish loading
-
-    if(typeof ap_featuregroup !== 'undefined' && map.hasLayer(ap_featuregroup))
-    {
-        var s = ap_featuregroup;
-    }
-    else
-    {
-        var s = plane_featuregroup;
-    }
-
-    if(s.hasLayer(flightpath))
+    if(map.hasLayer(fp_featuregroup))
     {
         // Get the plane object ready to be placed back
         togglePlaneTooltip(plane, false);
@@ -2191,9 +2174,10 @@ async function returnToView()
         }
 
         // Delete the active featuregroup
-        s.removeLayer(dep_point); delete dep_point;
-        s.removeLayer(arr_point); delete arr_point;
-        s.removeLayer(flightpath); flightpath = null;
+        plane_featuregroup.removeLayer(dep_point); delete dep_point;
+        plane_featuregroup.removeLayer(arr_point); delete arr_point;
+        fp_featuregroup.removeLayer(flightpath); flightpath = null;
+        map.removeLayer(fp_featuregroup); fp_featuregroup = new L.FeatureGroup();
 
         // Hide the flight information box
         $('#flights-sidebar').hide().removeClass('d-flex');
