@@ -5654,7 +5654,7 @@
 "UWKS":{"icao":"UWKS","iata":"CSY","name":"Cheboksary Airport","city":"Cheboksary, Russia","lat":"56.090000","lon":"47.348333","callsign":""},
 "UWLL":{"icao":"UWLL","iata":"ULV","name":"Ulyanovsk Baratayevka Airport","city":"Ulyanovsk, Russia","lat":"54.268333","lon":"48.226667","callsign":""},
 "UWLW":{"icao":"UWLW","iata":"ULY","name":"Ulyanovsk East Airport","city":"Ulyanovsk, Russia","lat":"54.401667","lon":"48.805000","callsign":""},
-"UWOO":{"icao":"UWOO","iata":"REN","name":"Orenburg Central Airport","city":"Orenburg, Russia","lat":"51.477000","lon":"55.274000","callsign":""},
+"UWOO":{"icao":"UWOO","iata":"REN","name":"Orenburg Central Airport","city":"Orenburg, Russia","lat":"51.795833","lon":"55.456667","callsign":""},
 "UWPP":{"icao":"UWPP","iata":"PEZ","name":"Penza Airport","city":"Penza, Russia","lat":"54.783330","lon":"46.000000","callsign":""},
 "XWPR":{"icao":"XWPR","iata":null,"name":"Rtishchevo Air Base","city":"Rtishchevo, Russia","lat":"52.296667","lon":"43.725000","callsign":""},
 "UWSS":{"icao":"UWSS","iata":"RTW","name":"Saratov Central Airport","city":"Saratov, Russia","lat":"51.339000","lon":"46.027000","callsign":""},
