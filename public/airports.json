@@ -47463,6 +47463,14 @@
         "lat": "36.72129821777344",
         "lon": "9.94314956665039"
     },
+    "DT70": {
+        "icao": "DT70",
+        "iata": null,
+        "name": "Medenine Airport",
+        "city": "Medenine, Tunisia",
+        "lat": "33.3502007",
+        "lon": "10.4440002"
+    },
     "EBSL": {
         "icao": "EBSL",
         "iata": null,
