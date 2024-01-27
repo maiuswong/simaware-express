@@ -59,7 +59,7 @@ const wf = [
 ]
 
 // Initializes the map in the #map container
-function initializeMap(manual = 0, landscape = 0)
+async function initializeMap(manual = 0, landscape = 0)
 {
     $('.os-host-flexbox').overlayScrollbars({ });
     // Set storage variables
@@ -82,7 +82,7 @@ function initializeMap(manual = 0, landscape = 0)
     layers_alt = 50;
 
     // Initialize the icons that will be used
-    initializeIcons();
+    await initializeIcons();
 
     if(!$.cookie('init'))
     {
@@ -90,7 +90,7 @@ function initializeMap(manual = 0, landscape = 0)
     }
 
     // Initialize map data
-    initializeFirData();
+    await initializeFirData();
 
     var activearea = (landscape) ? 'active-area-landscape' : 'active-area';
 

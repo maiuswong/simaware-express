@@ -23,7 +23,7 @@ async function initialize()
 {
     // Set-up airport only
 
-    initializeMap();
+    await initializeMap();
     map.removeLayer(plane_featuregroup);
     refreshFlights();
     initializeUser({{ cid }});

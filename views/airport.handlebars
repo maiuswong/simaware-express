@@ -31,7 +31,7 @@ async function initialize()
     filterName = 'airport';
     filterCriteria = '{{ icao }}';
 
-    initializeMap(false);
+    await initializeMap(false);
 
     response = await fetchRetry('/livedata/airports.json');
     airports = await response.json();
@@ -40,7 +40,7 @@ async function initialize()
 
     initializeAirport('{{ icao }}');
     initializeNexrad();
-    initializeATC();
+    await initializeATC();
     initializeAirports();
     refreshATC();
     initializeInfobar();

@@ -79,7 +79,7 @@ $(document).ready(function() {
 
 async function initialize()
 {
-    initializeMap();
+    await initializeMap();
 
     await initializeAirports();
     flights = await refreshFlights(filterName, filterCriteria);
