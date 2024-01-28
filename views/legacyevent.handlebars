@@ -11,7 +11,7 @@
 </div>
 <script>
 
-$(document).ready(function() {
+$(document).ready(async function() {
 
     airports = [];
     flights = [];
@@ -24,7 +24,7 @@ $(document).ready(function() {
     filterName = null;
     filterCriteria = null;
 
-    initialize();
+    await initialize();
     setInterval(
         async () => { 
 

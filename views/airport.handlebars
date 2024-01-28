@@ -10,13 +10,13 @@
     {{> footer}}
 </div>
 <script>
-$(document).ready(function() {
+$(document).ready(async function() {
 
     airports = [];
     flights = [];
     manual = false;
 
-    initialize();
+    await initialize();
     setInterval(
         async () => { 
             flights = await refreshFlights(filterName, filterCriteria); 
