@@ -235,7 +235,7 @@ async function initializeAirports()
     airportsByIata = [];
     airportsByPrefix = [];
 
-    let response = await fetchRetry('/livedata/airports.json');
+    let response = await fetchRetry(dataserver + 'api/livedata/airports.json');
     airports = await response.json();
 
     $.each(airports, (idx, obj) => {
