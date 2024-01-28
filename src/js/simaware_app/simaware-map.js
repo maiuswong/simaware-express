@@ -298,10 +298,11 @@ async function initializePatrons()
 async function initializeATC()
 {
 
+    layers_positions = {};
+
     let response = await fetch('/livedata/layers_positions.json');
     let lp = await response.json();
 
-    layers_positions = {};
     for(i in lp)
     {
         var l = lp[i];
