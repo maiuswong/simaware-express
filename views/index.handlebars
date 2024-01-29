@@ -59,14 +59,19 @@ $(document).ready(async function() {
     })
 
     await initialize();
-    setInterval(
-        async () => { 
+    const initialiseDate = new Date();
 
-            if(new Date().getSeconds() % 15 == 1)
+    setInterval(
+        async (initialiseDate) => { 
+            const now = new Date();
+            const elasped = new Date(now - initialiseDate);
+
+            // Refresh every 15 seconds from when this page was loaded, otherwise interpolate flight positions
+            if (elasped.getSeconds() % 15 == 0)
             {
                 flights = await refreshFlights(filterName, filterCriteria);
                 await refreshATC();
-                updateInfobar();
+                await updateInfobar();
                 setLayerOrder();
             }
             else
@@ -74,7 +79,7 @@ $(document).ready(async function() {
                 interpolateLoc();
             }
             
-        }, 1000);
+        }, 1000, initialiseDate);
 })
 
 async function initialize()
@@ -95,6 +100,9 @@ async function initialize()
     await updateSigmet();
     {{!-- initializeWorldFlight(); --}}
     handleCookies();
+
+    await updateInfobar();
+    setLayerOrder();
 
     // If redirected from another page
     let searchParams = new URLSearchParams(window.location.search);
