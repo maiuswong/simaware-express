@@ -2454,8 +2454,6 @@ async function toggleATC()
     {
         map.removeLayer(atc_featuregroup);
         $('.map-button#atc').removeClass('map-button-active');
-        $('.map-button#layers').removeClass('map-button-active');
-        $.cookie('layers', 'false', {expires: 180});
     }
     else
     {
@@ -2472,12 +2470,14 @@ async function toggleATC()
             atc_featuregroup.addLayer(atc_leg_featuregroup);
         }
         $('.map-button#atc').addClass('map-button-active');
-        $('.map-button#layers').removeClass('map-button-active');
         setLayerOrder();
         refreshATC();
         $.cookie('atc', 'true', {expires: 180});
-        $.cookie('layers', 'false', {expires: 180});
     }
+
+    $.cookie('layers', 'false', {expires: 180});
+    $('.map-button#layers').removeClass('map-button-active');
+    $('#layers-status').hide();
 }
 
 async function toggleLayers()
