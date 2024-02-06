@@ -2777,7 +2777,7 @@ function getMarker(str)
     case 'BA11':
         return [33, 33, 'BA11'];
     case 'BALL':
-        return [73, 100, 'BALL'];
+        return [44, 60, 'BALL'];
     case 'BN2P':
         return [28, 20, 'BN2P'];
     case 'C25C':
