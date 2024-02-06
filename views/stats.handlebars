@@ -115,8 +115,6 @@ async function initialize()
     await initializePatrons();
     await initializeMap(1);
 
-    layers_positions = {};
-
     response = await fetchRetry('/livedata/airports.json');
     airports = await response.json();
     flights = await refreshFlights(filterName, filterCriteria);

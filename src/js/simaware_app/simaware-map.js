@@ -457,7 +457,7 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     $.each(flights, function(idx, obj)
     {
         // Update current connections
-        if(typeof plane_array[obj.uid] !== 'undefined')
+        if(typeof map !== 'undefined' && typeof plane_array[obj.uid] !== 'undefined')
         {   
             updateLocation(obj);
         }
@@ -628,7 +628,7 @@ function updateLocation(obj)
     plane_array[obj.uid].flight = obj;
 
     // If the flight is active, then update the flightpath
-    if(typeof flightpath != 'undefined' && map.hasLayer(fp_featuregroup) && plane.flight.uid == obj.uid)
+    if(typeof flightpath != 'undefined' && map && map.hasLayer(fp_featuregroup) && plane.flight.uid == obj.uid)
     {
         flightpath.addLatLng([obj.lat, obj.lon]);
     }
