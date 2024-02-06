@@ -234,6 +234,7 @@ async function initializeAirports()
 {
     airportsByIata = [];
     airportsByPrefix = [];
+    airportsByApac = [];
 
     let response = await fetchRetry(dataserver + 'api/livedata/airports.json');
     airports = await response.json();
@@ -243,6 +244,10 @@ async function initializeAirports()
         if(obj.prefix)
         {
             airportsByPrefix[obj.prefix] = obj;
+        }
+        if(obj.apac)
+        {
+            airportsByApac[obj.apac] = obj;
         }
     })
 }
@@ -678,6 +683,10 @@ function airportSearch(str)
     else if(airportsByIata[str]) // USA
     {
         return airportsByIata[str];
+    }
+    else if(airportsByApac[str]) // APAC
+    {
+        return airportsByApac[str];
     }
 }
 
