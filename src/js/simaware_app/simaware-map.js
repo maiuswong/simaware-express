@@ -2055,8 +2055,8 @@ function toggleBasemap()
   {
     map.removeLayer(lightbasemap);
     basemap = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    	attribution: '',
-    	subdomains: 'abcd',
+        attribution: '',
+        subdomains: 'abcd',
     }).addTo(map);
     $('.map-button#light').removeClass('map-button-active');
     setLayerOrder();
@@ -2072,7 +2072,7 @@ function toggleBasemap()
   {
     map.removeLayer(basemap);
     lightbasemap =  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    	attribution: ''
+        attribution: ''
     }).addTo(map);
     $('.map-button#light').addClass('map-button-active');
     setLayerOrder();
@@ -2684,7 +2684,7 @@ function getMarker(str)
   case 'AS55':
   case 'EC20':
   case 'EC30':
-	  return [23, 33, 'AS50'];
+      return [23, 33, 'AS50'];
     case 'B703':
         return [44, 47, 'B703'];
     case 'B720':
@@ -2892,7 +2892,6 @@ function getMarker(str)
     case 'CL60':
         return [33, 35, 'CL60'];
     case 'F18':
-    case 'F18':
         return [20, 30, 'F18'];
     case 'F35':
         return [21, 30, 'F35'];
@@ -2918,7 +2917,7 @@ function getMarker(str)
         return [21, 30, 'B407'];
     case 'V22':
         return [30, 20, 'V22'];
-	case 'ATP':
+    case 'ATP':
         return [31, 28, 'ATP'];
     case 'H160':
         return [29, 34, 'H160'];
@@ -2938,7 +2937,7 @@ function getMarker(str)
         return [52, 53, 'C17'];
     case 'DC3':
         return [30, 21, 'DC3'];
-	case 'A400':
+    case 'A400':
         return [42, 46, 'A400'];
     case 'CRJ1':
         return [24, 30, 'CRJ1'];
@@ -2972,32 +2971,34 @@ function getMarker(str)
         return [125, 26, 'SHIP'];
     case 'RFAL':
         return [23, 33, 'RFAL'];
-	case 'VULC':
+    case 'VULC':
         return [36, 33, 'VULC'];
-	case 'B190':
+    case 'B190':
         return [27, 28, 'B190'];
-	case 'C182':
+    case 'C182':
         return [26, 20, 'C182'];
-	case 'DHC2':
+    case 'DHC2':
         return [35, 22, 'DHC2'];
-	case 'DR40':
+    case 'DR40':
         return [28, 22, 'DR40'];
-	case 'F14':
+    case 'F14':
         return [34, 33, 'F14'];
-	case 'F28':
+    case 'F28':
         return [30, 34, 'F28'];
-	case 'J328':
+    case 'J328':
         return [31, 31, 'J328'];
-	case 'P212':
+    case 'P212':
         return [27, 21, 'P212'];
-	case 'PC6T':
+    case 'PC6T':
         return [29, 20, 'PC6T'];
-	case 'T134':
+    case 'T134':
         return [29, 37, 'T134'];
-	case 'T144':
+    case 'T144':
         return [29, 66, 'T144'];
-	case 'TEX2':
+    case 'TEX2':
         return [24, 23, 'TEX2'];
+    case 'HDJT':
+        return [28, 28, 'E55P'];
     default:
         return [40, 40, 'A320'];
   }
