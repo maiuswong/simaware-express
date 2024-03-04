@@ -2680,10 +2680,10 @@ function getMarker(str)
         return [65, 69, 'A35K'];
     case 'A388':
         return [80, 74, 'A388'];
-  case 'AS50':
-  case 'AS55':
-  case 'EC20':
-  case 'EC30':
+    case 'AS50':
+    case 'AS55':
+    case 'EC20':
+    case 'EC30':
 	  return [23, 33, 'AS50'];
     case 'B703':
         return [44, 47, 'B703'];
@@ -2707,6 +2707,7 @@ function getMarker(str)
         return [29, 32, 'B735'];
     case 'B736':
         return [35, 33, 'B736'];
+    case 'E737':
     case 'B737':
         return [35, 35, 'B737'];
     case 'B738':
