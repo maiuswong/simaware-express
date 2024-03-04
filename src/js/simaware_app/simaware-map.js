@@ -2892,8 +2892,8 @@ function getMarker(str)
     case 'CL60':
         return [33, 35, 'CL60'];
     case 'F18':
-    case 'F18':
         return [20, 30, 'F18'];
+    case 'VF35':
     case 'F35':
         return [21, 30, 'F35'];
     case 'R22':
@@ -2918,7 +2918,7 @@ function getMarker(str)
         return [21, 30, 'B407'];
     case 'V22':
         return [30, 20, 'V22'];
-	case 'ATP':
+    case 'ATP':
         return [31, 28, 'ATP'];
     case 'H160':
         return [29, 34, 'H160'];
@@ -2938,7 +2938,7 @@ function getMarker(str)
         return [52, 53, 'C17'];
     case 'DC3':
         return [30, 21, 'DC3'];
-	case 'A400':
+    case 'A400':
         return [42, 46, 'A400'];
     case 'CRJ1':
         return [24, 30, 'CRJ1'];
@@ -2972,32 +2972,55 @@ function getMarker(str)
         return [125, 26, 'SHIP'];
     case 'RFAL':
         return [23, 33, 'RFAL'];
-	case 'VULC':
+    case 'VULC':
         return [36, 33, 'VULC'];
-	case 'B190':
+    case 'B190':
         return [27, 28, 'B190'];
-	case 'C182':
+    case 'C182':
         return [26, 20, 'C182'];
-	case 'DHC2':
+    case 'DHC2':
         return [35, 22, 'DHC2'];
-	case 'DR40':
+    case 'DR40':
         return [28, 22, 'DR40'];
-	case 'F14':
+    case 'F14':
         return [34, 33, 'F14'];
-	case 'F28':
+    case 'F28':
         return [30, 34, 'F28'];
-	case 'J328':
+    case 'J328':
         return [31, 31, 'J328'];
-	case 'P212':
+    case 'P212':
         return [27, 21, 'P212'];
-	case 'PC6T':
+    case 'PC6T':
         return [29, 20, 'PC6T'];
-	case 'T134':
+    case 'T134':
         return [29, 37, 'T134'];
-	case 'T144':
+    case 'T144':
         return [29, 66, 'T144'];
-	case 'TEX2':
+    case 'TEX2':
         return [24, 23, 'TEX2'];
+    case"B52":
+	return[56,50,"B52"];
+    case"C160":
+	return[40,32,"C160"];
+    case"E3TF":
+    case"E3CF":
+	return[44,48,"E3xF"];
+    case"E50P":
+	return[27,28,"E50P"];
+    case"HAWK":
+	return[24,30,"HAWK"];
+    case"HDJT":
+	return[29,30,"HDJT"];
+    case"K35E":
+	return[40,41,"K35E"];
+    case"LJ35":
+	return[27,35,"LJ35"];
+    case"MI8":
+	return[35,42,"MI8"];
+    case"P06T":
+	return[26,20,"P06T"];
+    case"PA24":
+	return[28,19,"PA24"];
     default:
         return [40, 40, 'A320'];
   }
