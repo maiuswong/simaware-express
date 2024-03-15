@@ -1370,7 +1370,7 @@
 "EGBE":{"icao":"EGBE","iata":"CVT","name":"Coventry Airport","city":"Coventry, United Kingdom","lat":"52.369722","lon":"-1.479722","callsign":""},
 "EGBG":{"icao":"EGBG","iata":null,"name":"Leicester Airport","city":"Leicester, United Kingdom","lat":"52.607778","lon":"-1.031944","callsign":""},
 "EGBN":{"icao":"EGBN","iata":"NQT","name":"Nottingham Airport","city":"Nottingham, United Kingdom","lat":"52.920000","lon":"-1.029167","callsign":""},
-"EGBJ":{"icao":"EGBJ","iata":"GLO","name":"Gloucestershire Airport","city":"Golouchestershire, United Kingdom","lat":"51.894111","lon":"-2.167108","callsign":""},
+"EGBJ":{"icao":"EGBJ","iata":"GLO","name":"Gloucestershire Airport","city":"Gloucester, United Kingdom","lat":"51.894111","lon":"-2.167108","callsign":"Gloster"},
 "EGBK":{"icao":"EGBK","iata":"","name":"Northampton Sywell","city":"Unknown City","lat":"52.305278","lon":"-.793056","callsign":""},
 "EGBO":{"icao":"EGBO","iata":null,"name":"Wolverhampton Halfpenny Green Airport","city":"Halfpenny Green, United Kingdom","lat":"52.517500","lon":"-2.259444","callsign":""},
 "EGBS":{"icao":"EGBS","iata":null,"name":"Shobdon Aerodrome","city":"Shobdon, United Kingdom","lat":"52.241667","lon":"-2.881111","callsign":""},
