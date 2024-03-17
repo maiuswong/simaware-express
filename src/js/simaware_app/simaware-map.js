@@ -3013,6 +3013,7 @@ function getMarker(str)
     case"HDJT":
 	return[29,30,"HDJT"];
     case"K35E":
+    case"K35R":
 	return[40,41,"K35E"];
     case"LJ35":
 	return[27,35,"LJ35"];
