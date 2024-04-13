@@ -2853,6 +2853,7 @@ function getMarker(str)
     case 'PA28S':
     case 'PA28T':
     case 'PA28U':
+    case 'PA24':
         return [28, 22, 'PA28x'];
     case 'SB20':
         return [27, 30, 'SB20'];
