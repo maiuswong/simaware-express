@@ -410,6 +410,10 @@ async function initializeATC()
             var layer = traconmap.getLayer(index);
             var id = obj.feature.properties.prefix;
             var suffix = (typeof obj.feature.properties.suffix == 'undefined' || obj.feature.properties.suffix === null) ? 'APP' : obj.feature.properties.suffix;
+            if(!Array.isArray(id))
+            {
+                id = [id];
+            }
             $.each(id, (idx, prefix) => {
                 if(tracons_array[prefix] != undefined)
                 {
