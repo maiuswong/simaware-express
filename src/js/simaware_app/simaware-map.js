@@ -287,7 +287,7 @@ async function initializePatrons()
 {
     response = await fetchRetry(dataserver + 'api/livedata/patrons.json');
     ret = await response.json();
-    patrons = {}
+    patrons = {};
     $.each(ret, (obj) => {
         if(ret[obj].cid)
         {
@@ -1675,19 +1675,19 @@ function getLocalBlock(icao)
     if(obj.DEL)
     {
         $.each(obj.DEL, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+blue+'; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">DEL</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="ps-1" style="text-align: right">' + getControllerRating(item.rating) +'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(item)+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+blue+'; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">DEL</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+' '+getPatron(item.cid)+'</td><td class="ps-1" style="text-align: right">' + getControllerRating(item.rating) +'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(item)+'</td></tr>';
         })
     }
     if(obj.GND)
     {
         $.each(obj.GND, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+green+'; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">GND</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="ps-1" style="text-align: right">' + getControllerRating(item.rating) +'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(item)+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+green+'; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">GND</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+' '+getPatron(item.cid)+'</td><td class="ps-1" style="text-align: right">' + getControllerRating(item.rating) +'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(item)+'</td></tr>';
         })
     }
     if(obj.TWR)
     {
         $.each(obj.TWR, (idx, item) => {
-            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+red+'; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">TWR</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+'</td><td class="ps-1" style="text-align: right">' + getControllerRating(item.rating) +'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(item)+'</td></tr>';
+            list += '<tr><td style="display: flex; flex-direction: column"><div class="badge" style="background-color: '+red+'; margin-right: 0.4rem; font-family: \'JetBrains Mono\', sans-serif;">TWR</div></td><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+item.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+item.name+' '+getPatron(item.cid)+'</td><td class="ps-1" style="text-align: right">' + getControllerRating(item.rating) +'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+item.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+getTimeOnline(item)+'</td></tr>';
         })
     }
     if(obj.ATIS)
@@ -1743,12 +1743,12 @@ function getControllerBlock(firObj, firMembers, firname, firicao, index)
     $.each(firMembers, function(idx, member) {
         if(member.fssname)
         {
-            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB; white-space: nowrap">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-caret-square-down"></i></td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap">'+member.name+'</td><td class="ps-3" style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; color: #9370DB; white-space: nowrap">'+member.callsign+'<i style="display: inline; color: #9370db" class="ms-1 fas fa-caret-square-down"></i></td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap">'+member.name+' '+getPatron(member.cid)+'</td><td class="ps-3" style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
             list = list+'<tr><td colspan="4" class="small text-muted pt-0" style="line-height: 0.9rem;"><b style="color: #9370db">'+member.fssname+'</b> covers '+firicao+' above FL245</td></tr>';
         }
         else
         {
-            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+member.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+'</td><td class="ps-3"style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
+            list = list+'<tr><td style="vertical-align: middle; font-family: \'JetBrains Mono\', sans-serif; white-space: nowrap">'+member.callsign+'</td><td class="ps-3" style="vertical-align: middle; text-align: right; white-space: nowrap;">'+member.name+' '+getPatron(member.cid)+'</td><td class="ps-3"style="font-family: \'JetBrains Mono\', sans-serif">'+getControllerRating(member.rating)+'</td><td class="text-primary ps-3" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.freq+'</td><td class="ps-3 text-muted" style="vertical-align: middle; font-family: \'JetBrains Mono\', monospace; letter-spacing: -0.05rem">'+member.time_online+'</td></tr>';
         }
     })
     list = '<div class="card" style="border-radius: 5px; overflow: hidden"><div class="p-2" style="color: #222; background-color: #eee">'+list+'</table></div></div>';
