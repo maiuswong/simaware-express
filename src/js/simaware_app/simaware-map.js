@@ -2837,6 +2837,7 @@ function getMarker(str)
     case 'F22':
         return [22, 30, 'F22'];
     case 'GLID':
+    case 'DIMO':
         return [38, 19, 'GLID'];
     case 'L101':
         return [50, 50, 'L101'];
