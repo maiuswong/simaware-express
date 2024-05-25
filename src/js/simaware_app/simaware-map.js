@@ -333,7 +333,7 @@ async function initializeATC()
         success: function(data) {
 
             layers_map = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0, weight: 0, color: '#222'}});
-            
+
             $.each(layers_map._layers, function(index, obj) {
                 var layer = layers_map.getLayer(index);
                 if(layers_array[layer.feature.properties.facility])
@@ -363,10 +363,10 @@ async function initializeATC()
                     }
                 }
             }
-                
+
         }
     })
-    
+
     // Load the GeoJSON file
     $.ajax({
         url: '/livedata/firboundaries.json',
@@ -378,14 +378,14 @@ async function initializeATC()
 
         // Store the geoJSON by ICAO and if it is a FSS
         $.each(firmap._layers, function(index, obj) {
-        
+
             // Get the layer
             var layer = firmap.getLayer(index);
-            
+
             // Get the layer properties
             var is_fss = obj.feature.properties.oceanic;
             var icao = obj.feature.properties.id;
-            
+
             // Add to the array
             if(typeof firs_array[icao + is_fss] === 'undefined')
                 firs_array[icao + is_fss] = [layer];
@@ -395,7 +395,7 @@ async function initializeATC()
 
         atc_leg_featuregroup.addLayer(firmap);
     }})
-    
+
     $.ajax({
         url: '/livedata/traconboundaries.json',
         xhrFields: {withCredentials: false},
@@ -425,7 +425,7 @@ async function initializeATC()
                     tracons_array_temp[suffix] = layer;
                     tracons_array[prefix] = tracons_array_temp;
                 }
-                
+
             })
 
         })
@@ -457,12 +457,12 @@ async function refreshFlights(filterName = null, filterCriteria = null)
     flights = applyFilter(flights, filterName, filterCriteria);
     bnfoairports = {};
     newactive_uids = [];
-    
+
     $.each(flights, function(idx, obj)
     {
         // Update current connections
         if(typeof map !== 'undefined' && typeof plane_array[obj.uid] !== 'undefined')
-        {   
+        {
             updateLocation(obj);
         }
         else
@@ -521,24 +521,46 @@ async function refreshFlights(filterName = null, filterCriteria = null)
 
 }
 
-function interpolateLoc()
-{
+function toRadians(degrees) {
+    return degrees * Math.PI / 180;
+}
 
-    for(uid in plane_array)
-    {
-        var intervaltime = 1;
-        var latlon = plane_array[uid].getLatLng();
-        var R = 6378.1;
-        var hdg_rad = Math.PI * plane_array[uid].flight.hdg / 180;
-        var dist = 1.852 * plane_array[uid].flight.gndspd / 3600 * intervaltime;
+function toDegrees(radians) {
+    return radians * 180 / Math.PI;
+}
 
-        var lat1 = Math.PI * latlon.lat / 180;
-        var lon1 = Math.PI * latlon.lng / 180;
+function interpolateFlightPosition() {
+    const updateInterval = 1;
+    for(uid in plane_array) {
+        const hdg = plane_array[uid].flight.hdg;
+        const gndspd = plane_array[uid].flight.gndspd;
+        // Convert speed from knots to meters per second
+        const gndspd_mps = gndspd * 0.514444;
+        var position = plane_array[uid].getLatLng();
+        // Distance traveled in the interval (in meters)
+        const distance = gndspd_mps * updateInterval;
 
-        var lat2 = 180 * (Math.asin(Math.sin(lat1) * Math.cos(dist / R) + Math.cos(lat1) * Math.sin(dist / R) * Math.cos(hdg_rad))) / Math.PI;
-        var lon2 = 180 * (lon1 + Math.atan2(Math.sin(hdg_rad) * Math.sin(dist / R) * Math.cos(lat1), Math.cos(dist / R) - Math.sin(lat1) * Math.sin(lat2))) / Math.PI;
+        // Convert latitude, longitude, and heading to radians
+        const lat_rad = toRadians(position.lat);
+        const lng_rad = toRadians(position.lng);
+        const hdg_rad = toRadians(hdg);
 
-        plane_array[uid].setLatLng(new L.LatLng(lat2, lon2));
+        // Earth radius in meters
+        const R = 6371000;
+
+        // Calculate the new latitude
+        const new_lat_rad = Math.asin(Math.sin(lat_rad) * Math.cos(distance / R) +
+            Math.cos(lat_rad) * Math.sin(distance / R) * Math.cos(hdg_rad));
+
+        // Calculate the new longitude
+        const new_lng_rad = lng_rad + Math.atan2(Math.sin(hdg_rad) * Math.sin(distance / R) * Math.cos(lat_rad),
+            Math.cos(distance / R) - Math.sin(lat_rad) * Math.sin(new_lat_rad));
+
+        // Convert the new latitude and longitude from radians to degrees
+        const new_lat = toDegrees(new_lat_rad);
+        const new_lng = toDegrees(new_lng_rad);
+
+        plane_array[uid].setLatLng(new L.LatLng(new_lat, new_lng));
     }
 }
 
@@ -596,13 +618,13 @@ function createPlaneMarker(obj)
     plane.uid = obj.uid;
     plane.flight = obj;
     [offset, dir] = getMarkerDirection(obj);
-    
+
     // Set the tooltip
     plane.bindTooltip(getDatablock(obj), {
-        offset: offset, 
-        direction: dir, 
-        permanent: false, 
-        className: 'datablock' 
+        offset: offset,
+        direction: dir,
+        permanent: false,
+        className: 'datablock'
     });
 
     // Set the onclick action
@@ -853,7 +875,7 @@ function getCallsign(str)
     else
     {
         var fir = firSearch(str);
-    } 
+    }
     if(typeof fir !== 'undefined')
     {
         if(typeof fir.firs !== 'undefined') // UIRs already have the suffix added
@@ -870,7 +892,7 @@ function getCallsign(str)
                     return fir.name + ' Center';
                 }
                 else
-                {   
+                {
                     if(str.search('_FSS'))
                     {
                         return fir.name + ' Radio';
@@ -910,7 +932,7 @@ function getCallsignByFir(fir, index)
     {
         index = fir.icao + '0';
     }
-    if(fir !== null && typeof fir !== 'undefined') 
+    if(fir !== null && typeof fir !== 'undefined')
     {
         if(fir.icao == 'CZUL')
         {
@@ -934,7 +956,7 @@ function getCallsignByFir(fir, index)
                     return fir.name + ' Center';
                 }
                 else
-                {   
+                {
                     return fir.name + ' Centre';
                 }
             }
@@ -965,7 +987,7 @@ function getTimeOnline(atc, unix = 1)
     }
 
     return hr + ':' + min;
-    
+
 }
 
 function getCountry(fir)
@@ -986,7 +1008,7 @@ async function refreshATC()
     active_firs = getActiveFIRs();
     newdata = {};
     var atccount = 0;
-    
+
     // $.each(data, (idx, fir) => {
     //     index = getFirIndex(fir);
     //     firObj = firs_array[index];
@@ -1003,7 +1025,7 @@ async function refreshATC()
 
     layers_pos = {};
     $.each(sectors, (idx, atc) => {
-        
+
         if(pos = findLayersPosition(atc))
         {
             if(layers_pos[pos.id.split('/')[0]])
@@ -1037,7 +1059,7 @@ async function refreshATC()
     })
 
     $.each(tracons, (idx, atc) => {
-        
+
         if(pos = findLayersPosition(atc))
         {
             if(layers_pos[pos.id.split('/')[0]])
@@ -1236,7 +1258,7 @@ async function refreshATC()
             atccount++;
         }
     });
-    
+
     locals = [];
 
     $.each(localsraw, (idx, local) => {
@@ -1289,7 +1311,7 @@ async function refreshATC()
     for(id in locals) {
 
         let local = locals[id];
-        
+
         var lat = Number(local.loc.lat);
         var lon = Number(local.loc.lon);
         var di = new L.divIcon({className: 'simaware-ap-tooltip', html: getLocalTooltip(local.loc.icao), iconSize: 'auto'});
@@ -1300,7 +1322,7 @@ async function refreshATC()
         oloc.bindTooltip(getLocalBlock(local.loc.icao), {opacity: 1, sticky: true});
         locals_featuregroup.addLayer(oloc);
     }
-    for(icao in eventsByAirport) 
+    for(icao in eventsByAirport)
     {
         if(typeof locals[icao] == 'undefined' && airports[icao])
         {
@@ -1325,7 +1347,7 @@ async function updateSigmet()
 {
     response = await fetchRetry(dataserver + 'api/livedata/sigmets.json');
     data = await response.json();
-    
+
     for(let sigmet in sigmets_array)
     {
         sigmets_featuregroup.removeLayer(sigmets_array[sigmet]);
@@ -1394,7 +1416,7 @@ function lightupFIR(obj, firMembers, firname, firicao, index)
                     obj.setTooltipContent(getControllerBlock(obj[idx], firMembers, firname, firicao, index));
                 })
             }
-            
+
             obj[idx].bringToFront();
         }
         if(firmarkers_array[index] === undefined)
@@ -1499,7 +1521,7 @@ function getFirTooltip(icao, index, firMembers)
 {
     var is_fss = 0;
     var fssicao = '';
-    $.each(firMembers, function(idx, member) 
+    $.each(firMembers, function(idx, member)
     {
         if(member.fssname && is_fss == 0)
         {
@@ -1621,7 +1643,7 @@ function getLocalTooltip(icao)
         tt = '<table style="margin: 0.1rem; margin-top: 0rem; flex: 1; overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; font-size: 0.6rem; overflow: hidden; font-weight: bold; border-radius: 3px;"><tr>'+tt+'</tr></table>';
         icao_text_style = 'text-light'; // ATC online
         icao_background_color = 'rgba(255,255,255,0.1)'
-    }    
+    }
     // If event, show "notification dot"
     let event = '';
     if(eventsByAirport[icao])
@@ -1706,7 +1728,7 @@ function getLocalBlock(icao)
             eventslist += '<tr><td class="pe-3 pt-1" width="15%"><table class="rounded-2" style="overflow: hidden; font-family: \'JetBrains Mono\', sans-serif; background-color: #eee"><tr><td style="color: rgb(169,56,72); text-transform: uppercase; font-size: 0.6rem; text-align: center">'+moment(eventsByAirport[icao][id].start).utc().format('MMM')+'</td></tr><tr><td style="min-width: 35px; text-align: center; font-size: 1rem; color: #222">'+moment(eventsByAirport[icao][id].start).utc().format('D')+'</td></tr></table></td><td style="font-size: 0.9rem; color: #aaa; white-space: nowrap; line-height: normal">'+eventsByAirport[icao][id].name+'<br><small class="text-muted" style="font-family: \'JetBrains Mono\', sans-serif">'+moment(eventsByAirport[icao][id].start).utc().format('HHmm')+' - '+ moment(eventsByAirport[icao][id].end).utc().format('HHmm') +'Z</small></td></tr>';
         }
     }
-    
+
 
     list = '<div class="card border border-secondary" style="background-color: #282828; min-width: 300px; overflow: hidden; border-radius: 5px;"><div class="p-2">'+list+'</table></div>';
     if(eventsByAirport[icao])
@@ -1877,7 +1899,7 @@ async function zoomToFlight(uid)
     plane = plane_array[uid];
     bounds = []; bounds.push(plane.getLatLng());
     active_flight = uid;
-    
+
 
     // Refresh the flights before showing
     if(!historical)
@@ -1906,7 +1928,7 @@ async function zoomToFlight(uid)
     [dep_airport, dep_point, dep_name, dep_city] = processAirport(plane.flight.dep);
     [arr_airport, arr_point, arr_name, arr_city] = processAirport(plane.flight.arr);
     if(dep_point && arr_point)
-    {   
+    {
         [dep_point, arr_point] = processAirportForAntimeridian(plane.flight, airports[dep_airport], airports[arr_airport], dep_point, arr_point);
     }
 
@@ -2300,7 +2322,7 @@ function updateFlightsBox(flight)
 
     $('#flights-dep-icao').html('<div class="flights-link-item" onclick="zoomToAirport(\''+dep_airport+'\')">'+dep_airport+'</div>');
     $('#flights-airport-dep').html('<div class="flights-link-item" onclick="zoomToAirport(\''+dep_airport+'\')">'+dep_name+'<br><span class="text-muted">'+dep_city+'</span></div>');
-    
+
     $('#flights-arr-icao').html('<div class="flights-link-item" onclick="zoomToAirport(\''+arr_airport+'\')">'+arr_airport+'</div>');
     $('#flights-airport-arr').html('<div class="flights-link-item" onclick="zoomToAirport(\''+arr_airport+'\')">'+arr_name+'<br><span class="text-muted">'+arr_city+'</span></div>');
 
@@ -3006,12 +3028,12 @@ function getMarker(str)
     default:
         return [40, 40, 'A320'];
   }
-    
+
 }
 
 // Helper functions
-function nl2br (str, is_xhtml) {   
-    var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';    
+function nl2br (str, is_xhtml) {
+    var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
 }
 
