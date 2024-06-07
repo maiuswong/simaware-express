@@ -104,7 +104,6 @@
     {"country":"Lesotho","regex":"^7P[A-Z][A-Z][A-Z]\\b"},
     {"country":"Liberia","regex":"^A8[A-Z][A-Z][A-Z]\\b"},
     {"country":"Libya","regex":"^5A[A-Z][A-Z][A-Z]\\b"},
-    {"country":"Liechtenstein","regex":"^HB[A-Z][A-Z][A-Z]\\b"},
     {"country":"Lithuania","regex":"^LY[A-Z][A-Z][A-Z]\\b"},
     {"country":"Luxembourg","regex":"^LX[A-Z][A-Z][A-Z]\\b"},
     {"country":"Macau","regex":"^BM[A-Z][A-Z]\\b"},
