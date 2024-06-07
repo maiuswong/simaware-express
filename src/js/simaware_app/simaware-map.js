@@ -99,7 +99,14 @@ async function initializeMap(manual = 0, landscape = 0)
     {
         map = L.map('map', { zoomControl: false, preferCanvas: true, keyboard: false}).setView([30, 0], 3).setActiveArea(activearea);
         map.doubleClickZoom.disable();
-        basemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <a href="https://github.com/lennycolton/vatglasses-data"><i class="fab fa-github"></i> VATGlasses Data on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
+        // basemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | <a href="https://github.com/maiuswong/simaware-express"><i class="fab fa-github"></i> SimAware on GitHub</a> | <a href="https://github.com/lennycolton/vatglasses-data"><i class="fab fa-github"></i> VATGlasses Data on GitHub</a> | <b>Not for real-world navigation.</b>', subdomains: 'abcd'}).addTo(map);
+        $.ajax({
+            url: '/world.geo.json',
+            success: function(data) {
+                basemap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0.08, weight: 0, color: '#222'}});
+                map.addLayer(basemap);            
+            }
+        })
         map.attributionControl.setPosition('topright');
 
         if ($.cookie('mapView')) {
@@ -2058,10 +2065,17 @@ function toggleBasemap()
   if(typeof basemap == 'undefined')
   {
     map.removeLayer(lightbasemap);
-    basemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    	attribution: '',
-    	subdomains: 'abcd',
-    }).addTo(map);
+    // basemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+    // 	attribution: '',
+    // 	subdomains: 'abcd',
+    // }).addTo(map);
+    $.ajax({
+        url: '/world.geo.json',
+        success: function(data) {
+            basemap = new L.geoJSON(data, {style: {fillColor: '#fff', fillOpacity: 0.08, weight: 0, color: '#222'}});
+            map.addLayer(basemap);            
+        }
+    })
     $('.map-button#light').removeClass('map-button-active');
     setLayerOrder();
     setBasemapOrder();
