@@ -62,7 +62,7 @@ $(document).ready(async function() {
     const initialiseDate = new Date();
 
     setInterval(
-        async (initialiseDate) => { 
+        async (initialiseDate) => {
             const now = new Date();
             const elasped = new Date(now - initialiseDate);
 
@@ -76,9 +76,9 @@ $(document).ready(async function() {
             }
             else
             {
-                interpolateLoc();
+                interpolateFlightPosition();
             }
-            
+
         }, 1000, initialiseDate);
 })
 
