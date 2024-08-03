@@ -57,11 +57,6 @@ app.get('/analysis/:id', (req, res) => {
     res.render('analysis', {id: req.params.id});
 })
 
-/* Patrons Page */
-app.get('/patreon', (req, res) => {
-    res.render('patreon', {id: req.params.id});
-})
-
 app.get('/selfservice/events/request', (req, res) => {
     res.redirect('https://api.simaware.ca/selfservice/events/request');
 })
