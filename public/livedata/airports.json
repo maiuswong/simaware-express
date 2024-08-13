@@ -8466,7 +8466,7 @@
 "K2K7":{"icao":"K2K7","iata":"2K7","name":"Neodesha Municipal Airport","city":"Neodesha, United States","lat":"37.43539810180664","lon":"-95.64610290527344","callsign":""},
 "AK59":{"icao":"AK59","iata":null,"name":"King Ranch Airport","city":"Sutton, United States","lat":"61.79560089111328","lon":"-148.35499572753906","callsign":""},
 "KEHA":{"icao":"KEHA","iata":"EHA","name":"Elkhart Morton County Airport","city":"Elkhart, United States","lat":"37.000702","lon":"-101.879997","callsign":""},
-"KFTG":{"icao":"KFTG","iata":"FTG","name":"Front Range Airport","city":"Denver, United States","lat":"39.785301208496094","lon":"-104.54299926757812","callsign":""},
+"KFTG":{"icao":"KCFO","iata":null,"name":"Colorado Air and Space Portt","city":"Denver, United States","lat":"39.785301208496094","lon":"-104.54299926757812","callsign":""},
 "KGBG":{"icao":"KGBG","iata":"GBG","name":"Galesburg Municipal Airport","city":"Galesburg, United States","lat":"40.937999725299996","lon":"-90.431098938","callsign":""},
 "KMEJ":{"icao":"KMEJ","iata":"MEJ","name":"Meade Municipal Airport","city":"Meade, United States","lat":"37.27690124511719","lon":"-100.35600280761719","callsign":""},
 "MO00":{"icao":"MO00","iata":null,"name":"Turkey Mountain Estates Airport","city":"Shell Knob, United States","lat":"36.59170150756836","lon":"-93.66690063476562","callsign":""},
